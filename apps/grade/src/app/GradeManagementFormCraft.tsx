@@ -3,25 +3,27 @@ import Button from "now-design-atoms/dist/button";
 
 import { useFormConfig, useSections } from "@dynamic_forms/react";
 
-import "./styles/gradev2.css";
+import "../styles/gradev2.css";
 import {
-  gradeFormSectionedModel,
-  gradeFormModel,
-} from "./models/gradeFormModel";
+  gradeConfigurationSectionedModel,
+  gradeConfigurationModel,
+} from "../models/gradeConfigurationModel";
 
-import UniversalFieldRenderer from "./components/UniversalFieldRenderer";
+import UniversalFieldRenderer from "../core/UniversalFieldRenderer";
 
 const GradeManagementFormCraft = () => {
-  const form = useFormConfig(gradeFormModel, {
+  const form = useFormConfig(gradeConfigurationModel, {
     enableValidation: true,
     enableDependencies: true,
     enableAnalytics: true,
+    validateOnChange: false,
+    validateOnBlur: true,
     eventHooks: {
       onFieldChange: (path: string, value: any) => {},
       onFormSubmit: (values: any) => {},
     },
   });
-  const sections = useSections(gradeFormSectionedModel, form as any, {
+  const sections = useSections(gradeConfigurationSectionedModel, form as any, {
     autoHideEmptySections: true,
   });
   const handleSubmit = form.handleSubmit(async (values: any) => {
@@ -33,15 +35,38 @@ const GradeManagementFormCraft = () => {
     const value = form.values[fieldPath];
     const error = form.errors[fieldPath];
 
-        return (
+    return (
       <UniversalFieldRenderer
-            key={fieldPath}
-            field={field}
-            value={value}
-            onChange={(newValue: any) => form.setValue(fieldPath, newValue)}
-            error={error}
-            fieldPath={fieldPath}
-            form={form}
+        key={fieldPath}
+        field={field}
+        value={value}
+        onChange={(newValue: any) => {
+          // Try setValue first
+          form.setValue(fieldPath, newValue);
+          
+          // If setValue didn't work, try handleChange
+          if (form.values[fieldPath] !== newValue) {
+            form.handleChange(fieldPath, newValue);
+          }
+          
+          // If both failed, try direct manipulation with force update
+          if (form.values[fieldPath] !== newValue) {
+            form.values[fieldPath] = newValue;
+            
+            // Force form to recognize the change
+            if (form.forceUpdate) {
+              form.forceUpdate();
+            } else if (form.setValue) {
+              // Try setValue again after direct manipulation
+              setTimeout(() => {
+                form.setValue(fieldPath, newValue);
+              }, 0);
+            }
+          }
+        }}
+        error={error}
+        fieldPath={fieldPath}
+        form={form}
         sectionContext={field.meta?.sectionContext || "default"}
       />
     );
@@ -73,9 +98,9 @@ const GradeManagementFormCraft = () => {
                 <div className="section-header">
                   <h2 className="section-header-title">{section.title}</h2>
                 </div>
-                  {section.description && (
-                    <p className="section-description">{section.description}</p>
-                  )}
+                {section.description && (
+                  <p className="section-description">{section.description}</p>
+                )}
 
                 <div
                   className={`section-fields ${section.layout?.className ||

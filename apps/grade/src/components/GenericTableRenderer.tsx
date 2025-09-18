@@ -41,6 +41,32 @@ const GenericTableRenderer = ({
   const tableConfig = getTableConfig();
   const items = Array.isArray(value) ? value : [];
 
+  // 🎯 FILTER COLUMNS BASED ON VISIBILITY CONDITIONS
+  const getVisibleColumns = () => {
+    if (!tableConfig?.columns) return [];
+    
+    return tableConfig.columns.filter((column: any) => {
+      // If column has hidden property, check the condition
+      if (column.hidden) {
+        // For bath chemistry columns, show only when bathChemistry is 'with'
+        if (column.key === 'bathMin' || column.key === 'bathMax') {
+          return form.values.bathChemistry === 'with';
+        }
+        // For other hidden columns, you can add more conditions here
+        return false;
+      }
+      // Show all non-hidden columns
+      return true;
+    });
+  };
+
+  const visibleColumns = getVisibleColumns();
+
+  // 🎯 HIDE TABLE WHEN NO DATA
+  if (items.length === 0) {
+    return null; // Don't render anything when table is empty
+  }
+
   // 🎯 GENERIC ADD ITEM HANDLER
   const handleAddItem = () => {
     const selectedItem = form.values[tableConfig?.selectField || 'selectedItem'];
@@ -153,7 +179,7 @@ const GenericTableRenderer = ({
         <table className="generic-table">
           <thead>
             <tr>
-              {tableConfig?.columns?.map((column: any) => (
+              {visibleColumns.map((column: any) => (
                 <th key={column.key} className="table-header-cell">
                   {column.label}
                 </th>
@@ -164,7 +190,7 @@ const GenericTableRenderer = ({
           <tbody>
             {items.map((item: any, index: number) => (
               <tr key={index} className="table-row">
-                {tableConfig?.columns?.map((column: any) => (
+                {visibleColumns.map((column: any) => (
                   <td key={column.key} className="table-cell">
                     {renderCell(item, column, index)}
                   </td>

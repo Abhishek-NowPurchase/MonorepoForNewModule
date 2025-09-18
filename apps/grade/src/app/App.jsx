@@ -6,20 +6,12 @@ import 'now-design-styles/dist/fonts/fonts.css';
 import 'now-design-styles/dist/effect/effectStyles.css';
 
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from '../store/store';
-import GradeManager from './GradeManager';
-import ErrorBoundary from '../components/ErrorBoundary';
-import GradeManagerV2 from './GradeManagerV2';
+
+import GradeManagementFormCraft from './GradeManagementFormCraft';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <Provider store={store}>
-        {/* <GradeManager /> */}
-        <GradeManagerV2/>
-      </Provider>
-    </ErrorBoundary>
+   <> <GradeManagementFormCraft /></>
   );
 }
 

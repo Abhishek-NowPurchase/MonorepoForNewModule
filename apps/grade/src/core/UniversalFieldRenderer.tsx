@@ -3,9 +3,17 @@ import { TextInput, MinMax, Select, RadioGroup } from 'now-design-molecules';
 import Checkbox from 'now-design-atoms/dist/checkbox';
 import Button from 'now-design-atoms/dist/button';
 
+// Import required design tokens and styles
+import 'now-design-tokens/dist/css/variables.css';
+import 'now-design-styles/dist/text/text-styles.css';
+import 'now-design-styles/dist/color/colorStyles.css';
+import 'now-design-styles/dist/fonts/fonts.css';
+import 'now-design-styles/dist/effect/effectStyles.css';
+
 // ===== UNIVERSAL FIELD RENDERER =====
 // Handles ALL standard field types in one place to eliminate duplication
 interface UniversalFieldProps {
+  key : any;
   field: any;
   value: any;
   onChange: (value: any) => void;
@@ -16,7 +24,7 @@ interface UniversalFieldProps {
 }
 
 // 🚀 FUNDAMENTAL FIX: Convert to proper React component
-const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
+const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
   // 🚀 HOOKS AT TOP LEVEL - Always called consistently
   const [selectOptions, setSelectOptions] = React.useState([]);
 
@@ -33,7 +41,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
   }
 
   // Handle field headers (for grouped fields like DI parameters)
-  const renderFieldWithHeader = (fieldContent: JSX.Element) => {
+  const renderFieldWithHeader = (fieldContent: any) => {
     if (field.meta?.showHeader) {
       return (
         <div className={`${sectionContext}-field-with-header`}>
@@ -58,7 +66,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
     // 🚀 DRY APPROACH - All table renderers use the same GenericTableRenderer
     const tableRenderers = ["TargetChemistryTable", "ChargemixMaterialsTable", "RawMaterialsTable"];
     if (tableRenderers.includes(customRenderer)) {
-      const GenericTableRenderer = require("./GenericTableRenderer").default;
+      const GenericTableRenderer = require("../components/GenericTableRenderer").default;
       return (
         <GenericTableRenderer
           field={field}
@@ -73,7 +81,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
     
     if (customRenderer === "ToleranceSection") {
       // Import and render ToleranceSectionRenderer
-      const ToleranceSectionRenderer = require("./ToleranceSectionRenderer").default;
+      const ToleranceSectionRenderer = require("../components/ToleranceSectionRenderer").default;
       return (
         <ToleranceSectionRenderer
           field={field}
@@ -220,34 +228,47 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
   // Handle all standard field types
   switch (field.type) {
     case 'text':
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-text-field ${error ? "error" : ""}`}>
-          <TextInput
-            label={field.label}
-            value={(value || '').toString()}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={field.label}
-            error={error && error.length > 0 ? error.join(', ') : undefined}
-            helpText={field.meta?.helpText}
-            id={fieldPath}
-          />
-        </div>
-      );
-
     case 'number':
+    case 'email':
+    case 'password':
+    case 'tel':
+    case 'url':
+      // Universal TextInput handler for all input types
+      const inputType = field.type === 'number' ? 'number' : field.type;
+      const handleChange = (e: any) => {
+        const newValue = field.type === 'number' ? Number(e.target.value) : e.target.value;
+        onChange(newValue);
+      };
+
       return renderFieldWithHeader(
-        <div className={`${sectionContext}-number-field ${error ? "error" : ""}`}>
+        <div className={`${sectionContext}-${field.type}-field ${error ? "error" : ""}`}>
           <TextInput
             label={field.label}
-            type="number"
+            type={inputType}
             value={(value || '').toString()}
-            onChange={(e) => onChange(Number(e.target.value))}
+            onChange={handleChange}
             placeholder={field.label}
-            error={error && error.length > 0 ? error.join(', ') : undefined}
-            helpText={field.meta?.helpText}
+            status={error && error.length > 0 ? 'error' : undefined}
+            helperText={field.meta?.helpText}
             id={fieldPath}
-            min={field.validators?.min}
-            max={field.validators?.max}
+            required={field.validators?.required}
+            validator={field.validators?.custom ? (value) => {
+              const validationResult = field.validators.custom(value);
+              return {
+                valid: validationResult.length === 0,
+                status: validationResult.length > 0 ? 'error' : undefined,
+                message: validationResult.length > 0 ? validationResult[0] : undefined
+              };
+            } : undefined}
+            validateOn="blur"
+            // Additional props for specific types
+            {...(field.type === 'email' && { inputMode: 'email' })}
+            {...(field.type === 'tel' && { inputMode: 'tel' })}
+            {...(field.type === 'number' && { inputMode: 'numeric' })}
+            // Validation constraints from validators object
+            {...(field.validators?.min && { minLength: field.validators.min })}
+            {...(field.validators?.max && { maxLength: field.validators.max })}
+            {...(field.validators?.pattern && { regex: field.validators.pattern })}
           />
         </div>
       );
@@ -259,7 +280,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
           value: option.value,
           label: option.label
         }))
-      ];
+      ].filter(option => option.value !== "" || option.label !== ""); // Remove empty options
 
       return renderFieldWithHeader(
         <div className={`${sectionContext}-select-field ${error ? "error" : ""}`}>
@@ -270,8 +291,8 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
             className={`form-input ${error ? "error" : ""}`}
             id={fieldPath}
           >
-            {selectFieldOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+            {selectFieldOptions.map((option, index) => (
+              <option key={`${option.value}-${index}`} value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -291,7 +312,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
           <Checkbox
             id={fieldPath}
             checked={!!value}
-            onChange={(checked) => onChange(checked)}
+            onChange={(event) => onChange(event.target.checked)}
             disabled={field.disabled}
           >
             {field.label}
@@ -330,7 +351,8 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
                 <Checkbox
                   id={`${fieldPath}-${option.value}`}
                   checked={Array.isArray(value) && value.includes(option.value)}
-                  onChange={(checked) => {
+                  onChange={(event) => {
+                    const checked = event.target.checked;
                     const currentArray = Array.isArray(value) ? value : [];
                     if (checked) {
                       onChange([...currentArray, option.value]);

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from 'now-design-atoms';
+import Button from 'now-design-atoms/dist/button';
 import { MinMax } from 'now-design-molecules';
 
 interface ToleranceSectionRendererProps {
@@ -11,10 +11,10 @@ interface ToleranceSectionRendererProps {
 }
 
 // Tolerance Section Renderer - Comprehensive tolerance management
-const ToleranceSectionRenderer: React.FC<ToleranceSectionRendererProps> = ({ 
+const ToleranceSectionRenderer = ({ 
   field, 
   form 
-}) => {
+}: ToleranceSectionRendererProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const targetChemistry = form.values["targetChemistry"] || [];
   const elementsWithData = targetChemistry.filter((el: any) => el.element);
