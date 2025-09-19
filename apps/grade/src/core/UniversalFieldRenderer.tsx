@@ -3,29 +3,28 @@ import { TextInput, MinMax, Select, RadioGroup } from 'now-design-molecules';
 import Checkbox from 'now-design-atoms/dist/checkbox';
 import Button from 'now-design-atoms/dist/button';
 
-// Import required design tokens and styles
+
 import 'now-design-tokens/dist/css/variables.css';
 import 'now-design-styles/dist/text/text-styles.css';
 import 'now-design-styles/dist/color/colorStyles.css';
 import 'now-design-styles/dist/fonts/fonts.css';
 import 'now-design-styles/dist/effect/effectStyles.css';
+import { getFieldStyle, getFieldClassName } from '../utils/layoutUtils';
 
-// ===== UNIVERSAL FIELD RENDERER =====
-// Handles ALL standard field types in one place to eliminate duplication
+
 interface UniversalFieldProps {
-  key : any;
   field: any;
   value: any;
   onChange: (value: any) => void;
   error?: string[];
   fieldPath: string;
   form: any;
-  sectionContext?: string; // For section-specific styling
+  sectionContext?: string; 
 }
 
-// 🚀 FUNDAMENTAL FIX: Convert to proper React component
-const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
-  // 🚀 HOOKS AT TOP LEVEL - Always called consistently
+
+const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
+
   const [selectOptions, setSelectOptions] = React.useState([]);
 
   React.useEffect(() => {
@@ -34,14 +33,26 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
     }
   }, [field.type, field.options, field]);
 
-  // 🚀 Handle visibility inside component
+
   const isVisible = form.isFieldVisible(fieldPath);
   if (!isVisible) {
     return null;
   }
 
-  // Handle field headers (for grouped fields like DI parameters)
-  const renderFieldWithHeader = (fieldContent: any) => {
+
+  const renderFieldWithWrapper = (fieldContent: any, fieldType: string) => {
+    const wrapperContent = (
+      <div className={getFieldClassName(fieldType, sectionContext, error && error.length > 0)}>
+        {fieldContent}
+        {field.meta?.helpText && (
+          <div className="help-text">{field.meta.helpText}</div>
+        )}
+        {error && error.length > 0 && (
+          <div className="error-message">{error.join(', ')}</div>
+        )}
+      </div>
+    );
+
     if (field.meta?.showHeader) {
       return (
         <div className={`${sectionContext}-field-with-header`}>
@@ -50,20 +61,63 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
             <p className="subsection-description">{field.meta.headerDescription}</p>
           </div>
           <div className="field-content">
-            {fieldContent}
+            {wrapperContent}
           </div>
         </div>
       );
     }
-    return fieldContent;
+    return wrapperContent;
   };
 
 
-  // 🎯 CUSTOM RENDERER HANDLER - Handles all custom renderers through configuration
+  // 🎯 GENERIC BUTTON FACTORY - Eliminates redundant button creation
+  const createAddButton = (config: {
+    selectedField: string;
+    targetArray: string;
+    buttonText: string;
+    containerClass: string;
+    createItem: (selectedValue: any) => any;
+    clearFields: string[];
+  }) => {
+    const handleAdd = () => {
+      const selectedValue = form.values[config.selectedField];
+      if (!selectedValue) return;
+
+      const currentArray = form.values[config.targetArray] || [];
+      
+      // Check if item already exists
+      const exists = currentArray.some((item: any) => 
+        item.element === selectedValue || item.material === selectedValue
+      );
+      if (exists) return;
+
+      // Create new item
+      const newItem = config.createItem(selectedValue);
+      form.setValue(config.targetArray, [...currentArray, newItem]);
+      
+      // Clear fields
+      config.clearFields.forEach(field => form.setValue(field, field.includes('Percent') ? 0 : ''));
+    };
+
+    return (
+      <div className={config.containerClass}>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={handleAdd}
+          disabled={!form.values[config.selectedField]}
+        >
+          {config.buttonText}
+        </Button>
+      </div>
+    );
+  };
+
+  // 🎯 CUSTOM RENDERER HANDLER - Consolidated and DRY
   const handleCustomRenderer = () => {
     const customRenderer = field.meta?.customRenderer;
     
-    // 🚀 DRY APPROACH - All table renderers use the same GenericTableRenderer
+    // Table renderers - all use GenericTableRenderer
     const tableRenderers = ["TargetChemistryTable", "ChargemixMaterialsTable", "RawMaterialsTable"];
     if (tableRenderers.includes(customRenderer)) {
       const GenericTableRenderer = require("../components/GenericTableRenderer").default;
@@ -78,9 +132,8 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
       );
     }
     
-    
+    // Tolerance section renderer
     if (customRenderer === "ToleranceSection") {
-      // Import and render ToleranceSectionRenderer
       const ToleranceSectionRenderer = require("../components/ToleranceSectionRenderer").default;
       return (
         <ToleranceSectionRenderer
@@ -93,127 +146,56 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
       );
     }
     
+    // Add Element Button
     if (customRenderer === "AddElementButton") {
-      // 🎯 ADD ELEMENT BUTTON - Uses selectedElement field value
-      const handleAddElement = () => {
-        const selectedElement = form.values.selectedElement;
-        if (!selectedElement) return;
-
-        const currentElements = form.values.targetChemistry || [];
-        
-        // Check if element already exists
-        const elementExists = currentElements.some((item: any) => item.element === selectedElement);
-        if (elementExists) return;
-
-        // Create new element based on bath chemistry setting
-        const hasBathChemistry = form.values.bathChemistry === 'with';
-        const newElement = {
-          element: selectedElement,
-          ...(hasBathChemistry ? { bathMin: 0, bathMax: 0 } : {}),
-          finalMin: 0,
-          finalMax: 0
-        };
-
-        form.setValue('targetChemistry', [...currentElements, newElement]);
-        form.setValue('selectedElement', ''); // Clear selection
-      };
-
-      return (
-        <div className="add-element-button-container">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleAddElement}
-            disabled={!form.values.selectedElement}
-          >
-            Add Element
-          </Button>
-        </div>
-      );
+      return createAddButton({
+        selectedField: 'selectedElement',
+        targetArray: 'targetChemistry',
+        buttonText: 'Add Element',
+        containerClass: 'add-element-button-container',
+        createItem: (selectedElement) => {
+          const hasBathChemistry = form.values.bathChemistry === 'with';
+          return {
+            element: selectedElement,
+            ...(hasBathChemistry ? { bathMin: 0, bathMax: 0 } : {}),
+            finalMin: 0,
+            finalMax: 0
+          };
+        },
+        clearFields: ['selectedElement']
+      });
     }
     
+    // Add Raw Material Button
     if (customRenderer === "AddRawMaterialButton") {
-      // 🎯 ADD RAW MATERIAL BUTTON - Uses selectedRawMaterial field value
-      const handleAddRawMaterial = () => {
-        const selectedMaterial = form.values.selectedRawMaterial;
-        const minPercent = form.values.rawMaterialMinPercent;
-        const maxPercent = form.values.rawMaterialMaxPercent;
-        
-        if (!selectedMaterial || minPercent === undefined || maxPercent === undefined) return;
-
-        const currentMaterials = form.values.rawMaterials || [];
-        
-        // Check if material already exists
-        const materialExists = currentMaterials.some((item: any) => item.material === selectedMaterial);
-        if (materialExists) return;
-
-        // Create new material
-        const newMaterial = {
+      return createAddButton({
+        selectedField: 'selectedRawMaterial',
+        targetArray: 'rawMaterials',
+        buttonText: 'Add',
+        containerClass: 'add-raw-material-button-container',
+        createItem: (selectedMaterial) => ({
           material: selectedMaterial,
-          minPercent: minPercent,
-          maxPercent: maxPercent
-        };
-
-        form.setValue('rawMaterials', [...currentMaterials, newMaterial]);
-        form.setValue('selectedRawMaterial', ''); // Clear selection
-        form.setValue('rawMaterialMinPercent', 0); // Reset min
-        form.setValue('rawMaterialMaxPercent', 0); // Reset max
-      };
-
-      return (
-        <div className="add-raw-material-button-container">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleAddRawMaterial}
-            disabled={!form.values.selectedRawMaterial}
-          >
-            Add
-          </Button>
-        </div>
-      );
+          minPercent: form.values.rawMaterialMinPercent,
+          maxPercent: form.values.rawMaterialMaxPercent
+        }),
+        clearFields: ['selectedRawMaterial', 'rawMaterialMinPercent', 'rawMaterialMaxPercent']
+      });
     }
     
+    // Add Chargemix Material Button
     if (customRenderer === "AddChargemixMaterialButton") {
-      // 🎯 ADD CHARGEMIX MATERIAL BUTTON - Uses selectedChargemixMaterial field value
-      const handleAddChargemixMaterial = () => {
-        const selectedMaterial = form.values.selectedChargemixMaterial;
-        const minPercent = form.values.chargemixMaterialMinPercent;
-        const maxPercent = form.values.chargemixMaterialMaxPercent;
-        
-        if (!selectedMaterial || minPercent === undefined || maxPercent === undefined) return;
-
-        const currentMaterials = form.values.chargemixMaterials || [];
-        
-        // Check if material already exists
-        const materialExists = currentMaterials.some((item: any) => item.material === selectedMaterial);
-        if (materialExists) return;
-
-        // Create new material
-        const newMaterial = {
+      return createAddButton({
+        selectedField: 'selectedChargemixMaterial',
+        targetArray: 'chargemixMaterials',
+        buttonText: 'Add',
+        containerClass: 'add-chargemix-material-button-container',
+        createItem: (selectedMaterial) => ({
           material: selectedMaterial,
-          minPercent: minPercent,
-          maxPercent: maxPercent
-        };
-
-        form.setValue('chargemixMaterials', [...currentMaterials, newMaterial]);
-        form.setValue('selectedChargemixMaterial', ''); // Clear selection
-        form.setValue('chargemixMaterialMinPercent', 0); // Reset min
-        form.setValue('chargemixMaterialMaxPercent', 0); // Reset max
-      };
-
-      return (
-        <div className="add-chargemix-material-button-container">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleAddChargemixMaterial}
-            disabled={!form.values.selectedChargemixMaterial}
-          >
-            Add
-          </Button>
-        </div>
-      );
+          minPercent: form.values.chargemixMaterialMinPercent,
+          maxPercent: form.values.chargemixMaterialMaxPercent
+        }),
+        clearFields: ['selectedChargemixMaterial', 'chargemixMaterialMinPercent', 'chargemixMaterialMaxPercent']
+      });
     }
   
     return null;
@@ -225,7 +207,7 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
     return customRendererResult;
   }
 
-  // Handle all standard field types
+
   switch (field.type) {
     case 'text':
     case 'number':
@@ -233,44 +215,37 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
     case 'password':
     case 'tel':
     case 'url':
-      // Universal TextInput handler for all input types
-      const inputType = field.type === 'number' ? 'number' : field.type;
+    
       const handleChange = (e: any) => {
         const newValue = field.type === 'number' ? Number(e.target.value) : e.target.value;
         onChange(newValue);
       };
 
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-${field.type}-field ${error ? "error" : ""}`}>
-          <TextInput
-            label={field.label}
-            type={inputType}
-            value={(value || '').toString()}
-            onChange={handleChange}
-            placeholder={field.label}
-            status={error && error.length > 0 ? 'error' : undefined}
-            helperText={field.meta?.helpText}
-            id={fieldPath}
-            required={field.validators?.required}
-            validator={field.validators?.custom ? (value) => {
-              const validationResult = field.validators.custom(value);
-              return {
-                valid: validationResult.length === 0,
-                status: validationResult.length > 0 ? 'error' : undefined,
-                message: validationResult.length > 0 ? validationResult[0] : undefined
-              };
-            } : undefined}
-            validateOn="blur"
-            // Additional props for specific types
-            {...(field.type === 'email' && { inputMode: 'email' })}
-            {...(field.type === 'tel' && { inputMode: 'tel' })}
-            {...(field.type === 'number' && { inputMode: 'numeric' })}
-            // Validation constraints from validators object
-            {...(field.validators?.min && { minLength: field.validators.min })}
-            {...(field.validators?.max && { maxLength: field.validators.max })}
-            {...(field.validators?.pattern && { regex: field.validators.pattern })}
-          />
-        </div>
+      return renderFieldWithWrapper(
+        <TextInput
+          label={field.label}
+          type={field.type}
+          value={(value || '').toString()}
+          onChange={handleChange}
+          placeholder={field.label}
+          status={error && error.length > 0 ? 'error' : undefined}
+          id={fieldPath}
+          required={field.validators?.required}
+          validator={field.validators?.custom ? (value) => {
+            const validationResult = field.validators.custom(value);
+            return {
+              valid: validationResult.length === 0,
+              status: validationResult.length > 0 ? 'error' : undefined,
+              message: validationResult.length > 0 ? validationResult[0] : undefined
+            };
+          } : undefined}
+          validateOn="blur"
+          inputMode={field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : field.type === 'number' ? 'numeric' : undefined}
+          minLength={field.validators?.min}
+          maxLength={field.validators?.max}
+          regex={field.validators?.pattern}
+        />,
+        field.type
       );
 
     case 'select':
@@ -282,8 +257,8 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
         }))
       ].filter(option => option.value !== "" || option.label !== ""); // Remove empty options
 
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-select-field ${error ? "error" : ""}`}>
+      return renderFieldWithWrapper(
+        <>
           <label className="form-label">{field.label}</label>
           <select
             value={(value || "").toString()}
@@ -297,54 +272,39 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
               </option>
             ))}
           </select>
-          {field.meta?.helpText && (
-            <div className="help-text">{field.meta.helpText}</div>
-          )}
-          {error && error.length > 0 && (
-            <div className="error-message">{error.join(', ')}</div>
-          )}
-        </div>
+        </>,
+        'select'
       );
 
     case 'checkbox':
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-checkbox-field ${error ? "error" : ""}`}>
-          <Checkbox
-            id={fieldPath}
-            checked={!!value}
-            onChange={(event) => onChange(event.target.checked)}
-            disabled={field.disabled}
-          >
-            {field.label}
-          </Checkbox>
-          {error && error.length > 0 && (
-            <div className="error-message">{error.join(', ')}</div>
-          )}
-          {field.meta?.helpText && (
-            <div className="help-text">{field.meta.helpText}</div>
-          )}
-        </div>
+      return renderFieldWithWrapper(
+        <Checkbox
+          id={fieldPath}
+          checked={!!value}
+          onChange={(event) => onChange(event.target.checked)}
+          disabled={field.disabled}
+        >
+          {field.label}
+        </Checkbox>,
+        'checkbox'
       );
 
     case 'array':
-      // 🚀 DYNAMIC OPTIONS - Support both static and dynamic options
+      
       const getArrayOptions = () => {
         if (field.meta?.getOptions) {
-          // Dynamic options based on form values
+         
           return field.meta.getOptions(form.values);
         }
-        // Static options
+     
         return field.meta?.options || [];
       };
       
       const arrayOptions = getArrayOptions();
       
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-array-field ${error ? "error" : ""}`}>
+      return renderFieldWithWrapper(
+        <>
           <div className="array-field-label">{field.label}</div>
-          {field.meta?.helpText && (
-            <div className="help-text">{field.meta.helpText}</div>
-          )}
           <div className="array-checkboxes">
             {arrayOptions.map((option: any) => (
               <div key={option.value} className="array-checkbox-item">
@@ -367,79 +327,66 @@ const UniversalFieldRenderer = ({ key, field, value, onChange, error, fieldPath,
               </div>
             ))}
           </div>
-          {error && error.length > 0 && (
-            <div className="error-message">{error.join(', ')}</div>
-          )}
-        </div>
+        </>,
+        'array'
       );
 
     case 'range':
     case 'minmax':
-      // Handle both single value and range value
+     
       const rangeValue = typeof value === 'object' ? value : { min: value, max: value };
       
       const handleRangeChange = (range: { min?: number; max?: number }) => {
         if (field.meta?.isRange) {
           onChange(range);
         } else {
-          // For single value fields, use the min value
           onChange(range.min);
         }
       };
 
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-range-field ${error ? "error" : ""}`}>
-          <MinMax
-            id={field.key}
-            label={field.label}
-            value={rangeValue}
-            onChange={handleRangeChange}
-            error={error && error.length > 0 ? error.join(", ") : undefined}
-            helpText={field.meta?.helpText}
-            min={field.validators?.min || 1000}
-            max={field.validators?.max || 2000}
-            step={field.validators?.step || 10}
-            unit={field.meta?.unit || "°C"}
-          />
-        </div>
+      return renderFieldWithWrapper(
+        <MinMax
+          id={field.key}
+          label={field.label}
+          value={rangeValue}
+          onChange={handleRangeChange}
+          error={error && error.length > 0 ? error.join(", ") : undefined}
+          min={field.validators?.min || 1000}
+          max={field.validators?.max || 2000}
+          step={field.validators?.step || 10}
+          unit={field.meta?.unit || "°C"}
+        />,
+        'range'
       );
 
     case 'button':
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-button-field ${error ? "error" : ""}`}>
-          <button
-            type="button"
-            onClick={() => onChange(!value)}
-            className="simple-button"
-          >
-            {field.label}
-          </button>
-          {error && error.length > 0 && (
-            <div className="error-message">{error.join(', ')}</div>
-          )}
-          {field.meta?.helpText && (
-            <div className="help-text">{field.meta.helpText}</div>
-          )}
-        </div>
+      return renderFieldWithWrapper(
+        <button
+          type="button"
+          onClick={() => onChange(!value)}
+          className="simple-button"
+        >
+          {field.label}
+        </button>,
+        'button'
       );
 
     default:
-      // Fallback for unknown field types
-      return renderFieldWithHeader(
-        <div className={`${sectionContext}-unknown-field fallback-field`}>
-          <div className="fallback-content">
-            <span className="fallback-message">
-              Unknown field type: "{field.type}" for field "{field.key}"
-            </span>
-            <TextInput
-              label={field.label || field.key}
-              value={(value || '').toString()}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={`Enter ${field.label || field.key}`}
-              error={error && error.length > 0 ? error.join(', ') : undefined}
-            />
-          </div>
-        </div>
+      // Fallback 
+      return renderFieldWithWrapper(
+        <div className="fallback-content">
+          <span className="fallback-message">
+            Unknown field type: "{field.type}" for field "{field.key}"
+          </span>
+          <TextInput
+            label={field.label || field.key}
+            value={(value || '').toString()}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={`Enter ${field.label || field.key}`}
+            error={error && error.length > 0 ? error.join(', ') : undefined}
+          />
+        </div>,
+        'unknown'
       );
   }
 };

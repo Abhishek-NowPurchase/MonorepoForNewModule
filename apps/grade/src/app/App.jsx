@@ -7,11 +7,11 @@ import 'now-design-styles/dist/effect/effectStyles.css';
 
 import React from 'react';
 
-import GradeManagementFormCraft from './GradeManagementFormCraft';
+import GradeConfigurationForm from './GradeConfigurationForm';
 
 function App() {
   return (
-   <> <GradeManagementFormCraft /></>
+   <> <GradeConfigurationForm /></>
   );
 }
 

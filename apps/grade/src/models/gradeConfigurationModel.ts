@@ -86,7 +86,7 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 1500,
     validators: {
       required: true,
-      min: 1000,
+      min: 1000
     },
     hidden: true,
     section: { sectionId: 'gradeOverview', order: 5 },
@@ -117,10 +117,7 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 1540,
     validators: {
       required: true,
-      min: 1000,
-      custom: (value: any) => {
-        return [];
-      }
+      min: 1000
     },
     hidden: true,
     section: { sectionId: 'gradeOverview', order: 6 },
@@ -133,10 +130,7 @@ export const gradeConfigurationModel: FormModel = [
           validators: { 
             required: true, 
             min: 1000, 
-            max: 2000,
-        custom: (value: any) => {
-          return [];
-        }
+            max: 2000
           },
           meta: { 
             helpText: 'Maximum tapping temperature for DI processing (must be > min temp)'
@@ -494,10 +488,7 @@ export const gradeConfigurationModel: FormModel = [
     ],
     validators: {
       min: 0,
-      max: 100,
-      custom: (value: any) => {
-        return [];
-      }
+      max: 100
     },
   },
 
@@ -617,10 +608,7 @@ export const gradeConfigurationModel: FormModel = [
     ],
     validators: {
       min: 0,
-      max: 100,
-      custom: (value: any) => {
-        return [];
-      }
+      max: 100
     },
   },
 

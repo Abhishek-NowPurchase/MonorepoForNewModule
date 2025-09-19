@@ -39,7 +39,7 @@ apps/grade/src/
 ├── components/             # Custom business components
 │   └── ToleranceSectionRenderer.tsx
 ├── app/                    # Main application components
-│   └── GradeManagementFormCraft.tsx
+│   └── GradeConfigurationForm.tsx
 └── styles/                 # Module-specific styles
     └── gradev2.css
 ```

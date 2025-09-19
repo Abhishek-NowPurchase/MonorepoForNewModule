@@ -1,6 +1,7 @@
 import React from "react";
 import Button from 'now-design-atoms/dist/button';
 import { TextInput } from 'now-design-molecules';
+import { getTableCellStyle } from '../utils/layoutUtils';
 
 interface GenericTableRendererProps {
   field: any;
@@ -105,38 +106,37 @@ const GenericTableRenderer = ({
     onChange(newItems);
   };
 
-  // 🎯 GENERIC CELL RENDERER
+  // 🎯 GENERIC CELL RENDERER - Consolidated cell rendering logic
   const renderCell = (item: any, column: any, index: number) => {
     const value = item[column.key];
     
+    // 🎯 GENERIC INPUT HANDLER - Consolidated input handling
+    const createInput = (type: string, props: any = {}) => (
+      <TextInput
+        type={type}
+        value={(value || '').toString()}
+        onChange={(e) => {
+          const newValue = type === 'number' ? Number(e.target.value) : e.target.value;
+          handleUpdateItem(index, column.key, newValue);
+        }}
+        placeholder={column.placeholder || column.label}
+        hideLabel={true}
+        size="small"
+        style={getTableCellStyle(column.type)}
+        {...props}
+      />
+    );
+    
     switch (column.type) {
       case 'text':
-        return (
-          <TextInput
-            value={(value || '').toString()}
-            onChange={(e) => handleUpdateItem(index, column.key, e.target.value)}
-            placeholder={column.placeholder || column.label}
-            hideLabel={true}
-            size="small"
-            style={{ width: '100%', minWidth: '80px', maxWidth: '120px' }}
-          />
-        );
+        return createInput('text');
       
       case 'number':
-        return (
-          <TextInput
-            type="number"
-            value={(value || '').toString()}
-            onChange={(e) => handleUpdateItem(index, column.key, Number(e.target.value))}
-            placeholder={column.placeholder || column.label}
-            hideLabel={true}
-            size="small"
-            min={column.min}
-            max={column.max}
-            step={column.step}
-            style={{ width: '100%', minWidth: '80px', maxWidth: '120px' }}
-          />
-        );
+        return createInput('number', {
+          min: column.min,
+          max: column.max,
+          step: column.step
+        });
       
       case 'select':
         return (
