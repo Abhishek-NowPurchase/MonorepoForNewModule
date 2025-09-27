@@ -115,7 +115,6 @@ body {
 .form-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
 }
 
 .form-label {
@@ -937,21 +936,6 @@ tr:hover {
   border-color: #f56565;
 }
 
-.simple-button {
-  background: #4299e1;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.simple-button:hover {
-  background: #3182ce;
-}
 
 .fallback-field {
   padding: 16px;

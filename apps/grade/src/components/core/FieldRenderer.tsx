@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, MinMax, Select, RadioGroup } from 'now-design-molecules';
+import { TextInput, Select, RadioGroup } from 'now-design-molecules';
 import Checkbox from 'now-design-atoms/dist/checkbox';
 import Button from 'now-design-atoms/dist/button';
 import ReactSelect from 'react-select';
@@ -277,7 +277,7 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
         const selectedOption = selectFieldOptions.find(option => option.value === value);
         
         return renderFieldWithWrapper(
-          <>
+          <div className="form-field">
             <label className="form-label">{field.label}</label>
             <ReactSelect
               value={selectedOption}
@@ -290,19 +290,19 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
                 menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
               }}
             />
-          </>,
+          </div>,
           'select'
         );
       }
 
       // Fallback to regular select for non-searchable fields
       return renderFieldWithWrapper(
-        <>
+        <div className="form-field">
           <label className="form-label">{field.label}</label>
           <select
             value={(value || "").toString()}
             onChange={(e) => onChange(e.target.value)}
-            className={`form-input ${error ? "error" : ""}`}
+            className={`form-input ${error && error.length > 0 ? "error" : ""}`}
             id={fieldPath}
           >
             {selectFieldOptions.map((option, index) => (
@@ -311,7 +311,7 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
               </option>
             ))}
           </select>
-        </>,
+        </div>,
         'select'
       );
 
@@ -370,45 +370,7 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
         'array'
       );
 
-    case 'range':
-    case 'minmax':
-     
-      const rangeValue = typeof value === 'object' ? value : { min: value, max: value };
-      
-      const handleRangeChange = (range: { min?: number; max?: number }) => {
-        if (field.meta?.isRange) {
-          onChange(range);
-        } else {
-          onChange(range.min);
-        }
-      };
 
-      return renderFieldWithWrapper(
-        <MinMax
-          id={field.key}
-          label={field.label}
-          value={rangeValue}
-          onChange={handleRangeChange}
-          error={error && error.length > 0 ? error.join(", ") : undefined}
-          min={field.validators?.min || 1000}
-          max={field.validators?.max || 2000}
-          step={field.validators?.step || 10}
-          unit={field.meta?.unit || "°C"}
-        />,
-        'range'
-      );
-
-    case 'button':
-      return renderFieldWithWrapper(
-        <button
-          type="button"
-          onClick={() => onChange(!value)}
-          className="simple-button"
-        >
-          {field.label}
-        </button>,
-        'button'
-      );
 
     default:
       // Fallback 
