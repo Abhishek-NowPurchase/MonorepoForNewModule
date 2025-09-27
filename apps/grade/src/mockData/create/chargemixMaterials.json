@@ -1,0 +1,20 @@
+[
+  { "value": "", "label": "Select raw material..." },
+  { "value": "pig_iron", "label": "Pig Iron", "category": "Furnace" },
+  { "value": "steel_scrap", "label": "Steel Scrap", "category": "Furnace" },
+  { "value": "cast_iron_returns", "label": "Cast Iron Returns", "category": "Furnace" },
+  { "value": "silicon_carbide", "label": "Silicon Carbide", "category": "Furnace" },
+  { "value": "ferrosilicon", "label": "Ferrosilicon", "category": "Furnace" },
+  { "value": "calcium_carbide", "label": "Calcium Carbide", "category": "Additives" },
+  { "value": "graphite", "label": "Graphite", "category": "Additives" },
+  { "value": "carbon_raiser", "label": "Carbon Raiser", "category": "Additives" },
+  { "value": "ferromanganese", "label": "Ferromanganese", "category": "Additives" },
+  { "value": "ferro_silicon_magnesium", "label": "Ferro Silicon Magnesium", "category": "Nodularizer" },
+  { "value": "nickel_magnesium", "label": "Nickel Magnesium", "category": "Nodularizer" },
+  { "value": "magnesium", "label": "Magnesium", "category": "Nodularizer" },
+  { "value": "rare_earth_magnesium", "label": "Rare Earth Magnesium", "category": "Nodularizer" },
+  { "value": "ladle_sand", "label": "Ladle Sand", "category": "Ladle" },
+  { "value": "refractory_brick", "label": "Refractory Brick", "category": "Ladle" },
+  { "value": "ladle_lining", "label": "Ladle Lining", "category": "Ladle" },
+  { "value": "calcium_wire", "label": "Calcium Wire", "category": "Ladle" }
+]

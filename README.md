@@ -352,3 +352,7 @@ The Grade Module has been **COMPLETELY TRANSFORMED** into a modern, dynamic form
 - **🔧 Easy extensibility** - Simple to add new features
 
 **This implementation represents a complete architectural transformation that makes the grade module more maintainable, user-friendly, and future-proof than ever before!** 🎉
+
+
+
+cd /Users/user/Desktop/NOWPURCHASE/Module/apps/grade && npm run dev

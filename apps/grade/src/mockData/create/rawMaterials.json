@@ -1,0 +1,13 @@
+[
+  { "value": "", "label": "Select raw material..." },
+  { "value": "pig_iron", "label": "Pig Iron", "category": "Furnace" },
+  { "value": "steel_scrap", "label": "Steel Scrap", "category": "Furnace" },
+  { "value": "cast_iron_returns", "label": "Cast Iron Returns", "category": "Furnace" },
+  { "value": "ferro_silicon", "label": "Ferro Silicon", "category": "Additives" },
+  { "value": "ferro_manganese", "label": "Ferro Manganese", "category": "Additives" },
+  { "value": "ferro_chrome", "label": "Ferro Chrome", "category": "Additives" },
+  { "value": "magnesium_ferrosilicon", "label": "Magnesium Ferrosilicon", "category": "Nodularizer" },
+  { "value": "rare_earth_alloy", "label": "Rare Earth Alloy", "category": "Nodularizer" },
+  { "value": "calcium_silicon", "label": "Calcium Silicon", "category": "Ladle" },
+  { "value": "aluminum_wire", "label": "Aluminum Wire", "category": "Ladle" }
+]

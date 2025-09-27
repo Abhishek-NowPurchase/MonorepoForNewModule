@@ -47,7 +47,6 @@ export async function mount(container, props) {
       }
     };
   } catch (error) {
-    console.error("❌ Error in mount function:", error);
 
     // Fallback: render with local React if container fails
     if (!root) {

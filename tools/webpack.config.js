@@ -17,7 +17,7 @@ const getModuleConfig = () => {
   return {
     moduleName,
     port,
-    entryPoint: "./src/app/mount.js",
+    entryPoint: "./app/mount.js",
     outputPath: "./dist"
   };
 };
@@ -81,7 +81,7 @@ module.exports = (env, argv) => {
       new ModuleFederationPlugin({
         name: config.moduleName,
         filename: "remoteEntry.js",
-        exposes: { "./mount": "./src/app/mount" },
+        exposes: { "./mount": "./app/mount" },
         shared: { 
           react: { 
             singleton: true, 

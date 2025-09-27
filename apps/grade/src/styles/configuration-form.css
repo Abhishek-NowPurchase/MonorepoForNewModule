@@ -1,4 +1,4 @@
-/* ===== GRADEV2 PROFESSIONAL UI DESIGN ===== */
+/* ===== CONFIGURATION FORM PROFESSIONAL UI DESIGN ===== */
 
 /* Reset and Base Styles */
 * {
@@ -15,7 +15,7 @@ body {
   font-size: 14px;
 }
 
-.gradev2-container {
+.configuration-form-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
@@ -556,7 +556,7 @@ tr:hover {
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
-  .gradev2-container {
+  .configuration-form-container {
     padding: 16px;
   }
   

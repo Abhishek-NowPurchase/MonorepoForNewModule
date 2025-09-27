@@ -17,7 +17,9 @@ const ToleranceSectionRenderer = ({
 }: ToleranceSectionRendererProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const targetChemistry = form.values["targetChemistry"] || [];
-  const elementsWithData = targetChemistry.filter((el: any) => el.element);
+  const elementsWithData = targetChemistry.filter((el: any) => 
+    el.element && typeof el.element === 'string' && el.element.trim() !== ''
+  );
 
   const updateElementTolerance = (
     elementIndex: number,
@@ -57,7 +59,7 @@ const ToleranceSectionRenderer = ({
         <h3 className="tolerance-title">{field.label}</h3>
         <Button 
           type="button" 
-          variant="ghost" 
+          variant="transparent" 
           size="small"
           className="tolerance-toggle"
         >
@@ -81,7 +83,7 @@ const ToleranceSectionRenderer = ({
           {/* Example Section */}
           {elementsWithData.length > 0 && (
             <div className="tolerance-examples">
-              <h4>Example: {elementsWithData[0].element} Reading vs Target</h4>
+              <h4>Example: {(elementsWithData[0].element && typeof elementsWithData[0].element === 'string') ? elementsWithData[0].element : 'Element'} Reading vs Target</h4>
               <div className="example-info">
                 <p>
                   <strong>Target:</strong> {elementsWithData[0].finalMin} -{" "}
@@ -148,15 +150,15 @@ const ToleranceSectionRenderer = ({
           {elementsWithData.length > 0 && (
             <div className="tolerance-cards">
               {elementsWithData.map((element: any, index: number) => (
-                <div key={element.element} className="tolerance-card">
+                <div key={element.element || `element-${index}`} className="tolerance-card">
                   <div className="tolerance-card-header">
                     <div
-                      className={`element-symbol ${element.element.toLowerCase()}`}
+                      className={`element-symbol ${(element.element && typeof element.element === 'string') ? element.element.toLowerCase() : 'unknown'}`}
                     >
-                      {element.element}
+                      {(element.element && typeof element.element === 'string') ? element.element : 'Unknown'}
                     </div>
                     <div className="element-info">
-                      <h4>{element.element} Tolerance</h4>
+                      <h4>{(element.element && typeof element.element === 'string') ? element.element : 'Unknown'} Tolerance</h4>
                       <p className="tolerance-base">
                         Base: {element.finalMin} - {element.finalMax}
                       </p>

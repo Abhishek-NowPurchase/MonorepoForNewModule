@@ -2,6 +2,7 @@ import React from "react";
 import { TextInput, MinMax, Select, RadioGroup } from 'now-design-molecules';
 import Checkbox from 'now-design-atoms/dist/checkbox';
 import Button from 'now-design-atoms/dist/button';
+import ReactSelect from 'react-select';
 
 
 import 'now-design-tokens/dist/css/variables.css';
@@ -9,7 +10,6 @@ import 'now-design-styles/dist/text/text-styles.css';
 import 'now-design-styles/dist/color/colorStyles.css';
 import 'now-design-styles/dist/fonts/fonts.css';
 import 'now-design-styles/dist/effect/effectStyles.css';
-import { getFieldStyle, getFieldClassName } from '../utils/layoutUtils';
 
 
 interface UniversalFieldProps {
@@ -23,15 +23,26 @@ interface UniversalFieldProps {
 }
 
 
-const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
+const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
 
-  const [selectOptions, setSelectOptions] = React.useState([]);
+  const [selectOptions, setSelectOptions] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     if (field.type === 'select' && field.options) {
-      field.options().then(setSelectOptions);
+      const optionsResult = field.options(form.values);
+      
+      // Handle both Promise-based and direct array options
+      if (optionsResult && typeof optionsResult.then === 'function') {
+        // Promise-based options (legacy)
+        optionsResult.then((options) => {
+          setSelectOptions(options);
+        });
+      } else if (Array.isArray(optionsResult)) {
+        // Direct array options (new dynamic functions)
+        setSelectOptions(optionsResult);
+      }
     }
-  }, [field.type, field.options, field]);
+  }, [field.type, field.options, field, value, form.values]);
 
 
   const isVisible = form.isFieldVisible(fieldPath);
@@ -42,7 +53,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
 
   const renderFieldWithWrapper = (fieldContent: any, fieldType: string) => {
     const wrapperContent = (
-      <div className={getFieldClassName(fieldType, sectionContext, error && error.length > 0)}>
+      <div className={`${sectionContext}-${fieldType}-field${error && error.length > 0 ? ' error' : ''}`}>
         {fieldContent}
         {field.meta?.helpText && (
           <div className="help-text">{field.meta.helpText}</div>
@@ -70,47 +81,36 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
   };
 
 
-  // 🎯 GENERIC BUTTON FACTORY - Eliminates redundant button creation
-  const createAddButton = (config: {
+
+  // 🎯 GENERIC ADD ARRAY ITEM HELPER - Completely generic, no business logic
+  const addArrayItem = (config: {
     selectedField: string;
     targetArray: string;
-    buttonText: string;
-    containerClass: string;
-    createItem: (selectedValue: any) => any;
+    keyField: string;
+    createItem: (value: any) => any;
     clearFields: string[];
   }) => {
-    const handleAdd = () => {
-      const selectedValue = form.values[config.selectedField];
-      if (!selectedValue) return;
+    const selectedValue = form.values[config.selectedField];
+    
+    if (!selectedValue) {
+      return;
+    }
 
-      const currentArray = form.values[config.targetArray] || [];
-      
-      // Check if item already exists
-      const exists = currentArray.some((item: any) => 
-        item.element === selectedValue || item.material === selectedValue
-      );
-      if (exists) return;
+    const currentArray = form.values[config.targetArray] || [];
+    const exists = currentArray.some((item: any) => item[config.keyField] === selectedValue);
+    if (exists) {
+      return;
+    }
 
-      // Create new item
-      const newItem = config.createItem(selectedValue);
-      form.setValue(config.targetArray, [...currentArray, newItem]);
-      
-      // Clear fields
-      config.clearFields.forEach(field => form.setValue(field, field.includes('Percent') ? 0 : ''));
-    };
-
-    return (
-      <div className={config.containerClass}>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={handleAdd}
-          disabled={!form.values[config.selectedField]}
-        >
-          {config.buttonText}
-        </Button>
-      </div>
-    );
+    // Create item using the provided createItem function
+    const newItem = config.createItem(selectedValue);
+    
+    // Add to array
+    const updatedArray = [...currentArray, newItem];
+    form.setValue(config.targetArray, updatedArray);
+    
+    // Clear selection fields
+    config.clearFields.forEach(field => form.setValue(field, field.includes('Percent') ? 0 : ''));
   };
 
   // 🎯 CUSTOM RENDERER HANDLER - Consolidated and DRY
@@ -120,7 +120,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
     // Table renderers - all use GenericTableRenderer
     const tableRenderers = ["TargetChemistryTable", "ChargemixMaterialsTable", "RawMaterialsTable"];
     if (tableRenderers.includes(customRenderer)) {
-      const GenericTableRenderer = require("../components/GenericTableRenderer").default;
+      const GenericTableRenderer = require("../custom/GenericTableRenderer").default;
       return (
         <GenericTableRenderer
           field={field}
@@ -128,13 +128,14 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
           onChange={onChange}
           error={error}
           form={form}
+          fieldPath={fieldPath}
         />
       );
     }
     
     // Tolerance section renderer
     if (customRenderer === "ToleranceSection") {
-      const ToleranceSectionRenderer = require("../components/ToleranceSectionRenderer").default;
+      const ToleranceSectionRenderer = require("../custom/ToleranceSectionRenderer").default;
       return (
         <ToleranceSectionRenderer
           field={field}
@@ -146,56 +147,73 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
       );
     }
     
-    // Add Element Button
+    // Add Element Button - Merged using generic helper
     if (customRenderer === "AddElementButton") {
-      return createAddButton({
-        selectedField: 'selectedElement',
-        targetArray: 'targetChemistry',
-        buttonText: 'Add Element',
-        containerClass: 'add-element-button-container',
-        createItem: (selectedElement) => {
-          const hasBathChemistry = form.values.bathChemistry === 'with';
-          return {
-            element: selectedElement,
-            ...(hasBathChemistry ? { bathMin: 0, bathMax: 0 } : {}),
-            finalMin: 0,
-            finalMax: 0
-          };
-        },
-        clearFields: ['selectedElement']
-      });
+      
+      return (
+        <div className="add-element-button-container">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => {
+              addArrayItem({
+                selectedField: 'selectedElement',
+                targetArray: 'targetChemistry',
+                keyField: 'element',
+                createItem: field.meta?.tableConfig?.createItem || ((value: any) => ({ element: value })),
+                clearFields: ['selectedElement']
+              });
+            }}
+            disabled={!form.values.selectedElement}
+          >
+            Add Element
+          </Button>
+        </div>
+      );
     }
     
-    // Add Raw Material Button
+    // Add Raw Material Button - Merged using generic helper
     if (customRenderer === "AddRawMaterialButton") {
-      return createAddButton({
-        selectedField: 'selectedRawMaterial',
-        targetArray: 'rawMaterials',
-        buttonText: 'Add',
-        containerClass: 'add-raw-material-button-container',
-        createItem: (selectedMaterial) => ({
-          material: selectedMaterial,
-          minPercent: form.values.rawMaterialMinPercent,
-          maxPercent: form.values.rawMaterialMaxPercent
-        }),
-        clearFields: ['selectedRawMaterial', 'rawMaterialMinPercent', 'rawMaterialMaxPercent']
-      });
+      return (
+        <div className="add-raw-material-button-container">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => addArrayItem({
+              selectedField: 'selectedRawMaterial',
+              targetArray: 'rawMaterials',
+              keyField: 'material',
+              createItem: field.meta?.tableConfig?.createItem || ((value: any) => ({ material: value })),
+              clearFields: ['selectedRawMaterial', 'rawMaterialMinPercent', 'rawMaterialMaxPercent']
+            })}
+            disabled={!form.values.selectedRawMaterial}
+          >
+            Add
+          </Button>
+        </div>
+      );
     }
     
-    // Add Chargemix Material Button
+    // Add Chargemix Material Button - Merged using generic helper
     if (customRenderer === "AddChargemixMaterialButton") {
-      return createAddButton({
-        selectedField: 'selectedChargemixMaterial',
-        targetArray: 'chargemixMaterials',
-        buttonText: 'Add',
-        containerClass: 'add-chargemix-material-button-container',
-        createItem: (selectedMaterial) => ({
-          material: selectedMaterial,
-          minPercent: form.values.chargemixMaterialMinPercent,
-          maxPercent: form.values.chargemixMaterialMaxPercent
-        }),
-        clearFields: ['selectedChargemixMaterial', 'chargemixMaterialMinPercent', 'chargemixMaterialMaxPercent']
-      });
+      return (
+        <div className="add-chargemix-material-button-container">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => addArrayItem({
+              selectedField: 'selectedChargemixMaterial',
+              targetArray: 'chargemixMaterials',
+              keyField: 'material',
+              createItem: field.meta?.tableConfig?.createItem || ((value: any) => ({ material: value })),
+              clearFields: ['selectedChargemixMaterial', 'chargemixMaterialMinPercent', 'chargemixMaterialMaxPercent']
+            })}
+            disabled={!form.values.selectedChargemixMaterial}
+          >
+            Add
+          </Button>
+        </div>
+      );
     }
   
     return null;
@@ -230,7 +248,7 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
           placeholder={field.label}
           status={error && error.length > 0 ? 'error' : undefined}
           id={fieldPath}
-          required={field.validators?.required}
+          // required={field.validators?.required}
           validator={field.validators?.custom ? (value) => {
             const validationResult = field.validators.custom(value);
             return {
@@ -249,14 +267,35 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
       );
 
     case 'select':
-      const selectFieldOptions = [
-        { value: "", label: field.label },
-        ...selectOptions.map((option: any) => ({
+      const selectFieldOptions = selectOptions.map((option: any) => ({
           value: option.value,
           label: option.label
-        }))
-      ].filter(option => option.value !== "" || option.label !== ""); // Remove empty options
+      }));
 
+      // Check if this field should use react-select (searchable)
+      if (field.meta?.searchable) {
+        const selectedOption = selectFieldOptions.find(option => option.value === value);
+        
+        return renderFieldWithWrapper(
+          <>
+            <label className="form-label">{field.label}</label>
+            <ReactSelect
+              value={selectedOption}
+              onChange={(selectedOption: any) => onChange(selectedOption?.value || '')}
+              options={selectFieldOptions}
+              isSearchable={true}
+              placeholder={field.meta?.searchPlaceholder || `Search ${field.label.toLowerCase()}...`}
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
+              }}
+            />
+          </>,
+          'select'
+        );
+      }
+
+      // Fallback to regular select for non-searchable fields
       return renderFieldWithWrapper(
         <>
           <label className="form-label">{field.label}</label>
@@ -391,5 +430,5 @@ const UniversalFieldRenderer = ({ field, value, onChange, error, fieldPath, form
   }
 };
 
-export default UniversalFieldRenderer;
+export default FieldRenderer;
 export type { UniversalFieldProps };

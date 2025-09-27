@@ -1,0 +1,8 @@
+[
+  { "value": "spectro", "label": "Spectro Module", "description": "Advanced spectroscopy analysis and chemistry management" },
+  { "value": "kiosk", "label": "Kiosk Module", "description": "Self-service interface for production floor operations" },
+  { "value": "heat_plan", "label": "Heat Plan Module", "description": "Comprehensive heat planning and scheduling system" },
+  { "value": "quality_control", "label": "Quality Control Module", "description": "Quality assurance and testing management" },
+  { "value": "inventory", "label": "Inventory Module", "description": "Raw material and consumable inventory tracking" },
+  { "value": "reporting", "label": "Reporting Module", "description": "Analytics and reporting dashboard" }
+]

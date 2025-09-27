@@ -1,6 +1,6 @@
 import { FormModel, FieldSection, SectionedFormModel } from '@dynamic_forms/react';
-import { mockData } from '../data/mockData';
-
+import { mockData } from '../../mockData/create';
+import { createApiOptions } from './apiOptions';
 
 export const gradeConfigurationModel: FormModel = [
   {
@@ -28,7 +28,7 @@ export const gradeConfigurationModel: FormModel = [
     key: 'tagId',
     type: 'text',
     label: 'Tag ID',
-    defaultValue: 'DI-001',
+    defaultValue: '',
     validators: {
       required: true,
       min: 6,
@@ -44,7 +44,7 @@ export const gradeConfigurationModel: FormModel = [
     key: 'gradeName',
     type: 'text',
     label: 'Grade Name',
-    defaultValue: 'Ductile 60-40-18',
+    defaultValue: '',
     validators: {
       required: true,
       min: 2
@@ -58,7 +58,7 @@ export const gradeConfigurationModel: FormModel = [
     key: 'gradeCode',
     type: 'text',
     label: 'Grade Code',
-    defaultValue: '60-40-18',
+    defaultValue: '',
     validators: {
       required: true,
       pattern: /^[\w-]+$/,
@@ -72,9 +72,9 @@ export const gradeConfigurationModel: FormModel = [
     key: 'gradeType',
     type: 'select',
     label: 'Grade Type',
-    defaultValue: 'DI',
+    defaultValue: '',
     validators: { required: true },
-    options: async () => mockData.gradeTypes,
+    options: createApiOptions('gradeCategory', 'symbol', 'name'),
     section: { sectionId: 'gradeOverview', order: 4 },
     meta: { helpText: 'Select the material type for this grade' },
   },
@@ -83,10 +83,10 @@ export const gradeConfigurationModel: FormModel = [
     key: 'tappingTempMin',
     type: 'number',
     label: 'Tapping Temperature Min (°C)',
-    defaultValue: 1500,
+    defaultValue: null,
     validators: {
       required: true,
-      min: 1000
+      min: 1000,
     },
     hidden: true,
     section: { sectionId: 'gradeOverview', order: 5 },
@@ -114,10 +114,13 @@ export const gradeConfigurationModel: FormModel = [
     key: 'tappingTempMax',
     type: 'number',
     label: 'Tapping Temperature Max (°C)',
-    defaultValue: 1540,
+    defaultValue: null,
     validators: {
       required: true,
-      min: 1000
+      min: 1000,
+      custom: (value: any) => {
+        return [];
+      }
     },
     hidden: true,
     section: { sectionId: 'gradeOverview', order: 6 },
@@ -130,7 +133,10 @@ export const gradeConfigurationModel: FormModel = [
           validators: { 
             required: true, 
             min: 1000, 
-            max: 2000
+            max: 2000,
+        custom: (value: any) => {
+          return [];
+        }
           },
           meta: { 
             helpText: 'Maximum tapping temperature for DI processing (must be > min temp)'
@@ -267,13 +273,21 @@ export const gradeConfigurationModel: FormModel = [
           { key: 'finalMin', label: 'Final Min (%)', type: 'number', min: 0, max: 100, step: 0.01 },
           { key: 'finalMax', label: 'Final Max (%)', type: 'number', min: 0, max: 100, step: 0.01 }
         ],
-        createItem: (selectedElement: string) => ({
-          element: selectedElement,
-          bathMin: 0,
-          bathMax: 0,
-          finalMin: 0,
-          finalMax: 0
-        }),
+        createItem: (selectedElementId: string) => {
+          // Find the element object from elementsData using the selected ID
+          const elementsData = (window as any).elementsData;
+          const elementObj = elementsData?.find((el: any) => el.id === selectedElementId);
+          
+          return {
+            element: elementObj?.symbol || selectedElementId, // Use symbol if available, fallback to ID
+            elementId: selectedElementId, // Store the ID for reference
+            elementName: elementObj?.name || '', // Store the name for reference
+            bathMin: 0,
+            bathMax: 0,
+            finalMin: 0,
+            finalMax: 0
+          };
+        },
         helpText: 'Select an element to add to the chemistry table'
       }
     },
@@ -300,7 +314,27 @@ export const gradeConfigurationModel: FormModel = [
     label: 'Select Element',
     defaultValue: 'Mn',
     hidden: true,
-    options: async () => mockData.chemistryElements,
+    options: (formValues: any) => {
+      if (!formValues) return [];
+      
+      const elementsData = (window as any).elementsData;
+      const targetChemistry = formValues.targetChemistry || [];
+      
+      if (!elementsData || !Array.isArray(elementsData)) {
+        return [];
+      }
+      
+      // Get already selected element IDs
+      const selectedElementIds = targetChemistry.map((item: any) => item.elementId || item.element);
+      
+      // Filter out already selected elements
+      return elementsData
+        .filter((element: any) => !selectedElementIds.includes(element.id))
+        .map((element: any) => ({
+          value: element.id,
+          label: element.symbol
+        }));
+    },
     section: { sectionId: 'targetChemistry', order: 2 },
     dependencies: [
       {
@@ -310,7 +344,9 @@ export const gradeConfigurationModel: FormModel = [
       }
     ],
     meta: {
-      helpText: 'Select an element to add to the chemistry table'
+      helpText: 'Select an element to add to the chemistry table',
+      searchable: true,
+      searchPlaceholder: 'Search elements...'
     }
   },
 
@@ -381,13 +417,21 @@ export const gradeConfigurationModel: FormModel = [
     meta: {
       helpText: 'Select elements to be considered for Addition/Dilution suggestions',
       getOptions: (formValues: any) => {
+        if (!formValues) return [];
+        
         const targetChemistry = formValues.targetChemistry || [];
+        
         return targetChemistry
-          .filter((element: any) => element.element)
-          .map((element: any) => ({
-            value: element.element,
-            label: `${element.element} (${element.finalMin}-${element.finalMax}%)`
-          }));
+          .filter((element: any) => element.element) // Filter out elements without element field
+          .map((element: any) => {
+            // Just show the element symbol, no percentage data
+            const elementValue = element.element;
+            
+            return {
+              value: elementValue,
+              label: elementValue
+            };
+          });
       }
     },
   },
@@ -422,11 +466,19 @@ export const gradeConfigurationModel: FormModel = [
           { key: 'minPercent', label: 'Min %', type: 'number', min: 0, max: 100, step: 0.01 },
           { key: 'maxPercent', label: 'Max %', type: 'number', min: 0, max: 100, step: 0.01 }
         ],
-        createItem: (selectedMaterial: string) => ({
-          material: selectedMaterial,
-          minPercent: 0,
-          maxPercent: 0
-        }),
+        createItem: (selectedMaterialId: string) => {
+          // Find the material object from itemInventoryData using the selected ID
+          const itemInventoryData = (window as any).itemInventoryData;
+          const materialObj = itemInventoryData?.results?.find((item: any) => item.id === selectedMaterialId);
+          
+          return {
+            material: materialObj?.name || selectedMaterialId, // Use name if available, fallback to ID
+            materialId: selectedMaterialId, // Store the ID for reference
+            materialSlug: materialObj?.slug || '', // Store the slug for reference
+            minPercent: 0,
+            maxPercent: 0
+          };
+        },
         helpText: 'Select a raw material to add to the table'
       }
     },
@@ -437,7 +489,27 @@ export const gradeConfigurationModel: FormModel = [
     type: 'select',
     label: 'Select Raw Material',
     defaultValue: '',
-    options: async () => mockData.rawMaterials,
+    options: (formValues: any) => {
+      if (!formValues) return [];
+      
+      const itemInventoryData = (window as any).itemInventoryData;
+      const rawMaterials = formValues.rawMaterials || [];
+      
+      if (!itemInventoryData?.results || !Array.isArray(itemInventoryData.results)) {
+        return [];
+      }
+      
+      // Get already selected material IDs
+      const selectedMaterialIds = rawMaterials.map((item: any) => item.materialId || item.material);
+      
+      // Filter out already selected materials
+      return itemInventoryData.results
+        .filter((material: any) => !selectedMaterialIds.includes(material.id))
+        .map((material: any) => ({
+          value: material.id,
+          label: material.name
+        }));
+    },
     hidden: true,
     section: { sectionId: 'additionDilution', order: 3 },
     dependencies: [
@@ -448,7 +520,9 @@ export const gradeConfigurationModel: FormModel = [
       },
     ],
     meta: {
-      helpText: 'Choose a raw material to add'
+      helpText: 'Choose a raw material to add',
+      searchable: true,
+      searchPlaceholder: 'Search materials...'
     },
   },
 
@@ -488,7 +562,10 @@ export const gradeConfigurationModel: FormModel = [
     ],
     validators: {
       min: 0,
-      max: 100
+      max: 100,
+      custom: (value: any) => {
+        return [];
+      }
     },
   },
 
@@ -542,11 +619,41 @@ export const gradeConfigurationModel: FormModel = [
           { key: 'minPercent', label: 'Min %', type: 'number', min: 0, max: 100, step: 0.01 },
           { key: 'maxPercent', label: 'Max %', type: 'number', min: 0, max: 100, step: 0.01 }
         ],
-        createItem: (selectedMaterial: string) => ({
-          material: selectedMaterial,
-          minPercent: 0,
-          maxPercent: 0
-        }),
+        createItem: (selectedMaterialId: string) => {
+          // Find the material object from itemInventoryData using the selected ID
+          const itemInventoryData = (window as any).itemInventoryData;
+          
+          const materialObj = itemInventoryData?.results?.find((item: any) => item.id === selectedMaterialId);
+          
+          return {
+            material: materialObj?.name || selectedMaterialId, // Use name if available, fallback to ID
+            materialId: selectedMaterialId, // Store the ID for reference
+            materialSlug: materialObj?.slug || '', // Store the slug for reference
+            minPercent: 0,
+            maxPercent: 0
+          };
+        },
+        // Helper function to fix existing items that might have IDs instead of names
+        fixExistingItems: (items: any[]) => {
+          const itemInventoryData = (window as any).itemInventoryData;
+          if (!itemInventoryData?.results) return items;
+          
+          return items.map((item: any) => {
+            // If material is a number (ID), try to find the name
+            if (typeof item.material === 'number' || /^\d+$/.test(item.material)) {
+              const materialObj = itemInventoryData.results.find((m: any) => m.id == item.material);
+              if (materialObj) {
+                return {
+                  ...item,
+                  material: materialObj.name,
+                  materialId: item.material,
+                  materialSlug: materialObj.slug || ''
+                };
+              }
+            }
+            return item;
+          });
+        },
         helpText: 'Select a raw material to add to the chargemix table'
       }
     },
@@ -558,7 +665,27 @@ export const gradeConfigurationModel: FormModel = [
     label: 'Select Raw Material',
     defaultValue: '',
     hidden: true, 
-    options: async () => mockData.chargemixMaterials,
+    options: (formValues: any) => {
+      if (!formValues) return [];
+      
+      const itemInventoryData = (window as any).itemInventoryData;
+      const chargemixMaterials = formValues.chargemixMaterials || [];
+      
+      if (!itemInventoryData?.results || !Array.isArray(itemInventoryData.results)) {
+        return [];
+      }
+      
+      // Get already selected material IDs
+      const selectedMaterialIds = chargemixMaterials.map((item: any) => item.materialId || item.material);
+      
+      // Filter out already selected materials
+      return itemInventoryData.results
+        .filter((material: any) => !selectedMaterialIds.includes(material.id))
+        .map((material: any) => ({
+          value: material.id,
+          label: material.name
+        }));
+    },
     section: { sectionId: 'chargemixData', order: 2 },
     dependencies: [
       {
@@ -568,7 +695,9 @@ export const gradeConfigurationModel: FormModel = [
       }
     ],
     meta: {
-      helpText: 'Choose a raw material to add to chargemix configuration'
+      helpText: 'Choose a raw material to add to chargemix configuration',
+      searchable: true,
+      searchPlaceholder: 'Search materials...'
     },
   },
 
@@ -608,7 +737,10 @@ export const gradeConfigurationModel: FormModel = [
     ],
     validators: {
       min: 0,
-      max: 100
+      max: 100,
+      custom: (value: any) => {
+        return [];
+      }
     },
   },
 

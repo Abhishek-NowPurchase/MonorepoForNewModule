@@ -1,7 +1,6 @@
 import React from "react";
 import Button from 'now-design-atoms/dist/button';
 import { TextInput } from 'now-design-molecules';
-import { getTableCellStyle } from '../utils/layoutUtils';
 
 interface GenericTableRendererProps {
   field: any;
@@ -9,6 +8,7 @@ interface GenericTableRendererProps {
   onChange: (value: any) => void;
   error?: string[];
   form: any;
+  fieldPath: string;
 }
 
 /**
@@ -27,7 +27,8 @@ const GenericTableRenderer = ({
   value,
   onChange,
   error,
-  form
+  form,
+  fieldPath
 }: GenericTableRendererProps) => {
   // 🚀 DYNAMIC TABLE CONFIG - Support both static and dynamic configurations
   const getTableConfig = () => {
@@ -68,7 +69,7 @@ const GenericTableRenderer = ({
     return null; // Don't render anything when table is empty
   }
 
-  // 🎯 GENERIC ADD ITEM HANDLER
+  // 🎯 ENHANCED ADD ITEM HANDLER - Uses form.addArrayItem with custom logic
   const handleAddItem = () => {
     const selectedItem = form.values[tableConfig?.selectField || 'selectedItem'];
     if (!selectedItem) return;
@@ -79,23 +80,41 @@ const GenericTableRenderer = ({
     );
     if (itemExists) return;
 
-    // Create new item based on table configuration
-    const newItem = tableConfig?.createItem 
-      ? tableConfig.createItem(selectedItem, form.values)
-      : { [tableConfig?.uniqueKey || 'id']: selectedItem };
 
-    onChange([...items, newItem]);
+    // 🎯 STEP 1: Use form.addArrayItem to add empty object
+    form.addArrayItem(fieldPath);
     
-    // Clear selection
-    if (tableConfig?.selectField) {
-      form.setValue(tableConfig.selectField, "");
-    }
+    // 🎯 STEP 2: Wait for next tick to ensure the item is added
+    setTimeout(() => {
+      const updatedArray = form.values[fieldPath] || [];
+      const newIndex = updatedArray.length - 1;
+      
+      
+      // 🎯 STEP 3: Create the complete item
+      const newItem = tableConfig?.createItem 
+        ? tableConfig.createItem(selectedItem, form.values)
+        : { [tableConfig?.uniqueKey || 'id']: selectedItem };
+      
+      
+      // 🎯 STEP 4: Replace the empty object with complete item
+      const finalArray = [...updatedArray];
+      finalArray[newIndex] = newItem;
+      form.setValue(fieldPath, finalArray);
+      
+      // 🎯 STEP 5: Clear selection
+      if (tableConfig?.selectField) {
+        form.setValue(tableConfig.selectField, "");
+      }
+      
+    }, 0);
   };
 
-  // 🎯 GENERIC REMOVE ITEM HANDLER
+  // 🎯 ENHANCED REMOVE ITEM HANDLER - Uses form.removeArrayItem with custom logic
   const handleRemoveItem = (index: number) => {
-    const newItems = items.filter((_: any, i: number) => i !== index);
-    onChange(newItems);
+    
+    // Use form.removeArrayItem for consistency
+    form.removeArrayItem(fieldPath, index);
+    
   };
 
   // 🎯 GENERIC UPDATE ITEM HANDLER
@@ -122,7 +141,12 @@ const GenericTableRenderer = ({
         placeholder={column.placeholder || column.label}
         hideLabel={true}
         size="small"
-        style={getTableCellStyle(column.type)}
+        style={{
+          width: '100%',
+          minWidth: '80px',
+          maxWidth: column.type === 'number' ? '120px' : '150px',
+          padding: '4px 8px',
+        }}
         {...props}
       />
     );

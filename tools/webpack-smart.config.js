@@ -27,7 +27,7 @@ const discoverModules = () => {
           name: moduleName,
           path: modulePath,
           packageJson,
-          hasValidStructure: fs.existsSync(path.join(modulePath, 'src', 'app', 'mount.js'))
+          hasValidStructure: fs.existsSync(path.join(modulePath, 'app', 'mount.js'))
         };
       } catch (error) {
         console.log(`⚠️  Error reading package.json for ${moduleName}:`, error.message);
@@ -79,7 +79,7 @@ const getCurrentModuleConfig = () => {
   
   // Check if we're in a module directory
   const isModule = fs.existsSync(path.join(cwd, 'package.json')) && 
-                   fs.existsSync(path.join(cwd, 'src', 'app', 'mount.js'));
+                   fs.existsSync(path.join(cwd, 'app', 'mount.js'));
   
   if (!isModule) {
     throw new Error(`❌ Not in a valid module directory: ${cwd}`);
@@ -93,13 +93,13 @@ const getCurrentModuleConfig = () => {
   const port = portMap[moduleName] || process.env.PORT || 3107;
   
   console.log(`🚀 Building module: ${moduleName} on port ${port}`);
-  console.log(`📁 Entry: ${path.resolve(cwd, "src/app/mount.js")}`);
+  console.log(`📁 Entry: ${path.resolve(cwd, "app/mount.js")}`);
   console.log(`📁 Output: ${path.resolve(cwd, "dist")}`);
   
   return {
     moduleName,
     port,
-    entryPoint: path.resolve(cwd, "src/app/mount.js"),
+    entryPoint: path.resolve(cwd, "app/mount.js"),
     publicDir: path.resolve(cwd, "public"),
     outputPath: path.resolve(cwd, "dist"),
     allModules,
@@ -180,7 +180,7 @@ module.exports = (env, argv) => {
       new ModuleFederationPlugin({
         name: config.moduleName,
         filename: "remoteEntry.js",
-        exposes: { "./mount": "./src/app/mount" },
+        exposes: { "./mount": "./app/mount" },
         shared: {
           react: {
             singleton: true,
