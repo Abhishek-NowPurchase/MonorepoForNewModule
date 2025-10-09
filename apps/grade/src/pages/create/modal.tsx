@@ -3,8 +3,188 @@ import {
   FieldSection,
   SectionedFormModel,
 } from "@dynamic_forms/react";
-import { mockData } from "../../mockData/create";
 import { createApiOptions } from "./apiOptions";
+
+// ============================================================================
+// 🔄 ASYNC OPTIONS FUNCTIONS - Separate functions for better organization
+// ============================================================================
+
+/**
+ * Load Elements - ASYNC LOAD ON OPEN MODE
+ * This function is called when the dropdown opens
+ * It filters out already selected elements
+ */
+const loadElementsAsync = async (formValues: any): Promise<{ value: any; label: string }[]> => {
+  const startTime = performance.now();
+  console.log('🔄 [ASYNC LOAD] Loading Elements - Started');
+  
+  // Simulate network delay for testing (remove in production if not needed)
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  const elementsData = (window as any).elementsData;
+  const targetChemistry = formValues?.targetChemistry || [];
+
+  // console.log('🔍 [DEBUG] targetChemistry:', targetChemistry);
+  // console.log('🔍 [DEBUG] elementsData:', elementsData);
+
+  if (!elementsData || !Array.isArray(elementsData)) {
+    console.log('⚠️ [ASYNC LOAD] Elements data not available');
+    return [];
+  }
+
+  // Get already selected elements - handle both symbol and ID formats
+  const selectedElements = targetChemistry.map((item: any) => {
+    // Return both symbol and ID for comprehensive matching
+    return {
+      symbol: item.element || item.symbol,
+      id: item.elementId || item.id
+    };
+  });
+
+  // console.log('🔍 [DEBUG] selectedElements:', selectedElements);
+
+  // Filter out already selected elements
+  const options = elementsData
+    .filter((element: any) => {
+      // Check if element is selected by either symbol or ID
+      const isSelectedBySymbol = selectedElements.some(selected => 
+        selected.symbol === element.symbol
+      );
+      const isSelectedById = selectedElements.some(selected => 
+        selected.id === element.id
+      );
+      const isSelected = isSelectedBySymbol || isSelectedById;
+      
+      // console.log(`🔍 [DEBUG] Element ${element.symbol} (id: ${element.id}) - isSelected: ${isSelected}`);
+      return !isSelected;
+    })
+    .map((element: any) => ({
+      value: element.id,
+      label: element.symbol,
+    }));
+
+  const endTime = performance.now();
+  console.log(`✅ [ASYNC LOAD] Elements loaded - ${options.length} options in ${(endTime - startTime).toFixed(2)}ms`);
+  // console.log('🔍 [DEBUG] Available options:', options.map(o => o.label));
+  
+  return options;
+};
+
+/**
+ * Search Raw Materials - SEARCH AS YOU TYPE MODE
+ * This function is called on every keystroke (debounced 300ms)
+ * It filters materials based on search query
+ */
+const searchRawMaterialsAsync = async (
+  formValues: any, 
+  searchQuery: string = ''
+): Promise<{ value: any; label: string }[]> => {
+  const startTime = performance.now();
+  console.log(`🔍 [SEARCH] Searching Raw Materials - Query: "${searchQuery}"`);
+  
+  // Simulate network delay for testing (remove in production if not needed)
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const itemInventoryData = (window as any).itemInventoryData;
+  const rawMaterials = formValues?.rawMaterials || [];
+
+  if (!itemInventoryData?.results || !Array.isArray(itemInventoryData.results)) {
+    console.log('⚠️ [SEARCH] Item inventory data not available');
+    return [];
+  }
+
+  // Get already selected material IDs
+  const selectedMaterialIds = rawMaterials.map(
+    (item: any) => item.materialId || item.material
+  );
+
+  // Filter out already selected materials and apply search filter
+  const options = itemInventoryData.results
+    .filter((material: any) => !selectedMaterialIds.includes(material.id))
+    .filter((material: any) => {
+      // Apply search filter if searchQuery exists
+      if (searchQuery) {
+        return material.name.toLowerCase().includes(searchQuery.toLowerCase());
+      }
+      return true;
+    })
+    .map((material: any) => ({
+      value: material.id,
+      label: material.name,
+    }));
+
+  const endTime = performance.now();
+  console.log(`✅ [SEARCH] Raw Materials filtered - ${options.length} results in ${(endTime - startTime).toFixed(2)}ms`);
+  
+  return options;
+};
+
+/**
+ * Search Chargemix Materials - SEARCH AS YOU TYPE MODE
+ * This function is called on every keystroke (debounced 300ms)
+ * It filters materials based on search query
+ */
+const searchChargemixMaterialsAsync = async (
+  formValues: any, 
+  searchQuery: string = ''
+): Promise<{ value: any; label: string }[]> => {
+  const startTime = performance.now();
+  console.log(`🔍 [SEARCH] Searching Chargemix Materials - Query: "${searchQuery}"`);
+  
+  // Simulate network delay for testing (remove in production if not needed)
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const itemInventoryData = (window as any).itemInventoryData;
+  const chargemixMaterials = formValues?.chargemixMaterials || [];
+
+  if (!itemInventoryData?.results || !Array.isArray(itemInventoryData.results)) {
+    console.log('⚠️ [SEARCH] Item inventory data not available');
+    return [];
+  }
+
+  // Get already selected material IDs
+  const selectedMaterialIds = chargemixMaterials.map(
+    (item: any) => item.materialId || item.material
+  );
+
+  // Filter out already selected materials and apply search filter
+  const options = itemInventoryData.results
+    .filter((material: any) => !selectedMaterialIds.includes(material.id))
+    .filter((material: any) => {
+      // Apply search filter if searchQuery exists
+      if (searchQuery) {
+        return material.name.toLowerCase().includes(searchQuery.toLowerCase());
+      }
+      return true;
+    })
+    .map((material: any) => ({
+      value: material.id,
+      label: material.name,
+    }));
+
+  const endTime = performance.now();
+  console.log(`✅ [SEARCH] Chargemix Materials filtered - ${options.length} results in ${(endTime - startTime).toFixed(2)}ms`);
+  
+  return options;
+};
+
+// ============================================================================
+// Reusable dependency conditions
+// ============================================================================
+
+const isSpectroAndBathReady = (watched: any) => {
+  return (
+    watched.spectroModule === true &&
+    (watched.bathChemistry === "with" || watched.bathChemistry === "without")
+  );
+};
+
+const isIfKioskAndBathReady = (watched: any) => {
+  return (
+    watched.ifKioskModule === true &&
+    (watched.bathChemistry === "with" || watched.bathChemistry === "without")
+  );
+};
 
 export const gradeConfigurationModel: FormModel = [
   {
@@ -35,8 +215,6 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: "",
     validators: {
       required: true,
-      // min: 6,
-      // max: 6,
     },
     section: { sectionId: "gradeOverview", order: 1 },
     meta: {
@@ -78,7 +256,10 @@ export const gradeConfigurationModel: FormModel = [
     validators: { required: true },
     options: createApiOptions("gradeCategory", "symbol", "name"),
     section: { sectionId: "gradeOverview", order: 4 },
-    meta: { helpText: "Select the material type for this grade" },
+    meta: {
+      helpText: "Select the material type for this grade",
+      searchable: false,
+    },
   },
 
   {
@@ -91,23 +272,22 @@ export const gradeConfigurationModel: FormModel = [
     },
     hidden: true,
     section: { sectionId: "gradeOverview", order: 5 },
-    dependencies: [
-      {
-        field: "gradeType",
-        condition: (value: any) => value === "DI",
-        overrides: {
-          hidden: false,
-          validators: {
-            required: true,
-            //  min: 1000, max: 2000
-          },
-          meta: {
-            helpText:
-              "Minimum tapping temperature for DI processing (1000-2000°C)",
-          },
+    dependencies: {
+      fields: ["gradeType"],
+      condition: (watched: any) => watched.gradeType === "DI",
+      overrides: {
+        hidden: false,
+        validators: {
+          required: true,
+          min: 1300,
+          max: 1600,
+        },
+        meta: {
+          helpText:
+            "Minimum tapping temperature for DI processing (1300-1600°C)",
         },
       },
-    ],
+    },
     meta: {
       subsection: "diParameters",
       showHeader: true,
@@ -125,57 +305,68 @@ export const gradeConfigurationModel: FormModel = [
     },
     hidden: true,
     section: { sectionId: "gradeOverview", order: 6 },
-    dependencies: [
-      {
-        field: "gradeType",
-        condition: (value: any) => value === "DI",
-        overrides: {
-          hidden: false,
-          validators: {
-            required: true,
-          },
-          meta: {
-            helpText:
-              "Maximum tapping temperature for DI processing (must be > min temp)",
-          },
+    dependencies: {
+      fields: ["gradeType"],
+      condition: (watched: any) => watched.gradeType === "DI",
+      overrides: {
+        hidden: false,
+        validators: {
+          required: true,
+          min: 1300,
+          max: 1600,
+        },
+        meta: {
+          helpText:
+            "Maximum tapping temperature for DI processing (1300-1600°C, must be > min temp)",
         },
       },
-    ],
+    },
     meta: { subsection: "diParameters" },
   },
   {
     key: "mgTreatmentTime",
     type: "number",
     label: "Mg Treatment Time (minutes)",
-    defaultValue: 1,
+    defaultValue: null,
     validators: {
       required: true,
     },
     hidden: true,
     section: { sectionId: "gradeOverview", order: 7 },
-    dependencies: [
-      {
-        field: "gradeType",
-        condition: (value: any) => value === "DI",
-        overrides: { hidden: false, validators: { required: true } },
-      },
-    ],
+    dependencies: {
+      fields: ["gradeType"],
+      condition: (watched: any) => watched.gradeType === "DI",
+      overrides: { hidden: false, validators: { required: true } },
+    },
     meta: { subsection: "diParameters" },
   },
 
   {
     key: "bathChemistry",
-    type: "select",
+    type: "radio",
     label: "Bath Chemistry",
     defaultValue: "",
-    options: async () => [
-      { value: "", label: "Select Bath Chemistry" },
-      { value: "with", label: "With Bath Chemistry" },
-      { value: "without", label: "Without Bath Chemistry" },
-    ],
+    options: async () => {
+      return [
+        { 
+          value: "with", 
+          label: "With Bath Chemistry",
+          description: "Enable bath range controls and advanced melt correction (Recommended for DI grades)",
+          impact: "High Impact"
+        },
+        { 
+          value: "without", 
+          label: "Without Bath Chemistry",
+          description: "Use target chemistry only with standard correction algorithms"
+        },
+      ];
+    },
     validators: { required: true },
     section: { sectionId: "bathChemistry", order: 1 },
-    meta: { helpText: "Choose whether to include bath chemistry analysis" },
+    meta: {
+      helpText: "Choose whether to include bath chemistry analysis",
+      showDescriptions: true, // Enable meta text display
+    },
   },
   {
     key: "rememberChoice",
@@ -183,19 +374,18 @@ export const gradeConfigurationModel: FormModel = [
     label: "Remember my choice for similar grades",
     defaultValue: false,
     section: { sectionId: "bathChemistry", order: 2 },
-    dependencies: [
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value !== null && value !== undefined,
-        overrides: {
-          meta: {
-            helpText:
-              "Save this preference for future similar grade configurations",
-            enabled: true,
-          },
+    dependencies: {
+      fields: ["bathChemistry"],
+      condition: (watched: any) =>
+        watched.bathChemistry !== null && watched.bathChemistry !== undefined,
+      overrides: {
+        meta: {
+          helpText:
+            "Save this preference for future similar grade configurations",
+          enabled: true,
         },
       },
-    ],
+    },
     meta: {
       helpText: "Save this preference for future similar grade configurations",
     },
@@ -208,6 +398,8 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: [
       {
         element: "C",
+        elementId: 1, // Carbon element ID
+        elementName: "Carbon",
         bathMin: 3.4,
         bathMax: 3.6,
         finalMin: 3.45,
@@ -218,6 +410,8 @@ export const gradeConfigurationModel: FormModel = [
       },
       {
         element: "Si",
+        elementId: 2, // Silicon element ID
+        elementName: "Silicon",
         bathMin: 3.4,
         bathMax: 3.6,
         finalMin: 2.3,
@@ -228,32 +422,11 @@ export const gradeConfigurationModel: FormModel = [
       },
     ],
     hidden: true,
-    dependencies: [
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value === "with",
-        overrides: {
-          hidden: false,
-          meta: {
-            helpText:
-              "Define chemical composition ranges with bath chemistry analysis",
-            showBathColumns: true,
-          },
-        },
-      },
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value === "without",
-        overrides: {
-          hidden: false,
-          meta: {
-            helpText:
-              "Define final chemistry ranges only (bath chemistry disabled)",
-            showBathColumns: false,
-          },
-        },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     section: { sectionId: "targetChemistry", order: 1 },
     meta: {
       helpText: "Define chemical composition ranges for this grade",
@@ -264,7 +437,6 @@ export const gradeConfigurationModel: FormModel = [
         allowAdd: true,
         selectField: "selectedElement",
         addLabel: "Element",
-        addOptions: mockData.addOptions,
         uniqueKey: "element",
         columns: [
           { key: "element", label: "Element", type: "readonly" },
@@ -304,7 +476,6 @@ export const gradeConfigurationModel: FormModel = [
           },
         ],
         createItem: (selectedElementId: string) => {
-          // Find the element object from elementsData using the selected ID
           const elementsData = (window as any).elementsData;
           const elementObj = elementsData?.find(
             (el: any) => el.id === selectedElementId
@@ -348,41 +519,18 @@ export const gradeConfigurationModel: FormModel = [
     label: "Select Element",
     defaultValue: "Mn",
     hidden: true,
-    options: (formValues: any) => {
-      if (!formValues) return [];
-
-      const elementsData = (window as any).elementsData;
-      const targetChemistry = formValues.targetChemistry || [];
-
-      if (!elementsData || !Array.isArray(elementsData)) {
-        return [];
-      }
-
-      // Get already selected element IDs
-      const selectedElementIds = targetChemistry.map(
-        (item: any) => item.elementId || item.element
-      );
-
-      // Filter out already selected elements
-      return elementsData
-        .filter((element: any) => !selectedElementIds.includes(element.id))
-        .map((element: any) => ({
-          value: element.id,
-          label: element.symbol,
-        }));
-    },
+    options: loadElementsAsync, // 🔄 Using separate async function
     section: { sectionId: "targetChemistry", order: 2 },
-    dependencies: [
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value === "with" || value === "without",
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       helpText: "Select an element to add to the chemistry table",
       searchable: true,
       searchPlaceholder: "Search elements...",
+      asyncMode: "loadOnOpen", // 🔄 Load options when dropdown opens
     },
   },
 
@@ -393,13 +541,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: "",
     hidden: true,
     section: { sectionId: "targetChemistry", order: 3 },
-    dependencies: [
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value === "with" || value === "without",
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "AddElementButton",
       hideLabel: true,
@@ -413,13 +559,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: "",
     hidden: true,
     section: { sectionId: "targetChemistry", order: 4 },
-    dependencies: [
-      {
-        field: "bathChemistry",
-        condition: (value: any) => value === "with" || value === "without",
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "ToleranceSection",
       helpText: "Configure tolerance ranges for final chemistry analysis",
@@ -433,13 +577,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: [],
     hidden: true,
     section: { sectionId: "additionDilution", order: 1 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     validators: {
       custom: (value: any) => {
         if (Array.isArray(value) && value.length === 0) {
@@ -478,13 +620,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: [],
     hidden: true,
     section: { sectionId: "additionDilution", order: 2 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "RawMaterialsTable",
       helpText:
@@ -496,7 +636,7 @@ export const gradeConfigurationModel: FormModel = [
         allowAdd: true,
         selectField: "selectedRawMaterial",
         addLabel: "Raw Material",
-        addOptions: mockData.rawMaterials,
+        addOptions: searchRawMaterialsAsync,
         uniqueKey: "material",
         columns: [
           { key: "material", label: "Material", type: "readonly" },
@@ -528,6 +668,7 @@ export const gradeConfigurationModel: FormModel = [
             material: materialObj?.name || selectedMaterialId, // Use name if available, fallback to ID
             materialId: selectedMaterialId, // Store the ID for reference
             materialSlug: materialObj?.slug || "", // Store the slug for reference
+            fullMaterialData: materialObj, // Store the complete material object from inventory API
             minPercent: 0,
             maxPercent: 0,
           };
@@ -542,45 +683,19 @@ export const gradeConfigurationModel: FormModel = [
     type: "select",
     label: "Select Raw Material",
     defaultValue: "",
-    options: (formValues: any) => {
-      if (!formValues) return [];
-
-      const itemInventoryData = (window as any).itemInventoryData;
-      const rawMaterials = formValues.rawMaterials || [];
-
-      if (
-        !itemInventoryData?.results ||
-        !Array.isArray(itemInventoryData.results)
-      ) {
-        return [];
-      }
-
-      // Get already selected material IDs
-      const selectedMaterialIds = rawMaterials.map(
-        (item: any) => item.materialId || item.material
-      );
-
-      // Filter out already selected materials
-      return itemInventoryData.results
-        .filter((material: any) => !selectedMaterialIds.includes(material.id))
-        .map((material: any) => ({
-          value: material.id,
-          label: material.name,
-        }));
-    },
+    options: searchRawMaterialsAsync, // 🔍 Using separate async search function
     hidden: true,
     section: { sectionId: "additionDilution", order: 3 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       helpText: "Choose a raw material to add",
       searchable: true,
       searchPlaceholder: "Search materials...",
+      asyncMode: "loadOnOpen", // 🔄 Load options when dropdown opens
     },
   },
 
@@ -591,13 +706,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 0,
     hidden: true,
     section: { sectionId: "additionDilution", order: 4 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     validators: {
       min: 0,
       max: 100,
@@ -611,13 +724,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 0,
     hidden: true,
     section: { sectionId: "additionDilution", order: 5 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     validators: {
       required: true,
     },
@@ -630,13 +741,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: "",
     hidden: true,
     section: { sectionId: "additionDilution", order: 6 },
-    dependencies: [
-      {
-        field: "spectroModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["spectroModule", "bathChemistry"],
+      condition: isSpectroAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "AddRawMaterialButton",
       hideLabel: true,
@@ -650,13 +759,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: [],
     hidden: true,
     section: { sectionId: "chargemixData", order: 1 },
-    dependencies: [
-      {
-        field: "ifKioskModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["ifKioskModule", "bathChemistry"],
+      condition: isIfKioskAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "ChargemixMaterialsTable",
       helpText:
@@ -668,7 +775,7 @@ export const gradeConfigurationModel: FormModel = [
         allowAdd: true,
         selectField: "selectedChargemixMaterial",
         addLabel: "Raw Material",
-        addOptions: mockData.chargemixMaterials,
+        addOptions: searchChargemixMaterialsAsync,
         uniqueKey: "material",
         columns: [
           { key: "material", label: "Material", type: "readonly" },
@@ -701,6 +808,7 @@ export const gradeConfigurationModel: FormModel = [
             material: materialObj?.name || selectedMaterialId, // Use name if available, fallback to ID
             materialId: selectedMaterialId, // Store the ID for reference
             materialSlug: materialObj?.slug || "", // Store the slug for reference
+            fullMaterialData: materialObj, // Store the complete material object from inventory API
             minPercent: 0,
             maxPercent: 0,
           };
@@ -742,44 +850,18 @@ export const gradeConfigurationModel: FormModel = [
     label: "Select Raw Material",
     defaultValue: "",
     hidden: true,
-    options: (formValues: any) => {
-      if (!formValues) return [];
-
-      const itemInventoryData = (window as any).itemInventoryData;
-      const chargemixMaterials = formValues.chargemixMaterials || [];
-
-      if (
-        !itemInventoryData?.results ||
-        !Array.isArray(itemInventoryData.results)
-      ) {
-        return [];
-      }
-
-      // Get already selected material IDs
-      const selectedMaterialIds = chargemixMaterials.map(
-        (item: any) => item.materialId || item.material
-      );
-
-      // Filter out already selected materials
-      return itemInventoryData.results
-        .filter((material: any) => !selectedMaterialIds.includes(material.id))
-        .map((material: any) => ({
-          value: material.id,
-          label: material.name,
-        }));
-    },
+    options: searchChargemixMaterialsAsync, // 🔍 Using separate async search function
     section: { sectionId: "chargemixData", order: 2 },
-    dependencies: [
-      {
-        field: "ifKioskModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["ifKioskModule", "bathChemistry"],
+      condition: isIfKioskAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       helpText: "Choose a raw material to add to chargemix configuration",
       searchable: true,
       searchPlaceholder: "Search materials...",
+      asyncMode: "loadOnOpen", // 🔄 Load options when dropdown opens
     },
   },
 
@@ -790,13 +872,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 0,
     hidden: true,
     section: { sectionId: "chargemixData", order: 3 },
-    dependencies: [
-      {
-        field: "ifKioskModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["ifKioskModule", "bathChemistry"],
+      condition: isIfKioskAndBathReady,
+      overrides: { hidden: false },
+    },
     validators: {
       min: 0,
       max: 100,
@@ -810,13 +890,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: 0,
     hidden: true,
     section: { sectionId: "chargemixData", order: 4 },
-    dependencies: [
-      {
-        field: "ifKioskModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["ifKioskModule", "bathChemistry"],
+      condition: isIfKioskAndBathReady,
+      overrides: { hidden: false },
+    },
     validators: {
       required: true,
     },
@@ -829,13 +907,11 @@ export const gradeConfigurationModel: FormModel = [
     defaultValue: "",
     hidden: true,
     section: { sectionId: "chargemixData", order: 5 },
-    dependencies: [
-      {
-        field: "ifKioskModule",
-        condition: (value: any) => value === true,
-        overrides: { hidden: false },
-      },
-    ],
+    dependencies: {
+      fields: ["ifKioskModule", "bathChemistry"],
+      condition: isIfKioskAndBathReady,
+      overrides: { hidden: false },
+    },
     meta: {
       customRenderer: "AddChargemixMaterialButton",
       hideLabel: true,
@@ -870,7 +946,7 @@ export const gradeConfigurationSections: FieldSection[] = [
   {
     id: "bathChemistry",
     title: "Bath Chemistry Decision",
-    description: "Configure bath chemistry analysis preferences",
+    description: "This choice affects melt-correction algorithms. Choose carefully based on your process requirements.",
     collapsible: false,
     layout: {
       columns: 1,

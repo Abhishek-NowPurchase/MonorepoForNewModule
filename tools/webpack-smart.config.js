@@ -124,7 +124,8 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
-      fallback: { events: require.resolve("events/") }
+      fallback: { events: require.resolve("events/") },
+      symlinks: true  // Enable symlink resolution for yarn link
     },
     devServer: {
       port: config.port,

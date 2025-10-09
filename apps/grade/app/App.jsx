@@ -1,4 +1,3 @@
-// 🎨 DESIGN SYSTEM IMPORTS - Load once for the entire app
 import 'now-design-tokens/dist/css/variables.css';
 import 'now-design-styles/dist/text/text-styles.css';
 import 'now-design-styles/dist/color/colorStyles.css';
@@ -11,7 +10,6 @@ import { routes, defaultRoute } from '../src/routes';
 function App() {
   const currentPath = window.location.pathname;
   
-  // Simple route matching
   const route = routes.find(r => {
     if (r.path.includes(':id')) {
       return currentPath.startsWith(r.path.split(':id')[0]);

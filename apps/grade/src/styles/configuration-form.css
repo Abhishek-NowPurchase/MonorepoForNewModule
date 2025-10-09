@@ -111,48 +111,98 @@ body {
   margin-top: 20px;
 }
 
-/* ===== FORM FIELDS ===== */
-.form-field {
-  display: flex;
-  flex-direction: column;
+/* ===== SELECT COMPONENT WIDTH CONSISTENCY ===== */
+.select {
+  width: 282px !important;
+  max-width: 282px !important;
 }
 
-.form-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #4a5568;
-  margin-bottom: 6px;
+.select__trigger {
+  width: 282px !important;
+  max-width: 282px !important;
 }
 
-.form-label.required::after {
-  content: " *";
-  color: #f56565;
+.select .input {
+  width: 282px !important;
+  max-width: 282px !important;
 }
 
-.form-input {
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  background: white;
-  color: #2d3748;
+/* ===== MUI SELECT STYLES (Non-searchable) ===== */
+.MuiSelect-root {
+  border-radius: 8px !important;
 }
 
-.form-input:focus {
-  outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+.MuiSelect-root .MuiOutlinedInput-notchedOutline {
+  border-radius: 8px !important;
 }
 
-.form-input.error {
-  border-color: #f56565;
+.MuiSelect-root .MuiOutlinedInput-input {
+  padding: 10px !important;
 }
 
-.form-input.error:focus {
-  border-color: #f56565;
-  box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);
+/* ===== MUI AUTECOMPLETE STYLES (Searchable) ===== */
+.MuiAutocomplete-root {
+  width: 282px !important;
+  max-width: 282px !important;
 }
+
+.MuiAutocomplete-root .MuiOutlinedInput-root {
+  border-radius: 8px !important;
+  height: 43px !important;
+}
+
+.MuiAutocomplete-root .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-radius: 8px !important;
+}
+
+.MuiAutocomplete-root .MuiOutlinedInput-root .MuiOutlinedInput-input {
+  padding: 10px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
+/* ===== FORM CONTROL WIDTH CONSISTENCY ===== */
+.MuiFormControl-root {
+  width: 282px !important;
+  max-width: 282px !important;
+}
+
+/* ===== OUTLINED INPUT STYLES (Both Select and Autocomplete) ===== */
+.MuiOutlinedInput-root {
+  border-radius: 8px !important;
+}
+
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-radius: 8px !important;
+}
+
+.MuiOutlinedInput-root .MuiOutlinedInput-input {
+  padding: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
+/* ===== SPECIFIC TARGETING FOR SEARCHABLE FIELDS ===== */
+.MuiAutocomplete-root .MuiFormControl-root .MuiOutlinedInput-root {
+  border-radius: 8px !important;
+  height: 43px !important;
+}
+
+.MuiAutocomplete-root .MuiFormControl-root .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-radius: 8px !important;
+}
+
+.MuiAutocomplete-root .MuiFormControl-root .MuiOutlinedInput-root .MuiOutlinedInput-input {
+  padding: 10px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
 
 .help-text {
   font-size: 12px;
@@ -213,40 +263,6 @@ tr:hover {
   background: #f7fafc;
 }
 
-.element-cell {
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 14px;
-  text-align: left;
-}
-
-.chemistry-input {
-  width: 100%;
-  min-width: 80px;
-}
-
-.chemistry-input .input__text {
-  text-align: center;
-  font-size: 14px;
-}
-
-.remove-element-btn {
-  background: #fed7d7;
-  color: #c53030;
-  border: 1px solid #feb2b2;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.remove-element-btn:hover {
-  background: #f56565;
-  color: white;
-  border-color: #f56565;
-}
 
 /* ===== TOLERANCE SECTION ===== */
 .tolerance-section {
@@ -583,6 +599,89 @@ tr:hover {
   }
 }
 
+/* ===== MUI RADIO BUTTON STYLES ===== */
+.MuiFormControl-root {
+  width: 100%;
+}
+
+.MuiFormLabel-root {
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin-bottom: 8px !important;
+  font-size: 14px !important;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #4299e1 !important;
+}
+
+.MuiFormLabel-root.Mui-error {
+  color: #f56565 !important;
+}
+
+.MuiRadioGroup-root {
+  gap: 4px;
+}
+
+.MuiFormControlLabel-root {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.MuiFormControlLabel-label {
+  font-size: 14px !important;
+  color: #4a5568 !important;
+  line-height: 1.4 !important;
+}
+
+/* ===== RADIO BUTTON DESCRIPTION TEXT ===== */
+.MuiFormControlLabel-label .radio-description {
+  white-space: nowrap !important;
+  display: block !important;
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  color: #718096 !important;
+}
+
+/* ===== RADIO BUTTON DESCRIPTION DIV (Inline Styled) ===== */
+.MuiFormControl-root div[style*="marginLeft: 32px"] {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* ===== GENERAL RADIO DESCRIPTION TARGETING ===== */
+.MuiFormControl-root div {
+  white-space: nowrap !important;
+}
+
+.MuiFormControl-root div[style*="marginLeft: 32px"] {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.MuiRadio-root {
+  color: #cbd5e0 !important;
+  padding: 8px !important;
+}
+
+.MuiRadio-root.Mui-checked {
+  color: #4299e1 !important;
+}
+
+.MuiRadio-root:hover {
+  background-color: rgba(66, 153, 225, 0.04) !important;
+}
+
+.MuiRadio-root.Mui-disabled {
+  color: #e2e8f0 !important;
+}
+
+.MuiFormControlLabel-root.Mui-disabled .MuiFormControlLabel-label {
+  color: #a0aec0 !important;
+}
+
 /* ===== ARRAY FIELD STYLES ===== */
 .array-field-label {
   font-weight: 600;
@@ -860,81 +959,8 @@ tr:hover {
   margin-top: 16px;
 }
 
-.add-element-button,
-.add-raw-material-button,
-.add-chargemix-material-button {
-  background: #48bb78;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 
-.add-element-button:hover,
-.add-raw-material-button:hover,
-.add-chargemix-material-button:hover {
-  background: #38a169;
-}
 
-.add-element-button:disabled,
-.add-raw-material-button:disabled,
-.add-chargemix-material-button:disabled {
-  background: #a0aec0;
-  cursor: not-allowed;
-}
-
-/* Field type specific styles */
-.targetChemistry-text-field,
-.targetChemistry-number-field,
-.targetChemistry-select-field,
-.targetChemistry-checkbox-field,
-.targetChemistry-array-field,
-.targetChemistry-range-field,
-.targetChemistry-button-field,
-.additionDilution-text-field,
-.additionDilution-number-field,
-.additionDilution-select-field,
-.additionDilution-checkbox-field,
-.additionDilution-array-field,
-.additionDilution-range-field,
-.additionDilution-button-field,
-.chargemixData-text-field,
-.chargemixData-number-field,
-.chargemixData-select-field,
-.chargemixData-checkbox-field,
-.chargemixData-array-field,
-.chargemixData-range-field,
-.chargemixData-button-field {
-  margin-bottom: 16px;
-}
-
-.targetChemistry-text-field.error,
-.targetChemistry-number-field.error,
-.targetChemistry-select-field.error,
-.targetChemistry-checkbox-field.error,
-.targetChemistry-array-field.error,
-.targetChemistry-range-field.error,
-.targetChemistry-button-field.error,
-.additionDilution-text-field.error,
-.additionDilution-number-field.error,
-.additionDilution-select-field.error,
-.additionDilution-checkbox-field.error,
-.additionDilution-array-field.error,
-.additionDilution-range-field.error,
-.additionDilution-button-field.error,
-.chargemixData-text-field.error,
-.chargemixData-number-field.error,
-.chargemixData-select-field.error,
-.chargemixData-checkbox-field.error,
-.chargemixData-array-field.error,
-.chargemixData-range-field.error,
-.chargemixData-button-field.error {
-  border-color: #f56565;
-}
 
 
 .fallback-field {

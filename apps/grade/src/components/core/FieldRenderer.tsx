@@ -1,8 +1,21 @@
 import React from "react";
-import { TextInput, Select, RadioGroup } from 'now-design-molecules';
+import { TextInput, Select } from 'now-design-molecules';
 import Checkbox from 'now-design-atoms/dist/checkbox';
 import Button from 'now-design-atoms/dist/button';
-import ReactSelect from 'react-select';
+import { 
+  Radio, 
+  RadioGroup, 
+  FormControlLabel, 
+  FormControl, 
+  FormLabel,
+  Select as MuiSelect,
+  MenuItem,
+  InputLabel,
+  FormHelperText,
+  Autocomplete,
+  TextField,
+  CircularProgress
+} from '@mui/material';
 
 
 import 'now-design-tokens/dist/css/variables.css';
@@ -26,9 +39,15 @@ interface UniversalFieldProps {
 const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, sectionContext = '' }: UniversalFieldProps) => {
 
   const [selectOptions, setSelectOptions] = React.useState<any[]>([]);
+  
+  // Async Autocomplete states
+  const [asyncOpen, setAsyncOpen] = React.useState(false);
+  const [asyncOptions, setAsyncOptions] = React.useState<any[]>([]);
+  const [asyncLoading, setAsyncLoading] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
-    if (field.type === 'select' && field.options) {
+    if ((field.type === 'select' || field.type === 'radio') && field.options) {
       const optionsResult = field.options(form.values);
       
       // Handle both Promise-based and direct array options
@@ -44,6 +63,113 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
     }
   }, [field.type, field.options, field, value, form.values]);
 
+  // 🔄 ASYNC AUTOCOMPLETE: Load on Open
+  React.useEffect(() => {
+    if (!asyncOpen || field.meta?.asyncMode !== 'loadOnOpen') {
+      return;
+    }
+
+    let active = true;
+
+    (async () => {
+      setAsyncLoading(true);
+      
+      try {
+        if (field.options) {
+          const optionsResult = field.options(form.values);
+          
+          if (optionsResult && typeof optionsResult.then === 'function') {
+            const options = await optionsResult;
+            if (active) {
+              setAsyncOptions(options);
+            }
+          } else if (Array.isArray(optionsResult)) {
+            if (active) {
+              setAsyncOptions(optionsResult);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading async options:', error);
+      } finally {
+        if (active) {
+          setAsyncLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [asyncOpen, field.meta?.asyncMode, field.options, form.values]); // Removed asyncOptions.length to allow re-fetching
+
+  // 🔄 ASYNC AUTOCOMPLETE: Update options when form values change (for filtering)
+  React.useEffect(() => {
+    if (field.meta?.asyncMode !== 'loadOnOpen' && field.meta?.asyncMode !== 'searchAsYouType') {
+      return;
+    }
+
+    // Update async options when form values change (for real-time filtering)
+    if (asyncOptions.length > 0 || asyncOpen) {
+      let active = true;
+
+      (async () => {
+        try {
+          if (field.options) {
+            const optionsResult = field.options(form.values);
+            
+            if (optionsResult && typeof optionsResult.then === 'function') {
+              const options = await optionsResult;
+              if (active) {
+                setAsyncOptions(options);
+              }
+            } else if (Array.isArray(optionsResult)) {
+              if (active) {
+                setAsyncOptions(optionsResult);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error updating async options:', error);
+        }
+      })();
+
+      return () => {
+        active = false;
+      };
+    }
+  }, [form.values, field.meta?.asyncMode, field.options]); // React to form value changes
+
+  // 🔍 ASYNC AUTOCOMPLETE: Search as You Type (with debouncing)
+  React.useEffect(() => {
+    if (field.meta?.asyncMode !== 'searchAsYouType') {
+      return;
+    }
+
+    const debounceTimer = setTimeout(async () => {
+      setAsyncLoading(true);
+      
+      try {
+        if (field.options) {
+          const optionsResult = field.options(form.values, searchQuery);
+          
+          if (optionsResult && typeof optionsResult.then === 'function') {
+            const options = await optionsResult;
+            setAsyncOptions(options);
+          } else if (Array.isArray(optionsResult)) {
+            setAsyncOptions(optionsResult);
+          }
+        }
+      } catch (error) {
+        console.error('Error searching async options:', error);
+      } finally {
+        setAsyncLoading(false);
+      }
+    }, 300); // 300ms debounce delay
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery, field.meta?.asyncMode, field.options, form.values]);
+
 
   const isVisible = form.isFieldVisible(fieldPath);
   if (!isVisible) {
@@ -53,7 +179,7 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
 
   const renderFieldWithWrapper = (fieldContent: any, fieldType: string) => {
     const wrapperContent = (
-      <div className={`${sectionContext}-${fieldType}-field${error && error.length > 0 ? ' error' : ''}`}>
+      <div className={`${sectionContext}-${fieldType}-field`}>
         {fieldContent}
         {field.meta?.helpText && (
           <div className="help-text">{field.meta.helpText}</div>
@@ -248,7 +374,7 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
           placeholder={field.label}
           status={error && error.length > 0 ? 'error' : undefined}
           id={fieldPath}
-          // required={field.validators?.required}
+          required={field.validators?.required}
           validator={field.validators?.custom ? (value) => {
             const validationResult = field.validators.custom(value);
             return {
@@ -272,47 +398,178 @@ const FieldRenderer = ({ field, value, onChange, error, fieldPath, form, section
           label: option.label
       }));
 
-      // Check if this field should use react-select (searchable)
-      if (field.meta?.searchable) {
-        const selectedOption = selectFieldOptions.find(option => option.value === value);
-        
-        return renderFieldWithWrapper(
-          <div className="form-field">
-            <label className="form-label">{field.label}</label>
-            <ReactSelect
-              value={selectedOption}
-              onChange={(selectedOption: any) => onChange(selectedOption?.value || '')}
-              options={selectFieldOptions}
-              isSearchable={true}
-              placeholder={field.meta?.searchPlaceholder || `Search ${field.label.toLowerCase()}...`}
-              menuPortalTarget={document.body}
-              styles={{
-                menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
-              }}
-            />
-          </div>,
-          'select'
+      // Use MUI Select for non-searchable fields, otherwise use now-design-molecules Select
+      const isNonSearchable = field.meta?.searchable === false;
+      const isAsyncMode = field.meta?.asyncMode === 'loadOnOpen' || field.meta?.asyncMode === 'searchAsYouType';
+
+      if (isNonSearchable) {
+        // MUI Native Select for non-searchable fields - render directly without wrapper to avoid duplicate help text
+        return (
+          <div className={`${sectionContext}-select-field`}>
+            <FormControl 
+              error={error && error.length > 0}
+              disabled={field.disabled}
+              required={field.validators?.required}
+            >
+              <InputLabel id={`${fieldPath}-label`}>{field.label}</InputLabel>
+              <MuiSelect
+                labelId={`${fieldPath}-label`}
+                id={fieldPath}
+                value={value || ''}
+                onChange={(e) => onChange(e.target.value)}
+              >
+                {selectFieldOptions.map((option: any) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </MuiSelect>
+              {field.meta?.helpText && (
+                <FormHelperText>{field.meta.helpText}</FormHelperText>
+              )}
+              {error && error.length > 0 && (
+                <FormHelperText>{error.join(', ')}</FormHelperText>
+              )}
+            </FormControl>
+          </div>
         );
       }
 
-      // Fallback to regular select for non-searchable fields
+      // 🚀 ASYNC AUTOCOMPLETE for searchable fields with asyncMode
+      if (isAsyncMode) {
+        const currentOptions = asyncOptions.length > 0 ? asyncOptions : selectFieldOptions;
+        const selectedOption = currentOptions.find((opt: any) => opt.value === value) || null;
+
+        return (
+          <div className={`${sectionContext}-select-field`}>
+            <Autocomplete
+              id={fieldPath}
+              open={asyncOpen}
+              onOpen={() => setAsyncOpen(true)}
+              onClose={() => setAsyncOpen(false)}
+              value={selectedOption}
+              onChange={(event, newValue) => {
+                onChange(newValue ? newValue.value : '');
+              }}
+              onInputChange={(event, newInputValue, reason) => {
+                if (field.meta?.asyncMode === 'searchAsYouType' && reason === 'input') {
+                  setSearchQuery(newInputValue);
+                }
+              }}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              getOptionLabel={(option) => option.label || ''}
+              options={currentOptions}
+              loading={asyncLoading}
+              disabled={field.disabled}
+              sx={{ width: '282px' }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={field.label}
+                  placeholder={field.meta?.searchPlaceholder || field.meta?.placeholder}
+                  error={error && error.length > 0}
+                  helperText={
+                    error && error.length > 0 
+                      ? error.join(', ') 
+                      : field.meta?.helpText
+                  }
+                  required={field.validators?.required}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {asyncLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </div>
+        );
+      }
+
+      // Use the searchable Select component from now-design-molecules (default, non-async)
       return renderFieldWithWrapper(
-        <div className="form-field">
-          <label className="form-label">{field.label}</label>
-          <select
-            value={(value || "").toString()}
-            onChange={(e) => onChange(e.target.value)}
-            className={`form-input ${error && error.length > 0 ? "error" : ""}`}
-            id={fieldPath}
-          >
-            {selectFieldOptions.map((option, index) => (
-              <option key={`${option.value}-${index}`} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>,
+        <Select
+          id={fieldPath}
+          label={field.label}
+          value={value}
+          onChange={onChange}
+          options={selectFieldOptions}
+          searchable={field.meta?.searchable !== false}
+          searchInPanel={field.meta?.searchInPanel !== false}
+          placeholder={field.meta?.searchPlaceholder || field.meta?.placeholder}
+          disabled={field.disabled}
+          status={error && error.length > 0 ? 'error' : undefined}
+          helperText={field.meta?.helpText}
+          styles={{width: '282px'}}
+        />,
         'select'
+      );
+
+
+    case 'radio':
+      const radioOptions = selectOptions.map((option: any) => ({
+        value: option.value,
+        label: option.label,
+        description: option.description,
+        impact: option.impact
+      }));
+
+      return renderFieldWithWrapper(
+        <FormControl 
+          component="fieldset" 
+          disabled={field.disabled}
+          required={field.validators?.required}
+          error={error && error.length > 0}
+        >
+          <FormLabel component="legend">{field.label}</FormLabel>
+          <RadioGroup
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            name={fieldPath}
+          >
+            {radioOptions.map((option: any) => (
+              <div key={option.value} style={{ marginBottom: '16px' }}>
+                <FormControlLabel
+                  value={option.value}
+                  control={<Radio />}
+                  label={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontWeight: 'bold' }}>{option.label}</span>
+                      {option.impact && (
+                        <span style={{
+                          backgroundColor: '#e8f5e8',
+                          color: '#2e7d32',
+                          padding: '2px 8px',
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          fontWeight: '500'
+                        }}>
+                          {option.impact}
+                        </span>
+                      )}
+                    </div>
+                  }
+                  style={{ marginBottom: '4px' }}
+                />
+                {option.description && (
+                  <div style={{ 
+                    marginLeft: '32px', 
+                    color: '#666', 
+                    fontSize: '14px',
+                    marginTop: '2px'
+                  }}>
+                    {option.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </RadioGroup>
+        </FormControl>,
+        'radio'
       );
 
     case 'checkbox':

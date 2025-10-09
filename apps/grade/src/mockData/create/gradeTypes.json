@@ -1,7 +1,0 @@
-[
-  { "value": "DI", "label": "DI - Ductile Iron", "description": "Used for high-strength, wear-resistant applications." },
-  { "value": "CI", "label": "CI - Cast Iron", "description": "Commonly used for general engineering components." },
-  { "value": "SS", "label": "SS - Stainless Steel", "description": "Known for corrosion resistance and strength." },
-  { "value": "SG", "label": "SG - Spheroidal Graphite", "description": "Offers good ductility and impact resistance." },
-  { "value": "GI", "label": "GI - Gray Iron", "description": "Economical, good machinability, and damping properties." }
-]

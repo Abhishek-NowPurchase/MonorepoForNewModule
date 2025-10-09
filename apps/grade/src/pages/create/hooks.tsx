@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useFormConfig, useSections } from "@dynamic_forms/react";
 import {
   gradeConfigurationModel,
   gradeConfigurationSectionedModel,
 } from "./modal";
-import { getUserDetails } from "../../../../shared/Api/user";
 import {
   getGradeCategory,
   getItemInventory,
@@ -12,6 +12,25 @@ import {
 import { getElements } from "../../../../shared/Api/elements";
 import { getGradeTagId, createGrade } from "./api";
 import { useApiDataManager } from "./apiOptions";
+
+export const useUserDetail = () => {
+  return useSelector((state: any) => state.userDetail || {});
+};
+
+export const useCustomerId = (): number => {
+  const userDetail = useSelector((state: any) => state.userDetail);
+  return userDetail?.customer?.id || 243;
+};
+
+export const useCustomer = () => {
+  const userDetail = useSelector((state: any) => state.userDetail);
+  return userDetail?.customer || null;
+};
+
+export const useIsAuthenticated = (): boolean => {
+  const auth = useSelector((state: any) => state.auth);
+  return !!auth?.token && !!auth?.isLoggedIn;
+};
 
 const autoSelectFirstOption = (
   data: any,
@@ -43,6 +62,9 @@ const fixExistingMaterials = (items: any[], inventoryData: any, fieldName: strin
           material: materialObj.name,
           materialId: item.material,
           materialSlug: materialObj.slug || "",
+          fullMaterialData: materialObj, // Store the complete material object from inventory API
+          minPercent: item.minPercent ?? 0, // Ensure minPercent defaults to 0
+          maxPercent: item.maxPercent ?? 0, // Ensure maxPercent defaults to 0
         };
       }
     }
@@ -87,6 +109,8 @@ const fixExistingElements = (items: any[], elementsData: any[], form: any) => {
 
 export const useGradeCreateForm = (initialValues: any = {}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const customerId = useCustomerId();
+  const userDetail = useUserDetail();
   
   const form = useFormConfig(gradeConfigurationModel, {
     initialValues,
@@ -100,10 +124,6 @@ export const useGradeCreateForm = (initialValues: any = {}) => {
   });
 
   const { data, loading, error } = useApiDataManager([
-    {
-      key: "user",
-      apiFunction: getUserDetails,
-    },
     {
       key: "gradeCategory",
       apiFunction: getGradeCategory,
@@ -123,10 +143,10 @@ export const useGradeCreateForm = (initialValues: any = {}) => {
   ]);
 
   useEffect(() => {
-    if ((data as any).user?.app_permissions?.heatlog?.includes("all")) {
+    if (userDetail?.app_permissions?.heatlog?.includes("all")) {
       form.setValue("ifKioskModule", true);
     }
-  }, [(data as any).user]);
+  }, [userDetail]);
 
   useEffect(() => {
     autoSelectFirstOption(data, "gradeCategory", "gradeType", "symbol", form);
@@ -162,7 +182,7 @@ export const useGradeCreateForm = (initialValues: any = {}) => {
   const handleSubmit = form.handleSubmit(async (values: any) => {
     setIsSubmitting(true);
     try {
-      const result = await createGrade(values);
+      const result = await createGrade(values, customerId);
       return result;
     } catch (error) {
       throw error;

@@ -4,7 +4,6 @@ import Button from "now-design-atoms/dist/button";
 import "../../styles/configuration-form.css";
 import SectionRenderer from "./SectionRenderer";
 
-// 🎯 Generic props interface
 interface ConfigurationFormProps {
   form: any;
   sections: any;

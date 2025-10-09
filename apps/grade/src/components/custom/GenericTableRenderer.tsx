@@ -1,6 +1,7 @@
 import React from "react";
 import Button from 'now-design-atoms/dist/button';
 import { TextInput } from 'now-design-molecules';
+import { SystemDeleteBin7Line } from 'now-design-icons';
 
 interface GenericTableRendererProps {
   field: any;
@@ -11,17 +12,6 @@ interface GenericTableRendererProps {
   fieldPath: string;
 }
 
-/**
- * 🚀 GENERIC TABLE RENDERER - THE ULTIMATE TABLE SOLUTION
- * 
- * This single component replaces ALL table renderers:
- * - TargetChemistryTableRenderer.tsx
- * - ChargemixMaterialsTableRenderer.tsx
- * - RawMaterialsTableRenderer.tsx
- * 
- * Configuration-driven approach using field metadata for all table customizations.
- * Supports: add/remove items, custom columns, validation, and styling.
- */
 const GenericTableRenderer = ({
   field,
   value,
@@ -30,78 +20,59 @@ const GenericTableRenderer = ({
   form,
   fieldPath
 }: GenericTableRendererProps) => {
-  // 🚀 DYNAMIC TABLE CONFIG - Support both static and dynamic configurations
   const getTableConfig = () => {
     if (field.meta?.getTableConfig) {
-      // Dynamic configuration based on form values
       return field.meta.getTableConfig(form.values);
     }
-    // Static configuration
     return field.meta?.tableConfig;
   };
   
   const tableConfig = getTableConfig();
   const items = Array.isArray(value) ? value : [];
 
-  // 🎯 FILTER COLUMNS BASED ON VISIBILITY CONDITIONS
   const getVisibleColumns = () => {
     if (!tableConfig?.columns) return [];
     
     return tableConfig.columns.filter((column: any) => {
-      // If column has hidden property, check the condition
       if (column.hidden) {
-        // For bath chemistry columns, show only when bathChemistry is 'with'
         if (column.key === 'bathMin' || column.key === 'bathMax') {
           return form.values.bathChemistry === 'with';
         }
-        // For other hidden columns, you can add more conditions here
         return false;
       }
-      // Show all non-hidden columns
       return true;
     });
   };
 
   const visibleColumns = getVisibleColumns();
 
-  // 🎯 HIDE TABLE WHEN NO DATA
   if (items.length === 0) {
-    return null; // Don't render anything when table is empty
+    return null;
   }
 
-  // 🎯 ENHANCED ADD ITEM HANDLER - Uses form.addArrayItem with custom logic
   const handleAddItem = () => {
     const selectedItem = form.values[tableConfig?.selectField || 'selectedItem'];
     if (!selectedItem) return;
 
-    // Check if item already exists
     const itemExists = items.some((item: any) => 
       item[tableConfig?.uniqueKey || 'id'] === selectedItem
     );
     if (itemExists) return;
 
-
-    // 🎯 STEP 1: Use form.addArrayItem to add empty object
     form.addArrayItem(fieldPath);
     
-    // 🎯 STEP 2: Wait for next tick to ensure the item is added
     setTimeout(() => {
       const updatedArray = form.values[fieldPath] || [];
       const newIndex = updatedArray.length - 1;
       
-      
-      // 🎯 STEP 3: Create the complete item
       const newItem = tableConfig?.createItem 
         ? tableConfig.createItem(selectedItem, form.values)
         : { [tableConfig?.uniqueKey || 'id']: selectedItem };
       
-      
-      // 🎯 STEP 4: Replace the empty object with complete item
       const finalArray = [...updatedArray];
       finalArray[newIndex] = newItem;
       form.setValue(fieldPath, finalArray);
       
-      // 🎯 STEP 5: Clear selection
       if (tableConfig?.selectField) {
         form.setValue(tableConfig.selectField, "");
       }
@@ -109,15 +80,10 @@ const GenericTableRenderer = ({
     }, 0);
   };
 
-  // 🎯 ENHANCED REMOVE ITEM HANDLER - Uses form.removeArrayItem with custom logic
   const handleRemoveItem = (index: number) => {
-    
-    // Use form.removeArrayItem for consistency
     form.removeArrayItem(fieldPath, index);
-    
   };
 
-  // 🎯 GENERIC UPDATE ITEM HANDLER
   const handleUpdateItem = (index: number, property: string, newValue: any) => {
     const newItems = items.map((item: any, i: number) => 
       i === index ? { ...item, [property]: newValue } : item
@@ -125,21 +91,21 @@ const GenericTableRenderer = ({
     onChange(newItems);
   };
 
-  // 🎯 GENERIC CELL RENDERER - Consolidated cell rendering logic
   const renderCell = (item: any, column: any, index: number) => {
     const value = item[column.key];
     
-    // 🎯 GENERIC INPUT HANDLER - Consolidated input handling
     const createInput = (type: string, props: any = {}) => (
       <TextInput
         type={type}
-        value={(value || '').toString()}
+        label={column.label || ''}
+        value={value !== undefined && value !== null ? value.toString() : ''}
         onChange={(e) => {
-          const newValue = type === 'number' ? Number(e.target.value) : e.target.value;
+          const newValue = type === 'number' ? 
+            (e.target.value === '' ? null : Number(e.target.value)) : 
+            e.target.value;
           handleUpdateItem(index, column.key, newValue);
         }}
         placeholder={column.placeholder || column.label}
-        hideLabel={true}
         size="small"
         style={{
           width: '100%',
@@ -208,7 +174,7 @@ const GenericTableRenderer = ({
                   {column.label}
                 </th>
               ))}
-              <th className="table-header-cell">Actions</th>
+              <th className="table-header-cell" style={{ textAlign: 'center', width: '120px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -219,15 +185,27 @@ const GenericTableRenderer = ({
                     {renderCell(item, column, index)}
                   </td>
                 ))}
-                <td className="table-cell">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handleRemoveItem(index)}
-                    title="Remove item"
-                  >
-                    Remove
-                  </Button>
+                <td className="table-cell" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  {/* Hide Remove button for default elements */}
+                  {!item.isDefault && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handleRemoveItem(index)}
+                      title="Remove item"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        padding: '8px',
+                        minWidth: '40px',
+                        height: '40px'
+                      }}
+                    >
+                      <SystemDeleteBin7Line width={16} height={16} />
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

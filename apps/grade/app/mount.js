@@ -1,44 +1,24 @@
 import { createRoot } from "react-dom/client";
 import React from "react";
+import { Provider } from "react-redux";
 import App from "./App.jsx";
 
 
 let root = null;
 
-// Container-ready check function - ENHANCED DEBUGGING VERSION
-const waitForContainer = () => {
-  return new Promise((resolve) => {
-    const checkStatus = () => {
-      const webpackRequire = window.__webpack_require__;
-      const sharedScope = webpackRequire && webpackRequire.S && webpackRequire.S.default;
-
-      if (sharedScope) {
-        return true;
-      }
-      return false;
-    };
-
-    if (checkStatus()) {
-      resolve();
-    } else {
-      const checkInterval = setInterval(() => {
-        if (checkStatus()) {
-          clearInterval(checkInterval);
-          resolve();
-        }
-      }, 500); // Increased interval for better visibility
-    }
-  });
-};
-
 export async function mount(container, props) {
   try {
-    // Create root and render immediately without waiting for shared scope
+    const { store } = props;
+    
     if (!root) {
       root = createRoot(container);
     }
 
-    root.render(React.createElement(App, props));
+    const AppComponent = store 
+      ? React.createElement(Provider, { store }, React.createElement(App, props))
+      : React.createElement(App, props);
+    
+    root.render(AppComponent);
 
     return () => {
       if (root) {
@@ -47,12 +27,18 @@ export async function mount(container, props) {
       }
     };
   } catch (error) {
+    console.error('Mount error:', error);
 
-    // Fallback: render with local React if container fails
     if (!root) {
       root = createRoot(container);
     }
-    root.render(React.createElement(App, props));
+    
+    const { store } = props;
+    const AppComponent = store 
+      ? React.createElement(Provider, { store }, React.createElement(App, props))
+      : React.createElement(App, props);
+    
+    root.render(AppComponent);
 
     return () => {
       if (root) {
