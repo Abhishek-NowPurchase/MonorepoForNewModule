@@ -35,6 +35,8 @@
     "@dynamic_forms/react": "file:../../../../FormBuilder/formcraft-react",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.0.0",
     "@mui/material": "^7.3.4",
     "@reduxjs/toolkit": "^2.9.0",
     "babel-loader": "^10.0.0",

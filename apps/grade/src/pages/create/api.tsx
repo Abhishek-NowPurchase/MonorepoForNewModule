@@ -88,6 +88,7 @@ export interface GradeCreationPayload {
   carbon_loss: string;
   inventory_item: any[];
   addition_tc: any[];
+  tolerance_settings: ToleranceSettingsItem[];
 }
 
 interface GradeFormData {
@@ -104,6 +105,7 @@ interface GradeFormData {
   targetChemistry?: TargetChemistryFormItem[];
   rawMaterials?: MaterialFormItem[];
   chargemixMaterials?: MaterialFormItem[];
+  toleranceSettings?: ToleranceSettingsItem[];
 }
 
 interface TargetChemistryFormItem {
@@ -125,6 +127,13 @@ interface MaterialFormItem {
   fullMaterialData?: MaterialItem;
 }
 
+interface ToleranceSettingsItem {
+  element: string;
+  elementId: number;
+  toleranceMin: number;
+  toleranceMax: number;
+}
+
 
 const GRADE_ENDPOINTS = {
   TAG_ID: '/api/cm/metalgrade/gen_grade_tag_id/',
@@ -134,9 +143,8 @@ const GRADE_ENDPOINTS = {
 
 const validateMaterialData = (materials: MaterialFormItem[], type: string): void => {
   const missingData = materials.filter(item => !item.fullMaterialData);
-  
+  console.log("missingData",missingData,materials)
   if (missingData.length > 0) {
-    console.error(`❌ ${type} materials missing fullMaterialData:`, missingData);
     throw new Error(
       `Some ${type} materials are missing required inventory data. Please refresh and try again.`
     );
@@ -189,35 +197,76 @@ const transformTargetChemistry = (
     });
 };
 
+// Convert AdditionElement to MaterialFormItem format
+const convertAdditionElementToMaterialFormItem = (additionElement: any): MaterialFormItem => {
+  return {
+    material: additionElement.element,
+    materialId: typeof additionElement.elementId === 'string' ? parseInt(additionElement.elementId) : additionElement.elementId,
+    materialSlug: additionElement.fullMaterialData?.slug || '',
+    minPercent: typeof additionElement.minPercent === 'string' ? parseFloat(additionElement.minPercent) : additionElement.minPercent,
+    maxPercent: typeof additionElement.maxPercent === 'string' ? parseFloat(additionElement.maxPercent) : additionElement.maxPercent,
+    fullMaterialData: additionElement.fullMaterialData,
+  };
+};
+
 const transformMaterials = (
   materials: MaterialFormItem[] = [],
   materialType: string
 ): MaterialItem[] => {
+  console.log(`🔄 [transformMaterials] Processing ${materialType} materials:`, materials);
+  
   return materials
-    .map((item) => {
+    .map((item, index) => {
       if (item.fullMaterialData) {
-        return {
-          ...item.fullMaterialData,
-          item: item.materialId,
+        // Destructure to remove 'id' and spread the rest
+        const { id, ...materialDataWithoutId } = item.fullMaterialData;
+        
+        const transformed = {
+          ...materialDataWithoutId,
+          item: item.materialId || id, // Use materialId, fallback to id from fullMaterialData
           min_qty: parseFloat(item.minPercent?.toString() || '0') || null,
           max_qty: parseFloat(item.maxPercent?.toString() || '0') || null,
         };
+        
+        console.log(`✅ [transformMaterials] ${materialType}[${index}]: item.materialId=${item.materialId}, id=${id}, final item field=${transformed.item}`);
+        console.log(`   Material name: ${transformed.name}, min_qty: ${transformed.min_qty}, max_qty: ${transformed.max_qty}`);
+        
+        return transformed;
       }
       
-      console.error(`❌ Missing fullMaterialData for ${materialType}:`, item.material, item);
+      console.warn(`⚠️ [transformMaterials] ${materialType}[${index}]: Missing fullMaterialData`);
       return null;
     })
     .filter((item): item is MaterialItem => item !== null);
 };
 
 const transformFormDataToPayload = (formData: GradeFormData, customerId: number): GradeCreationPayload => {
-  if (formData.rawMaterials && formData.rawMaterials.length > 0) {
-    validateMaterialData(formData.rawMaterials, 'Raw');
+  // Convert AdditionElement objects to MaterialFormItem format
+  const convertedRawMaterials = formData.rawMaterials?.map(convertAdditionElementToMaterialFormItem) || [];
+  const convertedChargemixMaterials = formData.chargemixMaterials?.map(convertAdditionElementToMaterialFormItem) || [];
+  
+  if (convertedRawMaterials.length > 0) {
+    validateMaterialData(convertedRawMaterials, 'Raw');
   }
   
-  if (formData.chargemixMaterials && formData.chargemixMaterials.length > 0) {
-    validateMaterialData(formData.chargemixMaterials, 'Chargemix');
+  if (convertedChargemixMaterials.length > 0) {
+    validateMaterialData(convertedChargemixMaterials, 'Chargemix');
   }
+
+  const gradeItems = transformMaterials(convertedRawMaterials, 'raw material');
+  const gradeCms = transformMaterials(convertedChargemixMaterials, 'chargemix material');
+  
+  console.log('🎯 [transformFormDataToPayload] Final grade_item array:', gradeItems);
+  console.log('🎯 [transformFormDataToPayload] Final grade_cms array:', gradeCms);
+  
+  // Verify all items have the 'item' field
+  gradeItems.forEach((item, idx) => {
+    if (!item.item) {
+      console.error(`❌ [transformFormDataToPayload] grade_item[${idx}] is MISSING 'item' field!`, item);
+    } else {
+      console.log(`✅ [transformFormDataToPayload] grade_item[${idx}].item = ${item.item}`);
+    }
+  });
 
   return {
     created_at: Date.now(),
@@ -235,12 +284,13 @@ const transformFormDataToPayload = (formData: GradeFormData, customerId: number)
     pit_tc_same_as_ladle: false,
     has_nodularization: false,
     grade_tc: transformTargetChemistry(formData.targetChemistry),
-    grade_item: transformMaterials(formData.rawMaterials || [], 'raw material'),
-    grade_cms: transformMaterials(formData.chargemixMaterials || [], 'chargemix material'),
+    grade_item: gradeItems,
+    grade_cms: gradeCms,
     carbon_loss: '0.00',
     inventory_item: [],
     addition_tc: [],
     add_dil_inactive_elements: [],
+    tolerance_settings: formData.toleranceSettings || [],
   };
 };
 
@@ -262,6 +312,9 @@ export const getGradeTagId = async (): Promise<any> => {
 };
 
 export const createGrade = async (formData: GradeFormData, customerId: number = 243): Promise<any> => {
+  console.log('🔧 createGrade called with formData:', formData);
+  console.log('🔧 customerId:', customerId);
+  
   const token = getToken();
   
   if (!token) {
@@ -269,6 +322,8 @@ export const createGrade = async (formData: GradeFormData, customerId: number = 
   }
   
   const payload = transformFormDataToPayload(formData, customerId);
+  console.log('📦 Transformed payload:', payload);
+  console.log('📦 Tolerance settings in payload:', payload.tolerance_settings);
   
   const result = await apiFetch(GRADE_ENDPOINTS.CREATE_GRADE, token, { 
     method: 'POST',
@@ -278,5 +333,6 @@ export const createGrade = async (formData: GradeFormData, customerId: number = 
     }
   });
   
+  console.log('📡 API response:', result);
   return result;
 };

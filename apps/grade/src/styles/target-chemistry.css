@@ -1,0 +1,330 @@
+/* Target Chemistry - Demo Replica */
+
+/* Card Container */
+.target-chemistry-card {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Card Header */
+.target-chemistry-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+
+.target-chemistry-card-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.target-chemistry-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: #1D2530;
+}
+
+/* Card Body - NO side padding! */
+.target-chemistry-card-body {
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+/* Table Container */
+.target-chemistry-table-container {
+  /* overflow-x: auto; */
+  overflow-y: visible;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.target-chemistry-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.target-chemistry-table-header-row {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.target-chemistry-th {
+  padding: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1D2530;
+}
+
+.target-chemistry-th-left {
+  text-align: left;
+}
+
+.target-chemistry-th-center {
+  text-align: center;
+}
+
+.target-chemistry-th-actions {
+  width: 64px;
+}
+
+.target-chemistry-table-row {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+}
+
+.target-chemistry-table-row:hover {
+  background-color: rgba(249, 250, 251, 0.3);
+}
+
+.target-chemistry-td {
+  padding: 8px;
+  font-size: 14px;
+  color: #1D2530;
+}
+
+.target-chemistry-td-element {
+  font-weight: 500;
+}
+
+.target-chemistry-td-center {
+  text-align: center;
+}
+
+/* Table Input Fields */
+.target-chemistry-table-input {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f6f7f8;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: center;
+  color: #111827;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.target-chemistry-table-input::placeholder {
+  color: #9ca3af;
+}
+
+
+
+.target-chemistry-table-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Input Error States */
+.target-chemistry-input-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  z-index: 1;
+}
+
+.target-chemistry-input-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.target-chemistry-error-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 99999;
+  margin-top: 4px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  color: #374151;
+  border-radius: 6px;
+  font-size: 12px;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d1d5db;
+  transition: opacity 0.3s, visibility 0.3s;
+  min-width: 200px;
+  text-align: center;
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+}
+
+/* Tooltip positioned above when near bottom */
+.target-chemistry-error-tooltip.tooltip-above {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.target-chemistry-error-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 12px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #d1d5db;
+}
+
+/* Arrow for tooltip positioned above */
+.target-chemistry-error-tooltip.tooltip-above::before {
+  top: auto;
+  bottom: -4px;
+  border-bottom: none;
+  border-top: 4px solid #d1d5db;
+}
+
+.target-chemistry-error-icon {
+  color: #f59e0b;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.target-chemistry-error-message {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Delete Button */
+.target-chemistry-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.target-chemistry-delete-button:hover {
+  background-color: #fef2f2;
+}
+
+/* Add Element Section - Dashed Border */
+.target-chemistry-add-section {
+  padding: 0px 24px;
+}
+
+.target-chemistry-add-controls {
+  padding: 16px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  /* background-color: rgba(249, 250, 251, 0.5); */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.target-chemistry-element-select {
+  width: 192px;
+  min-width: 192px;
+  flex-shrink: 0;
+  border-color: #e5e7eb;
+}
+
+.target-chemistry-element-select .MuiOutlinedInput-root {
+  height: 40px;
+  background-color: #f6f7f8;
+}
+
+.target-chemistry-element-select .MuiOutlinedInput-input {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.target-chemistry-element-select .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb;
+}
+
+.target-chemistry-element-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb !important;
+   /* 1px solid #e5e7eb */ 
+   border-width: 0.5px !important;
+   
+}
+
+.target-chemistry-element-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb !important;
+  border-width: 1px !important;
+}
+
+/* Add Button */
+.target-chemistry-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 12px;
+  background-color: #f6f7f8;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.target-chemistry-add-btn:hover:not(:disabled) {
+  border-color: #e5e7eb !important; /* 1px solid #e5e7eb */ 
+  border-width: 0.5px !important;
+}
+
+.target-chemistry-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tolerance Wrapper */
+.target-chemistry-tolerance-wrapper {
+  padding: 0 24px 6px 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .target-chemistry-card-title {
+    font-size: 20px;
+  }
+
+  .target-chemistry-add-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .target-chemistry-element-select {
+    width: 100%;
+  }
+
+  .target-chemistry-add-btn {
+    width: 100%;
+  }
+}

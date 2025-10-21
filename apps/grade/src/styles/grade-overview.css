@@ -1,0 +1,264 @@
+/* Grade Overview - Card Based Design (Demo Replica) */
+
+/* Card Container */
+.grade-overview-card {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Card Header */
+.grade-overview-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+
+.grade-overview-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: #1d2530;
+}
+
+.grade-overview-card-description {
+  font-size: 14px;
+  color: #65758B;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Card Body */
+.grade-overview-card-body {
+  padding: 24px;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Grid Layout */
+.grade-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .grade-overview-grid {
+  grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Form Field */
+.grade-overview-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grade-overview-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #1D2530;
+  cursor: pointer;
+}
+
+.grade-overview-required {
+  color: #ef4444;
+}
+
+/* Input Styles */
+.grade-overview-input {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f6f7f8;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #111827;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.grade-overview-input::placeholder {
+  color: #9ca3af;
+}
+
+
+.grade-overview-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.grade-overview-input-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Help Text */
+.grade-overview-help-text {
+  font-size: 12px;
+  color: #65758b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Error Text */
+.grade-overview-error-text {
+  font-size: 12px;
+  color: #ef4444;
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+/* Input Error State */
+.grade-overview-input-error {
+  border-color: #ef4444 !important;
+}
+
+.grade-overview-input-error:focus {
+  outline-color: #ef4444 !important;
+}
+
+/* Select Error State */
+.grade-overview-select-error .MuiOutlinedInput-notchedOutline {
+  border-color: #ef4444 !important;
+}
+
+.grade-overview-select-error.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #ef4444 !important;
+}
+
+/* Select Styles */
+.grade-overview-select {
+  height: 40px !important;
+}
+
+.grade-overview-select .MuiSelect-select {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 12px !important;
+  height: 40px !important;
+  box-sizing: border-box !important;
+  background-color: #f6f7f8 !important;
+}
+
+.grade-overview-select .MuiOutlinedInput-root {
+  background-color: #f6f7f8 !important;
+}
+
+.grade-overview-select .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb !important;
+  /* 1px solid #e5e7eb */
+  border-width: 0.5px !important;
+}
+
+/* .grade-overview-select:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #9ca3af !important;
+} */
+
+/* .grade-overview-select.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+} */
+
+.grade-overview-placeholder {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Select Display (when selected) */
+.grade-overview-select-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.grade-overview-select-title {
+  font-weight: 500;
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.grade-overview-select-description {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+/* Select Option (in dropdown) */
+.grade-overview-select-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.grade-overview-select-option-title {
+  font-weight: 500;
+  font-size: 14px;
+  color: #111827;
+}
+
+.grade-overview-select-option-description {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* DI Specific Section */
+.grade-overview-di-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+}
+
+.grade-overview-di-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.grade-overview-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  background-color: #f3f4f6;
+  color: #1d2530;
+  transition: all 0.2s ease;
+}
+
+.grade-overview-badge:hover {
+  background-color: rgba(243, 244, 246, 0.8);
+}
+
+/* Range Inputs */
+.grade-overview-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grade-overview-range-inputs input {
+  flex: 1;
+}
+
+.grade-overview-range-separator {
+  font-size: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+}

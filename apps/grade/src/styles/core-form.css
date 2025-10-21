@@ -1,0 +1,132 @@
+
+/* Container */
+.configuration-form-container {
+  margin: 0 auto;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 56rem;
+}
+
+/* Form Content */
+.form-content {
+  flex: 1;
+  padding-bottom: 80px; /* Space for fixed footer */
+  margin-top: 20px;
+}
+
+/* Form */
+.grade-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* No Sections Message */
+.no-sections {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+  font-size: 16px;
+}
+
+/* ===== FOOTER ACTIONS (Professional Naming) ===== */
+.grade-form-footer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 16px;
+  background: #fff;
+  gap: 12px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Base Button Styles (Professional Naming) */
+.grade-form-btn {
+  border: 1px solid;
+  width: auto;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  font-weight: 500;
+  padding: 9px 20px;
+}
+
+.grade-form-btn:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.grade-form-btn i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Secondary Button (Cancel) - Professional Naming */
+.grade-form-btn--secondary {
+  background-color: #e8f2f8;
+  color: #1579be;
+  border-color: #1579be;
+}
+
+.grade-form-btn--secondary:hover {
+  background-color: #d1e7f0;
+  border-color: #0f5a8a;
+  color: #0f5a8a;
+}
+
+.grade-form-btn--secondary:active {
+  background-color: #b8d9e8;
+  border-color: #0a4a73;
+  color: #0a4a73;
+}
+
+/* Primary Button (Submit) - Professional Naming */
+.grade-form-btn--primary {
+  background-color: #1579be;
+  color: #fff;
+  border: none;
+  border-color: #fff;
+  padding: 10px 20px;
+}
+
+.grade-form-btn--primary:hover {
+  background-color: #0f5a8a;
+  border-color: #0f5a8a;
+}
+
+.grade-form-btn--primary:active {
+  background-color: #0a4a73;
+  border-color: #0a4a73;
+}
+
+.grade-form-btn--primary:disabled {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+/* Spin Animation for Loading Icon */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

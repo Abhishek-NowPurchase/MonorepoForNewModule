@@ -1,0 +1,382 @@
+/* Chargemix Data Configuration - Demo Design */
+
+/* Section Container */
+.chargemix-section {
+  margin: 16px 0;
+  max-width: 100%;
+}
+
+/* Collapsible Header Button */
+.chargemix-header-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chargemix-header-button:hover {
+  background-color: #f9fafb;
+}
+
+.chargemix-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f2937;
+}
+
+.chargemix-chevron {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.chargemix-package-icon {
+  font-size: 16px;
+}
+
+.chargemix-header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1D2530;
+}
+
+.chargemix-header-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  background-color: #f3f4f6;
+  color: #1D2530;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* Collapsible Content */
+.chargemix-content {
+  margin-top: 16px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Container */
+.chargemix-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Card Header */
+.chargemix-card-header {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chargemix-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  margin: 0;
+}
+
+.chargemix-card-title-icon {
+  font-size: 20px;
+}
+
+.chargemix-card-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Card Body */
+.chargemix-card-body {
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Table Section */
+.chargemix-table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chargemix-table-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.chargemix-table-wrapper {
+  overflow-x: auto;
+}
+
+.chargemix-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.chargemix-table thead {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.chargemix-th {
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.chargemix-th-left {
+  text-align: left;
+}
+
+.chargemix-th-center {
+  text-align: center;
+}
+
+.chargemix-th-actions {
+  width: 64px;
+}
+
+.chargemix-tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+}
+
+.chargemix-tr:hover {
+  background-color: rgba(249, 250, 251, 0.3);
+}
+
+.chargemix-tr:last-child {
+  border-bottom: none;
+}
+
+.chargemix-td {
+  padding: 8px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.chargemix-td-material {
+  font-weight: 500;
+}
+
+.chargemix-td-center {
+  text-align: center;
+}
+
+.chargemix-td-input {
+  padding: 8px;
+}
+
+.chargemix-dropdown-option {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px !important;
+}
+
+.chargemix-option-material {
+  flex: 1;
+  font-size: 14px;
+}
+
+.chargemix-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chargemix-input {
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+
+
+.chargemix-input::placeholder {
+  color: #9ca3af;
+}
+
+.chargemix-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 8px 12px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.chargemix-delete-button:hover {
+  background-color: #fef2f2;
+}
+
+/* Add New Material Section */
+.chargemix-add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  background-color: rgba(249, 250, 251, 0.2);
+}
+
+.chargemix-add-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.chargemix-add-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.chargemix-add-select {
+  flex: 0 0 256px;
+}
+
+.chargemix-add-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chargemix-input-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+.chargemix-add-input {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f6f7f8;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+
+
+.chargemix-add-input::placeholder {
+  color: #9ca3af;
+}
+
+.chargemix-add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f6f7f8;
+  border-radius: 6px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.chargemix-add-button:hover:not(:disabled) {
+  background-color: #f9fafb;
+}
+
+.chargemix-add-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* MUI Autocomplete Overrides */
+.chargemix-material-select .MuiOutlinedInput-root {
+  height: 40px;
+  background-color: #f6f7f8;
+}
+
+.chargemix-material-select .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb;
+}
+
+.chargemix-material-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb;
+}
+
+.chargemix-material-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #e5e7eb;
+  border-width: 1px;
+}
+
+.chargemix-material-select .MuiOutlinedInput-input {
+  padding: 10px 14px;
+  font-size: 14px;
+}
