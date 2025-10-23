@@ -77,11 +77,6 @@ const searchChargemixMaterialsAsync = async (
 
 const isSpectroAndBathReady = (watched: any) => {
   const result = watched.bathChemistry === "with" || watched.bathChemistry === "without";
-  console.log("🔍 [modal.tsx] isSpectroAndBathReady check:", {
-    bathChemistry: watched.bathChemistry,
-    isReady: result,
-    expectedValues: ["with", "without"]
-  });
   return result;
 };
 
@@ -333,20 +328,20 @@ export const gradeConfigurationModel: FormModel = [
         element: "C",
         elementId: 1, // Carbon element ID
         elementName: "Carbon",
-        bathMin: 3.4,
-        bathMax: 3.6,
-        finalMin: 3.45,
-        finalMax: 3.55,
+        bathMin: "",
+        bathMax: "",
+        finalMin: "",
+        finalMax: "",
         isDefault: true,
       },
       {
         element: "Si",
         elementId: 2, // Silicon element ID
         elementName: "Silicon",
-        bathMin: 3.4,
-        bathMax: 3.6,
-        finalMin: 2.3,
-        finalMax: 2.35,
+        bathMin: "",
+        bathMax: "",
+        finalMin: "",
+        finalMax: "",
         isDefault: true,
       },
     ],
@@ -458,15 +453,15 @@ export const gradeConfigurationModel: FormModel = [
         // Check if array is empty
         if (Array.isArray(value) && value.length === 0) {
           console.warn("❌ [modal.tsx] Validation failed: Empty raw materials array");
-          return ["Select at least 3 raw materials for Addition/Dilution"];
+          return ["You need to add at least 3 materials."];
         }
         
         // Check category validation (ADDITIVES, LADLE, NODULARIZER)
         if (Array.isArray(value) && value.length > 0) {
-          const categoryError = validateRawMaterialsCategories(value);
-          if (categoryError) {
-            console.warn("❌ [modal.tsx] Category validation failed:", categoryError);
-            return [categoryError];
+          const categoryErrors = validateRawMaterialsCategories(value);
+          if (categoryErrors.length > 0) {
+            console.warn("❌ [modal.tsx] Category validation failed:", categoryErrors);
+            return categoryErrors;
           }
           console.log("✅ [modal.tsx] Category validation passed");
         }

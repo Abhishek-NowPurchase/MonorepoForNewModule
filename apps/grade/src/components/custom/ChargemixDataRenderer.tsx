@@ -10,6 +10,25 @@ import { LogosCodepenLine } from "now-design-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
+// Triangle Alert Icon for validation errors
+const TriangleAlertIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="16" 
+    height="16" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="#f59f0a" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
+    <path d="M12 9v4"></path>
+    <path d="M12 17h.01"></path>
+  </svg>
+);
+
 interface ChargemixMaterial {
   material: string;
   materialId: string | number;
@@ -118,20 +137,16 @@ const validateChargemixInputs = (
   maxPercent: number | string
 ): string | null => {
   if (!selectedMaterial) return MESSAGES.SELECT_MATERIAL;
-  if (minPercent === null || minPercent === undefined || minPercent === "") {
-    return MESSAGES.ENTER_MIN_PERCENT;
-  }
-  if (maxPercent === null || maxPercent === undefined || maxPercent === "") {
-    return MESSAGES.ENTER_MAX_PERCENT;
-  }
+  
+  // Only validate Min <= Max when BOTH values are provided (like AdditionDilutionRenderer)
+  if (minPercent !== null && minPercent !== undefined && minPercent !== "" && 
+      maxPercent !== null && maxPercent !== undefined && maxPercent !== "") {
+    const minValue = typeof minPercent === "string" ? parseFloat(minPercent) : minPercent;
+    const maxValue = typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent;
 
-  const minValue =
-    typeof minPercent === "string" ? parseFloat(minPercent) : minPercent;
-  const maxValue =
-    typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent;
-
-  if (maxValue <= minValue) {
-    return MESSAGES.MAX_MUST_BE_GREATER;
+    if (!isNaN(minValue) && !isNaN(maxValue) && maxValue < minValue) {
+      return MESSAGES.MAX_MUST_BE_GREATER;
+    }
   }
 
   return null;
@@ -142,6 +157,7 @@ interface ChargemixInputProps {
   placeholder?: string;
   onChange: (value: string) => void;
   className?: string;
+  hasError?: boolean;
 }
 
 const ChargemixInput: React.FC<ChargemixInputProps> = ({
@@ -149,11 +165,12 @@ const ChargemixInput: React.FC<ChargemixInputProps> = ({
   placeholder = INPUT_CONFIG.PLACEHOLDER,
   onChange,
   className = "chargemix-input",
+  hasError = false,
 }) => {
   return (
     <input
       type="number"
-      className={className}
+      className={`${className} ${hasError ? 'chargemix-input-error' : ''}`}
       step={INPUT_CONFIG.STEP}
       min={INPUT_CONFIG.MIN}
       max={INPUT_CONFIG.MAX}
@@ -169,6 +186,9 @@ interface ChargemixMaterialRowProps {
   index: number;
   onUpdate: (index: number, field: keyof ChargemixMaterial, value: any) => void;
   onDelete: (index: number) => void;
+  validationError?: string;
+  isMinRequired?: boolean;
+  isMaxRequired?: boolean;
 }
 
 const ChargemixMaterialRow: React.FC<ChargemixMaterialRowProps> = ({
@@ -176,7 +196,16 @@ const ChargemixMaterialRow: React.FC<ChargemixMaterialRowProps> = ({
   index,
   onUpdate,
   onDelete,
+  validationError,
+  isMinRequired = false,
+  isMaxRequired = false,
 }) => {
+  const hasValidationError = !!validationError;
+  
+  // Check if individual fields have errors (for required field validation)
+  const hasMinError = isMinRequired && (material.minPercent === "" || material.minPercent === null || material.minPercent === undefined);
+  const hasMaxError = isMaxRequired && (material.maxPercent === "" || material.maxPercent === null || material.maxPercent === undefined);
+
   return (
     <tr key={index} className="chargemix-tr">
       <td className="chargemix-td chargemix-td-material">
@@ -188,20 +217,48 @@ const ChargemixMaterialRow: React.FC<ChargemixMaterialRowProps> = ({
         </span>
       </td>
       <td className="chargemix-td chargemix-td-input">
-        <ChargemixInput
-          value={material.minPercent}
-          onChange={(value) =>
-            onUpdate(index, "minPercent", parseNumericValue(value))
-          }
-        />
+        <div className={hasValidationError ? "tolerance-section-error-tooltip" : ""}>
+          <ChargemixInput
+            value={material.minPercent}
+            onChange={(value) =>
+              onUpdate(index, "minPercent", parseNumericValue(value))
+            }
+            hasError={hasValidationError || hasMinError}
+            placeholder={isMinRequired ? "Required" : "Optional"}
+          />
+          {hasValidationError && (
+            <div className="tolerance-section-tooltip-content">
+              <span className="tolerance-section-tooltip-icon">
+                <TriangleAlertIcon />
+              </span>
+              <span className="tolerance-section-tooltip-message">
+                {validationError}
+              </span>
+            </div>
+          )}
+        </div>
       </td>
       <td className="chargemix-td chargemix-td-input">
-        <ChargemixInput
-          value={material.maxPercent}
-          onChange={(value) =>
-            onUpdate(index, "maxPercent", parseNumericValue(value))
-          }
-        />
+        <div className={hasValidationError ? "tolerance-section-error-tooltip" : ""}>
+          <ChargemixInput
+            value={material.maxPercent}
+            onChange={(value) =>
+              onUpdate(index, "maxPercent", parseNumericValue(value))
+            }
+            hasError={hasValidationError || hasMaxError}
+            placeholder={isMaxRequired ? "Required" : "Optional"}
+          />
+          {hasValidationError && (
+            <div className="tolerance-section-tooltip-content">
+              <span className="tolerance-section-tooltip-icon">
+                <TriangleAlertIcon />
+              </span>
+              <span className="tolerance-section-tooltip-message">
+                {validationError}
+              </span>
+            </div>
+          )}
+        </div>
       </td>
       <td className="chargemix-td chargemix-td-center">
         <button
@@ -391,6 +448,71 @@ const ChargemixDataRenderer = ({
     section.collapsed ?? true
   );
   const [isTransitioning, setIsTransitioning] = React.useState(false);
+  const [validationErrors, setValidationErrors] = React.useState<{[key: string]: string}>({});
+  
+  // Validation function for Min <= Max range
+  const validateMinMaxRange = (key: string, minValue: number | string | undefined, maxValue: number | string | undefined) => {
+    // Only validate when both values are provided and not empty (like AdditionDilutionRenderer)
+    if (minValue !== undefined && minValue !== null && minValue !== "" && 
+        maxValue !== undefined && maxValue !== null && maxValue !== "") {
+      const min = typeof minValue === "string" ? parseFloat(minValue) : minValue;
+      const max = typeof maxValue === "string" ? parseFloat(maxValue) : maxValue;
+      
+      if (!isNaN(min) && !isNaN(max) && max < min) {
+        setValidationErrors(prev => ({
+          ...prev,
+          [key]: "Max % must be greater than or equal to Min %"
+        }));
+      } else {
+        setValidationErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[key];
+          return newErrors;
+        });
+      }
+    } else {
+      // Clear error if either value is missing
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[key];
+        return newErrors;
+      });
+    }
+  };
+
+  // Get selected material category for required field logic
+  const getSelectedMaterialCategory = () => {
+    const selectedMaterialId = form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL];
+    if (!selectedMaterialId) return "ADDITIVES"; // Default
+    
+    try {
+      const itemInventoryData = (window as any).itemInventoryData;
+      if (itemInventoryData?.results) {
+        const material = itemInventoryData.results.find((item: any) => item.id == selectedMaterialId);
+        return material?.cm_type || "ADDITIVES";
+      }
+    } catch (error) {
+      console.warn("Error getting material category:", error);
+    }
+    return "ADDITIVES";
+  };
+
+  // Determine if fields are required based on selected material category
+  const selectedMaterialCategory = getSelectedMaterialCategory();
+  const isMinRequired = selectedMaterialCategory === "LADLE" || selectedMaterialCategory === "NODULARIZER";
+  const isMaxRequired = selectedMaterialCategory === "LADLE";
+
+  // Helper function to check if value is empty
+  const isEmpty = (value: any) => {
+    return value === "" || value === null || value === undefined;
+  };
+
+  // Check if add button should be disabled
+  const isAddButtonDisabled = 
+    !form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL] ||
+    (isMinRequired && isEmpty(form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT])) ||
+    (isMaxRequired && isEmpty(form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT])) ||
+    !!validationErrors['add-min-max'];
   
   const handleFieldChange = (fieldKey: string, value: any) => {
     form.setValue(fieldKey, value);
@@ -411,6 +533,7 @@ const ChargemixDataRenderer = ({
   };
 
   const handleAddMaterial = () => {
+    
     const selectedMaterial =
       form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL];
     const minPercent = form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT];
@@ -547,59 +670,50 @@ const ChargemixDataRenderer = ({
                       </thead>
                       <tbody>
                         {chargemixMaterials.map(
-                          (material: any, index: number) => (
-                            <ChargemixMaterialRow
-                              key={index}
-                              material={material}
-                              index={index}
-                              onUpdate={(index, field, value) => {
-                                const updatedMaterials = [
-                                  ...chargemixMaterials,
-                                ];
-                                updatedMaterials[index] = {
-                                  ...updatedMaterials[index],
-                                  [field]: value,
-                                };
+                          (material: any, index: number) => {
+                            // Determine if fields are required based on material category
+                            const materialCategory = material.fullMaterialData?.cm_type || "ADDITIVES";
+                            const isMinRequired = materialCategory === "LADLE" || materialCategory === "NODULARIZER";
+                            const isMaxRequired = materialCategory === "LADLE";
+                            
+                            return (
+                              <ChargemixMaterialRow
+                                key={index}
+                                material={material}
+                                index={index}
+                                onUpdate={(index, field, value) => {
+                                  const updatedMaterials = [
+                                    ...chargemixMaterials,
+                                  ];
+                                  updatedMaterials[index] = {
+                                    ...updatedMaterials[index],
+                                    [field]: value,
+                                  };
 
-                                const updatedMaterial = updatedMaterials[index];
-                                const minValue =
-                                  typeof updatedMaterial.minPercent === "string"
-                                    ? parseFloat(updatedMaterial.minPercent)
-                                    : updatedMaterial.minPercent;
-                                const maxValue =
-                                  typeof updatedMaterial.maxPercent === "string"
-                                    ? parseFloat(updatedMaterial.maxPercent)
-                                    : updatedMaterial.maxPercent;
-
-                                // Remove blocking alert - let users complete their input
-                                // Validation will be handled by form-level validation instead
-                                // if (
-                                //   typeof minValue === "number" &&
-                                //   typeof maxValue === "number" &&
-                                //   !isNaN(minValue) &&
-                                //   !isNaN(maxValue) &&
-                                //   maxValue <= minValue
-                                // ) {
-                                //   alert(MESSAGES.MAX_MUST_BE_GREATER);
-                                //   return;
-                                // }
-
-                                form.setValue(
-                                  FIELD_KEYS.CHARGEMIX_MATERIALS,
-                                  updatedMaterials
-                                );
-                              }}
-                              onDelete={(index) => {
-                                const updatedMaterials = chargemixMaterials.filter(
-                                  (_: any, i: number) => i !== index
-                                );
-                                form.setValue(
-                                  FIELD_KEYS.CHARGEMIX_MATERIALS,
-                                  updatedMaterials
-                                );
-                              }}
-                            />
-                          )
+                                  form.setValue(
+                                    FIELD_KEYS.CHARGEMIX_MATERIALS,
+                                    updatedMaterials
+                                  );
+                                  
+                                  // Validate Min <= Max for this row
+                                  const updatedMaterial = updatedMaterials[index];
+                                  validateMinMaxRange(`table-${index}`, updatedMaterial.minPercent, updatedMaterial.maxPercent);
+                                }}
+                                onDelete={(index) => {
+                                  const updatedMaterials = chargemixMaterials.filter(
+                                    (_: any, i: number) => i !== index
+                                  );
+                                  form.setValue(
+                                    FIELD_KEYS.CHARGEMIX_MATERIALS,
+                                    updatedMaterials
+                                  );
+                                }}
+                                validationError={validationErrors[`table-${index}`]}
+                                isMinRequired={isMinRequired}
+                                isMaxRequired={isMaxRequired}
+                              />
+                            );
+                          }
                         )}
                       </tbody>
                     </table>
@@ -617,53 +731,77 @@ const ChargemixDataRenderer = ({
                   </div>
                   {/* Min/Max Inputs */}
                   <div className="chargemix-add-inputs">
-                    <label className="chargemix-input-label">Min %:</label>
-                    <ChargemixInput
-                      value={
-                        form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT]
-                      }
-                      onChange={(value) =>
-                        form.setValue(
-                          FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT,
-                          parseNumericValue(value)
-                        )
-                      }
-                      className="chargemix-add-input"
-                    />
-                    <label className="chargemix-input-label">Max %:</label>
-                    <ChargemixInput
-                      value={
-                        form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT]
-                      }
-                      onChange={(value) =>
-                        form.setValue(
-                          FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT,
-                          parseNumericValue(value)
-                        )
-                      }
-                      className="chargemix-add-input"
-                    />
+                    <label className="chargemix-input-label">
+                      Min %{isMinRequired ? <span style={{ color: '#ef4444' }}>{' '}*</span> : ''}:
+                    </label>
+                    <div className={validationErrors['add-min-max'] ? "tolerance-section-error-tooltip" : ""}>
+                      <ChargemixInput
+                        value={
+                          form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT]
+                        }
+                        onChange={(value) => {
+                          const newValue = parseNumericValue(value);
+                          form.setValue(
+                            FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT,
+                            newValue
+                          );
+                          // Validate Min <= Max
+                          validateMinMaxRange('add-min-max', newValue, form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT]);
+                        }}
+                        className="chargemix-add-input"
+                        hasError={!!validationErrors['add-min-max']}
+                        placeholder={'0.0'}
+                      />
+                      {validationErrors['add-min-max'] && (
+                        <div className="tolerance-section-tooltip-content">
+                          <span className="tolerance-section-tooltip-icon">
+                            <TriangleAlertIcon />
+                          </span>
+                          <span className="tolerance-section-tooltip-message">
+                            {validationErrors['add-min-max']}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <label className="chargemix-input-label">
+                      Max %{isMaxRequired ? <span style={{ color: '#ef4444' }}>{' '}*</span> : ''}:
+                    </label>
+                    <div className={validationErrors['add-min-max'] ? "tolerance-section-error-tooltip" : ""}>
+                      <ChargemixInput
+                        value={
+                          form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT]
+                        }
+                        onChange={(value) => {
+                          const newValue = parseNumericValue(value);
+                          form.setValue(
+                            FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT,
+                            newValue
+                          );
+                          // Validate Min <= Max
+                          validateMinMaxRange('add-min-max', form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT], newValue);
+                        }}
+                        className="chargemix-add-input"
+                        hasError={!!validationErrors['add-min-max']}
+                        placeholder={'0.0'}
+                      />
+                      {validationErrors['add-min-max'] && (
+                        <div className="tolerance-section-tooltip-content">
+                          <span className="tolerance-section-tooltip-icon">
+                            <TriangleAlertIcon />
+                          </span>
+                          <span className="tolerance-section-tooltip-message">
+                            {validationErrors['add-min-max']}
+                          </span>
+                        </div>
+                      )}
+                    </div>
         </div>
             {/* Add Button */}
               <button 
                     className="chargemix-add-button"
                 type="button" 
                 onClick={handleAddMaterial}
-                    disabled={
-                      !form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL] ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT] ===
-                        "" ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT] ===
-                        null ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT] ===
-                        undefined ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT] ===
-                        "" ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT] ===
-                        null ||
-                      form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT] ===
-                        undefined
-                    }
+                    disabled={isAddButtonDisabled}
                   >
                     +
               </button>

@@ -57,8 +57,8 @@ const FIELD_KEYS = {
 
 const INPUT_CONFIG = {
   STEP: 0.01,
-  PLACEHOLDER_BATH_MIN: "3.40",
-  PLACEHOLDER_BATH_MAX: "3.60",
+  PLACEHOLDER_BATH_MIN: "",
+  PLACEHOLDER_BATH_MAX: "",
 } as const;
 
 const MESSAGES = {

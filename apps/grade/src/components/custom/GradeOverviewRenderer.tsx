@@ -9,14 +9,16 @@ interface GradeOverviewRendererProps {
 }
 
 const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
-  fields, 
-  form, 
+  fields,
+  form,
   section,
 }) => {
   const getField = (key: string) => fields.find((f) => f.key === key);
 
   const getMetaValue = (field: any, metaKey: string): any => {
-    return field.meta?.[metaKey] || field.dependencies?.overrides?.meta?.[metaKey];
+    return (
+      field.meta?.[metaKey] || field.dependencies?.overrides?.meta?.[metaKey]
+    );
   };
 
   const getFieldError = (fieldKey: string): string | undefined => {
@@ -27,7 +29,7 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
 
   const handleFieldChange = (key: string, value: any) => {
     form.setValue(key, value);
-    
+
     // Cross-field validation for temperature range
     if (key === "tappingTempMin" || key === "tappingTempMax") {
       validateTemperatureRange();
@@ -37,26 +39,55 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
   const validateTemperatureRange = () => {
     const minValue = Number(form.values.tappingTempMin);
     const maxValue = Number(form.values.tappingTempMax);
-    
+
     // Only validate if both values are valid numbers and not empty
-    if (!isNaN(minValue) && !isNaN(maxValue) && form.values.tappingTempMin && form.values.tappingTempMax) {
+    if (
+      !isNaN(minValue) &&
+      !isNaN(maxValue) &&
+      form.values.tappingTempMin &&
+      form.values.tappingTempMax
+    ) {
       if (minValue > maxValue) {
         // Set error for both fields when min > max
-        if (!form.errors?.tappingTempMin?.includes("Minimum temperature must be less than or equal to maximum temperature")) {
-          form.setError("tappingTempMin", ["Minimum temperature must be less than or equal to maximum temperature"]);
+        if (
+          !form.errors?.tappingTempMin?.includes(
+            "Minimum temperature must be less than or equal to maximum temperature"
+          )
+        ) {
+          form.setError("tappingTempMin", [
+            "Minimum temperature must be less than or equal to maximum temperature",
+          ]);
         }
-        if (!form.errors?.tappingTempMax?.includes("Maximum temperature must be greater than or equal to minimum temperature")) {
-          form.setError("tappingTempMax", ["Maximum temperature must be greater than or equal to minimum temperature"]);
+        if (
+          !form.errors?.tappingTempMax?.includes(
+            "Maximum temperature must be greater than or equal to minimum temperature"
+          )
+        ) {
+          form.setError("tappingTempMax", [
+            "Maximum temperature must be greater than or equal to minimum temperature",
+          ]);
         }
       } else {
         // Clear errors by removing the keys entirely from the errors object
-        if (form.errors?.tappingTempMin?.includes("Minimum temperature must be less than or equal to maximum temperature")) {
+        if (
+          form.errors?.tappingTempMin?.includes(
+            "Minimum temperature must be less than or equal to maximum temperature"
+          )
+        ) {
           delete form.errors.tappingTempMin;
-          console.log('✅ [GradeOverview] Cleared tappingTempMin error - key removed');
+          console.log(
+            "✅ [GradeOverview] Cleared tappingTempMin error - key removed"
+          );
         }
-        if (form.errors?.tappingTempMax?.includes("Maximum temperature must be greater than or equal to minimum temperature")) {
+        if (
+          form.errors?.tappingTempMax?.includes(
+            "Maximum temperature must be greater than or equal to minimum temperature"
+          )
+        ) {
           delete form.errors.tappingTempMax;
-          console.log('✅ [GradeOverview] Cleared tappingTempMax error - key removed');
+          console.log(
+            "✅ [GradeOverview] Cleared tappingTempMax error - key removed"
+          );
         }
       }
     }
@@ -116,7 +147,9 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
         <input
           id={fieldKey}
           type={field.type === "number" ? "number" : "text"}
-          className={`${inputClassName}${error ? " grade-overview-input-error" : ""}`}
+          className={`${inputClassName}${
+            error ? " grade-overview-input-error" : ""
+          }`}
           placeholder={placeholder}
           value={form.values[fieldKey] || ""}
           onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
@@ -128,18 +161,12 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
             {error}
           </p>
         )}
-        {helpText && (
-          <p className="grade-overview-help-text">{helpText}</p>
-        )}
+        {helpText && <p className="grade-overview-help-text">{helpText}</p>}
       </div>
     );
   };
 
-  const renderRangeField = (
-    minKey: string,
-    maxKey: string,
-    label?: string
-  ) => {
+  const renderRangeField = (minKey: string, maxKey: string, label?: string) => {
     const minField = getField(minKey);
     const maxField = getField(maxKey);
     if (!minField || !maxField) return null;
@@ -153,7 +180,7 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
     const maxError = getFieldError(maxKey);
     const helpText = getMetaValue(minField, "helpText");
 
-  return (
+    return (
       <div className="grade-overview-field">
         <label className="grade-overview-label">
           {displayLabel}{" "}
@@ -165,7 +192,9 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           <input
             id={minKey}
             type="number"
-            className={`grade-overview-input${minError ? " grade-overview-input-error" : ""}`}
+            className={`grade-overview-input${
+              minError ? " grade-overview-input-error" : ""
+            }`}
             placeholder={minPlaceholder}
             value={form.values[minKey] || ""}
             onChange={(e) => handleFieldChange(minKey, e.target.value)}
@@ -176,7 +205,9 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           <input
             id={maxKey}
             type="number"
-            className={`grade-overview-input${maxError ? " grade-overview-input-error" : ""}`}
+            className={`grade-overview-input${
+              maxError ? " grade-overview-input-error" : ""
+            }`}
             placeholder={maxPlaceholder}
             value={form.values[maxKey] || ""}
             onChange={(e) => handleFieldChange(maxKey, e.target.value)}
@@ -185,13 +216,9 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           />
         </div>
         {(minError || maxError) && (
-          <p className="grade-overview-error-text">
-            {minError || maxError}
-          </p>
+          <p className="grade-overview-error-text">{minError || maxError}</p>
         )}
-        {helpText && (
-          <p className="grade-overview-help-text">{helpText}</p>
-        )}
+        {helpText && <p className="grade-overview-help-text">{helpText}</p>}
       </div>
     );
   };
@@ -207,15 +234,17 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           {gradeTypeField.label}{" "}
           {gradeTypeField.validators?.required && (
             <span className="grade-overview-required">*</span>
-                  )}
-                </label>
+          )}
+        </label>
         <FormControl fullWidth error={!!error}>
           <MuiSelect
             id="gradeType"
             value={form.values.gradeType || ""}
             onChange={(e) => handleFieldChange("gradeType", e.target.value)}
             displayEmpty
-            className={`grade-overview-select${error ? " grade-overview-select-error" : ""}`}
+            className={`grade-overview-select${
+              error ? " grade-overview-select-error" : ""
+            }`}
             aria-invalid={!!error}
             aria-describedby={error ? "gradeType-error" : undefined}
             renderValue={(selected) => {
@@ -226,14 +255,16 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
                   </span>
                 );
               }
-                    return (
+              return (
                 <div className="grade-overview-select-display">
                   <div className="grade-overview-select-title">
+                    {selectedGradeTypeOption.value}
+                    {` - `}
                     {selectedGradeTypeOption.label}
                   </div>
-                  <div className="grade-overview-select-description">
-                    {selectedGradeTypeOption.description}
-                  </div>
+                  {/* <div className="grade-overview-select-description">
+                    {selectedGradeTypeOption.value}
+                  </div> */}
                 </div>
               );
             }}
@@ -242,10 +273,12 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
               <MenuItem key={option.value} value={option.value}>
                 <div className="grade-overview-select-option">
                   <div className="grade-overview-select-option-title">
+                    {option.value}
+                    {` - `}
                     {option.label}
                   </div>
                   <div className="grade-overview-select-option-description">
-                    {option.description}
+                    {/* {option.value} */}
                   </div>
                 </div>
               </MenuItem>
@@ -260,8 +293,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
       </div>
     );
   };
-                  
-                  return (
+
+  return (
     <div className="grade-overview-card">
       <div className="grade-overview-card-header">
         <h3 className="grade-overview-card-title">{section.title}</h3>
@@ -274,8 +307,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           {renderTextField("gradeName")}
           {renderTextField("gradeCode")}
           {renderSelectField()}
-              </div>
-              
+        </div>
+
         {isDIType && (
           <div className="grade-overview-di-section">
             <div className="grade-overview-di-header">
@@ -291,7 +324,7 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
             </div>
           </div>
         )}
-        </div>
+      </div>
     </div>
   );
 };

@@ -234,9 +234,9 @@
   text-align: center;
   padding: 8px 12px;
   font-size: 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: #f6f7f8;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -309,6 +309,8 @@
   font-weight: 500;
   color: #6b7280;
   margin: 0;
+  white-space: nowrap;
+  min-width: 60px;
 }
 
 .chargemix-add-input {
@@ -379,4 +381,40 @@
 .chargemix-material-select .MuiOutlinedInput-input {
   padding: 10px 14px;
   font-size: 14px;
+}
+
+/* Input Error Styling */
+.chargemix-input-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+/* Tooltip wrapper - ensure it doesn't affect input width */
+.tolerance-section-error-tooltip {
+  position: relative;
+  display: inline-block;
+  width: 100%; /* Ensure full width is maintained */
+  z-index: 1000; /* Ensure tooltip appears on top layer */
+}
+
+.tolerance-section-error-tooltip .chargemix-input {
+  width: 100%; /* Ensure input maintains full width */
+  position: relative; /* For tooltip positioning */
+}
+
+/* Ensure table cells maintain their width with tooltip wrapper */
+.chargemix-td-input .tolerance-section-error-tooltip {
+  width: 100%;
+  display: block;
+}
+
+.chargemix-td-input .tolerance-section-error-tooltip .chargemix-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure tooltip content appears above everything */
+.tolerance-section-error-tooltip .tolerance-section-tooltip-content {
+  z-index: 9999 !important;
+  position: absolute !important;
 }
