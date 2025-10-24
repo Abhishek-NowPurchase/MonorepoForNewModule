@@ -142,7 +142,6 @@ const GRADE_ENDPOINTS = {
 
 const validateMaterialData = (materials: MaterialFormItem[], type: string): void => {
   const missingData = materials.filter(item => !item.fullMaterialData);
-  console.log("missingData",missingData,materials)
   if (missingData.length > 0) {
     throw new Error(
       `Some ${type} materials are missing required inventory data. Please refresh and try again.`
@@ -212,8 +211,6 @@ const transformMaterials = (
   materials: MaterialFormItem[] = [],
   materialType: string
 ): MaterialItem[] => {
-  console.log(`🔄 [transformMaterials] Processing ${materialType} materials:`, materials);
-  
   return materials
     .map((item, index) => {
       if (item.fullMaterialData) {
@@ -227,8 +224,6 @@ const transformMaterials = (
           max_qty: parseFloat(item.maxPercent?.toString() || '0') || null,
         };
         
-        console.log(`✅ [transformMaterials] ${materialType}[${index}]: item.materialId=${item.materialId}, id=${id}, final item field=${transformed.item}`);
-        console.log(`   Material name: ${transformed.name}, min_qty: ${transformed.min_qty}, max_qty: ${transformed.max_qty}`);
         
         return transformed;
       }
@@ -255,17 +250,6 @@ const transformFormDataToPayload = (formData: GradeFormData, customerId: number)
   const gradeItems = transformMaterials(convertedRawMaterials, 'raw material');
   const gradeCms = transformMaterials(convertedChargemixMaterials, 'chargemix material');
   
-  console.log('🎯 [transformFormDataToPayload] Final grade_item array:', gradeItems);
-  console.log('🎯 [transformFormDataToPayload] Final grade_cms array:', gradeCms);
-  
-  // Verify all items have the 'item' field
-  gradeItems.forEach((item, idx) => {
-    if (!item.item) {
-      console.error(`❌ [transformFormDataToPayload] grade_item[${idx}] is MISSING 'item' field!`, item);
-    } else {
-      console.log(`✅ [transformFormDataToPayload] grade_item[${idx}].item = ${item.item}`);
-    }
-  });
 
   return {
     created_at: Date.now(),
@@ -300,18 +284,11 @@ export const getGradeTagId = async (): Promise<any> => {
 };
 
 export const createGrade = async (formData: GradeFormData, customerId: number = 243): Promise<any> => {
-  console.log('🔧 createGrade called with formData:', formData);
-  console.log('🔧 customerId:', customerId);
-  
   const payload = transformFormDataToPayload(formData, customerId);
-  console.log('📦 Transformed payload:', payload);
-  console.log('📦 Tolerance settings in payload:', payload.tolerance_settings);
   
   const result = await authenticatedApiCall(GRADE_ENDPOINTS.CREATE_GRADE, { 
     method: 'POST',
     body: payload
   });
-  
-  console.log('📡 API response:', result);
   return result;
 };

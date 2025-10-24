@@ -443,16 +443,8 @@ export const gradeConfigurationModel: FormModel = [
       required: true,
       min: 1,
       custom: (value: any) => {
-        console.log("🔍 [modal.tsx] Raw Materials Validation TRIGGERED:", {
-          rawMaterialsCount: Array.isArray(value) ? value.length : 0,
-          rawMaterials: value,
-          timestamp: new Date().toISOString(),
-          fieldKey: "rawMaterials"
-        });
-        
         // Check if array is empty
         if (Array.isArray(value) && value.length === 0) {
-          console.warn("❌ [modal.tsx] Validation failed: Empty raw materials array");
           return ["You need to add at least 3 materials."];
         }
         
@@ -460,10 +452,8 @@ export const gradeConfigurationModel: FormModel = [
         if (Array.isArray(value) && value.length > 0) {
           const categoryErrors = validateRawMaterialsCategories(value);
           if (categoryErrors.length > 0) {
-            console.warn("❌ [modal.tsx] Category validation failed:", categoryErrors);
             return categoryErrors;
           }
-          console.log("✅ [modal.tsx] Category validation passed");
         }
         
         return [];

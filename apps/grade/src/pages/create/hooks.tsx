@@ -180,41 +180,19 @@ export const useGradeCreateForm = (initialValues: any = {}) => {
   }, [(data as any).elements, form.values.targetChemistry]);
 
   const handleSubmit = form.handleSubmit(async (values: any) => {
-    console.log('🚀 Form submitted with values:', values);
-    console.log('📊 Tolerance Settings:', values.toleranceSettings);
-    
-    // 🔍 DEBUG LOG: Addition/Dilution Fields
-    console.log('🔍 [SUBMIT] Addition/Dilution Fields:', {
-      additionElements: values.additionElements,
-      rawMaterials: values.rawMaterials,
-      selectedAdditionElement: values.selectedAdditionElement,
-      elementMinPercent: values.elementMinPercent,
-      elementMaxPercent: values.elementMaxPercent,
-      // These should NOT exist:
-      rawMaterialMinPercent: values.rawMaterialMinPercent,
-      rawMaterialMaxPercent: values.rawMaterialMaxPercent,
-    });
     
     setIsSubmitting(true);
     try {
       const result = await createGrade(values, customerId);
-      console.log('✅ Grade created successfully:', result);
       
       // ✅ SUCCESS INDICATOR: Check for id and grade_tag_id
       if (result.id && result.grade_tag_id) {
-        console.log('🎉 Grade created successfully!');
-        console.log(`   Grade ID: ${result.id}`);
-        console.log(`   Tag ID: ${result.grade_tag_id}`);
-        console.log(`   Name: ${result.name}`);
-        
         // Redirect to /grades
         window.location.href = '/grades';
       }
       
       return result;
     } catch (error) {
-      console.error('❌ Error creating grade:', error);
-      
       throw error;
     } finally {
       setIsSubmitting(false);

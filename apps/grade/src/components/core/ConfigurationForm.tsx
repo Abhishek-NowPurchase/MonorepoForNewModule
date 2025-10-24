@@ -35,7 +35,6 @@ const ConfigurationForm = ({
 
     // 1. Check if there are any errors in the form
     if (Object.keys(errors).length > 0) {
-      console.log('❌ [Button] Form has errors:', errors);
       return false;
     }
 
@@ -52,7 +51,6 @@ const ConfigurationForm = ({
     if (values.bathChemistry === 'with' || values.bathChemistry === 'without') {
       const rawMaterials = values.rawMaterials || [];
       if (!Array.isArray(rawMaterials) || rawMaterials.length === 0) {
-        console.log('❌ [Button] Missing rawMaterials: Array is empty');
         return false;
       }
       
@@ -67,14 +65,12 @@ const ConfigurationForm = ({
         if (!hasAdditives) missingCategories.push("ADDITIVES");
         if (!hasLadle) missingCategories.push("LADLE");
         if (!hasNodularizer) missingCategories.push("NODULARIZER");
-        console.log(`❌ [Button] Missing categories: ${missingCategories.join(", ")}`);
         return false;
       }
       
       // Check additionElements field
       const additionElements = values.additionElements || [];
       if (!Array.isArray(additionElements) || additionElements.length === 0) {
-        console.log('❌ [Button] Missing additionElements: Array is empty');
         return false;
       }
     }
@@ -84,7 +80,6 @@ const ConfigurationForm = ({
       const diFields = ['tappingTempMin', 'tappingTempMax', 'mgTreatmentTime'];
       for (const field of diFields) {
         if (values[field] === null || values[field] === undefined || values[field] === '') {
-          console.log(`❌ [Button] Missing DI parameter: ${field}`);
           return false;
         }
       }
@@ -92,18 +87,14 @@ const ConfigurationForm = ({
 
     // 4. Bath Chemistry - Must have a value
     if (!values.bathChemistry || values.bathChemistry === '') {
-      console.log('❌ [Button] Bath Chemistry is required');
       return false;
     }
 
     // 5. Addition Elements - At least one element must be selected
     const additionElements = values.additionElements || [];
     if (!Array.isArray(additionElements) || additionElements.length === 0) {
-      console.log('❌ [Button] At least one element must be selected in Addition/Dilution');
       return false;
     }
-
-    console.log('✅ [Button] All validations passed - button enabled!');
     return true;
   }, [form.values, form.errors]);
 

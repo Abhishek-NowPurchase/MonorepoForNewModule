@@ -298,7 +298,6 @@ const AsyncAutocompleteField = ({
     
     // If options are empty but we have a value, try to load options synchronously
     if (options.length === 0 && field.options) {
-      console.log("Options empty, trying to find label for value:", val);
       // For now, return a more user-friendly label
       return `Material ${val}`;
     }

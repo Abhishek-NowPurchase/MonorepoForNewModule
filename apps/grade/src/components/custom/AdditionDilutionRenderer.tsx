@@ -446,7 +446,6 @@ const AsyncAutocompleteField = ({ field, value, onChange, error, form }: any) =>
   const [options, setOptions] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
-  console.log("field---->>",inputValue)
   
   const selectedOption = options.find((option) => option.value == value) || null;
   const displayOption = selectedOption || (value ? { value, label: String(value) } : null);
@@ -504,7 +503,6 @@ const AsyncAutocompleteField = ({ field, value, onChange, error, form }: any) =>
   };
 
   const handleChange = (event: any, newValue: any) => {
-    console.log("field---->><<",inputValue)
     onChange(newValue?.value || "");
   };
 
@@ -606,7 +604,6 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
   
   // Auto-expand section if there are errors
   useEffect(() => {
-    console.log('errors-----> ',errors)
     if (errors?.additionElements?.length > 0 || errors?.rawMaterials?.length > 0) {
       setIsCollapsed(false);
     }

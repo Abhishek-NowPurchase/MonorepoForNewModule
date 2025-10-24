@@ -75,9 +75,6 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           )
         ) {
           delete form.errors.tappingTempMin;
-          console.log(
-            "✅ [GradeOverview] Cleared tappingTempMin error - key removed"
-          );
         }
         if (
           form.errors?.tappingTempMax?.includes(
@@ -85,9 +82,6 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           )
         ) {
           delete form.errors.tappingTempMax;
-          console.log(
-            "✅ [GradeOverview] Cleared tappingTempMax error - key removed"
-          );
         }
       }
     }
