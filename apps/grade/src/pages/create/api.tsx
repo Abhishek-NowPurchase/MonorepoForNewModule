@@ -1,5 +1,4 @@
-import { apiFetch } from '../../../../shared/Api/apiUtils';
-import { getToken } from '../../../../shared/Api/tokenUtils';
+import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
 
 interface MaterialRecoveryRate {
   id: number;
@@ -295,42 +294,22 @@ const transformFormDataToPayload = (formData: GradeFormData, customerId: number)
 };
 
 export const getGradeTagId = async (): Promise<any> => {
-  const token = getToken();
-  
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-  
-  const result = await apiFetch(GRADE_ENDPOINTS.TAG_ID, token, { 
-    method: 'GET',
-    headers: { 
-      'authorization': `Token ${token}` 
-    }
+  return authenticatedApiCall(GRADE_ENDPOINTS.TAG_ID, { 
+    method: 'GET'
   });
-  
-  return result;
 };
 
 export const createGrade = async (formData: GradeFormData, customerId: number = 243): Promise<any> => {
   console.log('🔧 createGrade called with formData:', formData);
   console.log('🔧 customerId:', customerId);
   
-  const token = getToken();
-  
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-  
   const payload = transformFormDataToPayload(formData, customerId);
   console.log('📦 Transformed payload:', payload);
   console.log('📦 Tolerance settings in payload:', payload.tolerance_settings);
   
-  const result = await apiFetch(GRADE_ENDPOINTS.CREATE_GRADE, token, { 
+  const result = await authenticatedApiCall(GRADE_ENDPOINTS.CREATE_GRADE, { 
     method: 'POST',
-    body: payload,
-    headers: { 
-      'authorization': `Token ${token}` 
-    }
+    body: payload
   });
   
   console.log('📡 API response:', result);

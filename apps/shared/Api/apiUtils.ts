@@ -1,4 +1,6 @@
 // Centralized API utility for all API calls
+import { getToken } from './tokenUtils';
+
 const BASE_URL = 'https://test-api.nowpurchase.com';
 
 const DEFAULT_HEADERS = {
@@ -40,4 +42,41 @@ export const apiFetch = async (
   }
 
   return response.json();
+};
+
+// Authenticated API call wrapper with automatic token handling
+export const authenticatedApiCall = async (
+  endpoint: string,
+  options: {
+    method?: string;
+    body?: any;
+    headers?: Record<string, string>;
+  } = {}
+) => {
+  const token = getToken();
+  
+  if (!token) {
+    // Try to get tokenv2 as fallback
+    const tokenV2 = localStorage.getItem('tokenv2');
+    
+    if (tokenV2) {
+      return apiFetch(endpoint, tokenV2, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'authorization': `Token ${tokenV2}`
+        }
+      });
+    }
+    
+    throw new Error('No authentication token found. Please login first.');
+  }
+  
+  return apiFetch(endpoint, token, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'authorization': `Token ${token}`
+    }
+  });
 };

@@ -1,5 +1,4 @@
-import { apiFetch } from '../apiUtils';
-import { getToken } from '../tokenUtils';
+import { authenticatedApiCall } from '../apiUtils';
 
 // User API endpoints
 const USER_ENDPOINTS = {
@@ -8,13 +7,7 @@ const USER_ENDPOINTS = {
 
 // User Details API - automatically gets token from localStorage
 export const getUserDetails = async () => {
-  const token = getToken();
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-  
-  return apiFetch(USER_ENDPOINTS.USER_DETAILS, token, { 
-    method: 'GET',
-    headers: { 'authorization': `Token ${token}` }
+  return authenticatedApiCall(USER_ENDPOINTS.USER_DETAILS, { 
+    method: 'GET'
   });
 };

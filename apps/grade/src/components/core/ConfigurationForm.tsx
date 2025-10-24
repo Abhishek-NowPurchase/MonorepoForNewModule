@@ -43,7 +43,6 @@ const ConfigurationForm = ({
     const requiredFields = ['tagId', 'gradeName', 'gradeCode', 'gradeType'];
     for (const field of requiredFields) {
       if (!values[field] || (typeof values[field] === 'string' && values[field].trim() === '')) {
-        console.log(`❌ [Button] Missing required field: ${field}`);
         return false;
       }
     }
