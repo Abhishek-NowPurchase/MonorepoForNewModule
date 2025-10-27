@@ -450,9 +450,9 @@ export const gradeConfigurationModel: FormModel = [
         
         // Check category validation (ADDITIVES, LADLE, NODULARIZER)
         if (Array.isArray(value) && value.length > 0) {
-          const categoryErrors = validateRawMaterialsCategories(value);
-          if (categoryErrors.length > 0) {
-            return categoryErrors;
+          const categoryError = validateRawMaterialsCategories(value);
+          if (categoryError) {
+            return [categoryError];
           }
         }
         

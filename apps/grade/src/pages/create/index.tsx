@@ -3,9 +3,10 @@ import { ConfigurationForm } from "../../components";
 import { SkeletonLoader } from "../../../../shared/component";
 import { useGradeCreateForm } from "./hooks";
 
-const GradeCreate = () => {
+const GradeCreate = ({ id }: { id?: string }) => {
   const { form, sections, handleSubmit, loading, error, isSubmitting } = useGradeCreateForm(
-    {}
+    {},
+    id
   );
   if ((loading as any).gradeCategory || (loading as any).gradeTagId) {
     return <SkeletonLoader />;
@@ -19,7 +20,7 @@ const GradeCreate = () => {
       form={form}
       sections={sections}
       handleSubmit={handleSubmit}
-      submitButtonText="Create Grade"
+      submitButtonText={id ? "Update Grade" : "Create Grade"}
       isSubmitting={isSubmitting}
     />
   );
