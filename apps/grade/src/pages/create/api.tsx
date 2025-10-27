@@ -137,12 +137,40 @@ interface ToleranceSettingsItem {
 const GRADE_ENDPOINTS = {
   TAG_ID: '/api/cm/metalgrade/gen_grade_tag_id/',
   CREATE_GRADE: '/api/c/grades_add_api/',
+  GET_GRADE: '/api/c/grades/',
 } as const;
 
 
 const validateMaterialData = (materials: MaterialFormItem[], type: string): void => {
-  const missingData = materials.filter(item => !item.fullMaterialData);
+  debugger
+  
+  // Try to fix materials with missing fullMaterialData by looking up inventory data
+  const itemInventoryData = (window as any).itemInventoryData;
+  
+  if (itemInventoryData?.results) {
+    materials.forEach((item, index) => {
+      if (!item.fullMaterialData && item.materialId) {
+        const materialObj = itemInventoryData.results.find((m: any) => m.id == item.materialId);
+        if (materialObj) {
+          // Update the material with full data
+          materials[index] = {
+            ...item,
+            material: materialObj.name,
+            materialSlug: materialObj.slug || "",
+            fullMaterialData: materialObj,
+          };
+        }
+      }
+    });
+  }
+  
+  const missingData = materials.filter(item => {
+    // Check if fullMaterialData is still missing after the fix attempt
+    return !item.fullMaterialData || item.fullMaterialData === null;
+  });
+  
   if (missingData.length > 0) {
+    console.warn(`Missing fullMaterialData for ${type} materials after fix attempt:`, missingData);
     throw new Error(
       `Some ${type} materials are missing required inventory data. Please refresh and try again.`
     );
@@ -283,11 +311,27 @@ export const getGradeTagId = async (): Promise<any> => {
   });
 };
 
+export const getGrade = async (gradeId: string): Promise<any> => {
+  return authenticatedApiCall(`${GRADE_ENDPOINTS.GET_GRADE}${gradeId}/`, { 
+    method: 'GET'
+  });
+};
+
 export const createGrade = async (formData: GradeFormData, customerId: number = 243): Promise<any> => {
   const payload = transformFormDataToPayload(formData, customerId);
   
   const result = await authenticatedApiCall(GRADE_ENDPOINTS.CREATE_GRADE, { 
     method: 'POST',
+    body: payload
+  });
+  return result;
+};
+
+export const updateGrade = async (gradeId: string, formData: GradeFormData, customerId: number = 243): Promise<any> => {
+  const payload = transformFormDataToPayload(formData, customerId);
+  
+  const result = await authenticatedApiCall(`${GRADE_ENDPOINTS.CREATE_GRADE}${gradeId}/`, { 
+    method: 'PATCH',
     body: payload
   });
   return result;

@@ -141,12 +141,12 @@ const ConfigurationForm = ({
             {isSubmitting ? (
               <>
                 <i className="ri-loader-4-line" style={{ animation: 'spin 1s linear infinite' }}></i>
-                Creating...
+                {submitButtonText.includes('Update') ? 'Updating...' : 'Creating...'}
               </>
             ) : (
               <>
                 <i className="ri-check-line"></i>
-                Create Grade
+                {submitButtonText}
               </>
             )}
           </button>
