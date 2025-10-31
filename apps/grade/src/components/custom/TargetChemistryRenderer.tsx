@@ -2,115 +2,12 @@ import React from "react";
 import { Autocomplete, TextField, FormControl } from "@mui/material";
 import ToleranceSectionRenderer from "./ToleranceSectionRenderer";
 import "../../styles/target-chemistry.css";
+import { ChemistryElement, ChemistryInputProps, ElementOption, FormField, FormValues, TargetChemistryRendererProps } from "../../pages/create/types";
+import { getElementName, createNewElement, isElementDuplicate, getInputValue, MESSAGES, INPUT_CONFIG, FIELD_KEYS } from "../../pages/create/utils";
+// {getElementName,createNewElement,isElementDuplicate,getInputValue,MESSAGES,INPUT_CONFIG,FIELD_KEYS}
 
-interface ChemistryElement {
-  element: string;
-  elementId: number;
-  elementName: string;
-  bathMin: number | string;
-  bathMax: number | string;
-  finalMin: number | string;
-  finalMax: number | string;
-  isDefault: boolean;
-}
 
-interface ElementOption {
-  value: number;
-  label: string;
-}
 
-interface FormField {
-  key: string;
-  label: string;
-  options?: (values: any) => Promise<ElementOption[]>;
-  meta?: {
-    searchPlaceholder?: string;
-    autoSelectFirst?: boolean;
-  };
-}
-
-interface FormValues {
-  targetChemistry: ChemistryElement[];
-  selectedElement: number | string;
-  toleranceSettings?: any;
-  bathChemistry?: string;
-}
-
-interface TargetChemistryRendererProps {
-  form: {
-    fields: FormField[];
-    values: FormValues;
-    setValue: (key: string, value: any) => void;
-    setError: (key: string, errors: string[]) => void;
-    errors?: Record<string, string[]>;
-  };
-  section: {
-    title: string;
-  };
-}
-
-const FIELD_KEYS = {
-  TARGET_CHEMISTRY: "targetChemistry",
-  SELECTED_ELEMENT: "selectedElement",
-  TOLERANCE_SETTINGS: "toleranceSettings",
-} as const;
-
-const INPUT_CONFIG = {
-  STEP: 0.01,
-  PLACEHOLDER_BATH_MIN: "",
-  PLACEHOLDER_BATH_MAX: "",
-} as const;
-
-const MESSAGES = {
-  SELECT_ELEMENT: "Please select an element",
-  INVALID_ELEMENT: "Invalid element selected",
-  DUPLICATE_ELEMENT: (symbol: string) =>
-    `Element "${symbol}" already exists in the table`,
-} as const;
-
-const getInputValue = (value: number | string | null | undefined): string => {
-  return value !== undefined && value !== null && value !== ""
-    ? String(value)
-    : "";
-};
-
-const isElementDuplicate = (
-  elements: ChemistryElement[],
-  symbol: string
-): boolean => {
-  return elements.some((el) => String(el.element) === String(symbol));
-};
-
-const createNewElement = (
-  symbol: string,
-  id: number,
-  name: string
-): ChemistryElement => {
-  return {
-    element: symbol,
-    elementId: id,
-    elementName: name,
-    bathMin: "",
-    bathMax: "",
-    finalMin: "",
-    finalMax: "",
-    isDefault: false,
-  };
-};
-
-const getElementName = (elementId: number, fallback: string): string => {
-  const elementsData = (window as any).elementsData || [];
-  const elementData = elementsData.find((el: any) => el.id === elementId);
-  return elementData?.name || fallback;
-};
-
-interface ChemistryInputProps {
-  value: number | string;
-  placeholder?: string;
-  required?: boolean;
-  onChange: (value: string) => void;
-  error?: string;
-}
 
 const ChemistryInput: React.FC<ChemistryInputProps> = ({
   value,
@@ -128,7 +25,7 @@ const ChemistryInput: React.FC<ChemistryInputProps> = ({
       const viewportHeight = window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      
+
       // If there's less than 60px below and more space above, position above
       if (spaceBelow < 60 && spaceAbove > 60) {
         setTooltipPosition('above');
@@ -307,17 +204,17 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
     const updatedElements = [...(form.values.targetChemistry || [])];
     const currentElement = updatedElements[index];
     const elementSymbol = currentElement.element;
-    
+
     // Update the field value
     updatedElements[index] = {
       ...currentElement,
       [field]: value === "" ? "" : parseFloat(value),
     };
-    
+
     // Validation logic
     const newElement = updatedElements[index];
     const errors: string[] = [];
-    
+
     // 1. Mg Min validation - required for Mg, optional for others
     if (elementSymbol === "Mg" && field === "bathMin" && (value === "" || value === null || value === undefined)) {
       errors.push("Min value is required for Magnesium");
@@ -325,7 +222,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
     if (elementSymbol === "Mg" && field === "finalMin" && (value === "" || value === null || value === undefined)) {
       errors.push("Min value is required for Magnesium");
     }
-    
+
     // 2. Max validation - mandatory for all elements
     if (field === "bathMax" && (value === "" || value === null || value === undefined)) {
       errors.push("Max value is required");
@@ -333,7 +230,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
     if (field === "finalMax" && (value === "" || value === null || value === undefined)) {
       errors.push("Max value is required");
     }
-    
+
     // 3. Min <= Max comparison validation
     if (field === "bathMin" && value !== "" && value !== null && value !== undefined) {
       const maxValue = newElement.bathMax;
@@ -359,7 +256,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
         errors.push("Min value cannot be greater than Max value");
       }
     }
-    
+
     // Set validation errors if any
     if (errors.length > 0) {
       // Set form field error for this specific field
@@ -373,7 +270,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
         delete form.errors[fieldKey];
       }
     }
-    
+
     form.setValue(FIELD_KEYS.TARGET_CHEMISTRY, updatedElements);
   };
 
@@ -392,7 +289,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
   const targetChemistry = form.values.targetChemistry || [];
   const showBathColumns = form.values.bathChemistry === "with";
 
-    return (
+  return (
     <div className="target-chemistry-card">
       <div className="target-chemistry-card-header">
         <div className="target-chemistry-card-header-content">
@@ -512,41 +409,41 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
           <div className="target-chemistry-add-controls">
             {selectedElementField && (
               <FormControl className="target-chemistry-element-select">
-      <Autocomplete
+                <Autocomplete
                   options={availableOptions}
-        value={getDisplayValue()}
-        inputValue={inputValue}
-        onInputChange={handleInputChange}
+                  value={getDisplayValue()}
+                  inputValue={inputValue}
+                  onInputChange={handleInputChange}
                   onChange={handleAutocompleteChange}
-        loading={loading}
-        getOptionLabel={(option) => option?.label || ""}
+                  loading={loading}
+                  getOptionLabel={(option) => option?.label || ""}
                   isOptionEqualToValue={(option, value) =>
                     String(option?.value) === String(value?.value)
                   }
-        renderInput={(params) => (
-          <TextField
-            {...params}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
                       placeholder={
                         selectedElementField.meta?.searchPlaceholder ||
                         selectedElementField.label
                       }
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? "Loading..." : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
-        renderOption={(props, option) => (
-          <li {...props} key={option.value}>
-            {option.label}
-          </li>
-        )}
-      />
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loading ? "Loading..." : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.value}>
+                      {option.label}
+                    </li>
+                  )}
+                />
               </FormControl>
             )}
 
@@ -558,7 +455,7 @@ const TargetChemistryRenderer: React.FC<TargetChemistryRendererProps> = ({
             >
               Add
             </button>
-      </div>
+          </div>
         </div>
 
         {toleranceSettingsField && (

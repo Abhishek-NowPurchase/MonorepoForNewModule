@@ -1,6 +1,4 @@
-// ============================================
-// IMPORTS
-// ============================================
+
 import React, { useEffect } from "react";
 import {
   Autocomplete,
@@ -12,306 +10,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import "../../styles/addition-dilution.css";
 import { MetalcloudMeltingFurnaceLine, SystemErrorWarningLine } from "now-design-icons";
-
-// Triangle Alert Icon for validation errors
-const TriangleAlertIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="#f59f0a" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-    <path d="M12 9v4"></path>
-    <path d="M12 17h.01"></path>
-  </svg>
-);
-
-// ============================================
-// TYPESCRIPT TYPES
-// ============================================
-interface AdditionElement {
-  element: string;
-  elementId: string | number;
-  minPercent: number | string;
-  maxPercent: number | string;
-  category: string; // ADDITIVES, LADLE, or NODULARIZER
-  fullMaterialData?: any;
-}
-
-interface ElementOption {
-  value: string | number;
-  label: string;
-}
-
-interface FormField {
-  key: string;
-  type: string;
-  options?: (values: any, inputValue?: string) => Promise<ElementOption[]>;
-  meta?: {
-    autoSelectFirst?: boolean;
-  };
-  validators?: {
-    required?: boolean;
-  };
-}
-
-interface FormValues {
-  targetChemistry: Array<{
-    element: string;
-    symbol?: string;
-  }>;
-  additionElements: AdditionElement[];
-  selectedAdditionElement: string | number;
-  elementMinPercent: number | string;
-  elementMaxPercent: number | string;
-  includeCarbon?: boolean;
-  includeSilicon?: boolean;
-  rawMaterials?: AdditionElement[];
-  [key: string]: any;
-}
-
-interface AdditionDilutionRendererProps {
-  fields: FormField[];
-  form: {
-    values: FormValues;
-    setValue: (key: string, value: any) => void;
-    errors?: Record<string, string[]>;
-  };
-  section: {
-    title: string;
-    collapsed?: boolean;
-  };
-}
-
-interface AdditionInputProps {
-  value: number | string;
-  placeholder?: string;
-  onChange: (value: string) => void;
-  className?: string;
-  hasError?: boolean;
-}
-
-interface ElementCheckboxProps {
-  elementSymbol: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
-
-interface AdditionElementRowProps {
-  element: AdditionElement;
-  index: number;
-  onUpdate: (index: number, field: string, value: any) => void;
-  onDelete: (index: number) => void;
-  validationError?: string;
-}
-
-// ============================================
-// CONSTANTS & CONFIG
-// ============================================
-const FIELD_KEYS = {
-  ADDITION_ELEMENTS: "additionElements",
-  RAW_MATERIALS: "rawMaterials",
-  SELECTED_ADDITION_ELEMENT: "selectedAdditionElement",
-  ELEMENT_MIN_PERCENT: "elementMinPercent",
-  ELEMENT_MAX_PERCENT: "elementMaxPercent",
-  INCLUDE_CARBON: "includeCarbon",
-  INCLUDE_SILICON: "includeSilicon",
-} as const;
-
-const INPUT_CONFIG = {
-  STEP: 0.01,
-  MIN: 0,
-  MAX: 100,
-  PLACEHOLDER: "0.0",
-} as const;
-
-const MESSAGES = {
-  SELECT_ELEMENT: "Please select an element",
-  MAX_MUST_BE_GREATER: "Maximum percentage must be greater than minimum percentage",
-} as const;
-
-const TRANSITION_DURATION = 300;
-
-const CATEGORY_STYLES = {
-  ADDITIVES: "addition-dilution-category-badge additives",
-  LADLE: "addition-dilution-category-badge ladle",
-  NODULARIZER: "addition-dilution-category-badge nodularizer",
-  DEFAULT: "addition-dilution-category-badge",
-} as const;
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-/**
- * Checks if a value is empty (null, undefined, or empty string)
- */
-const isEmpty = (value: any): boolean => {
-  return value === "" || value === null || value === undefined;
-};
-
-
-/**
- * Converts value to string for input fields
- */
-const getInputValue = (value: number | string | null | undefined): string => {
-  return !isEmpty(value) ? String(value) : "";
-};
-
-/**
- * Parses string to number or returns empty string
- */
-const parseNumericValue = (value: string): number | string => {
-  return value === "" ? "" : parseFloat(value);
-};
-
-/**
- * Creates an AdditionElement object
- */
-const createAdditionElement = (
-  element: string | number,
-  minPercent: number | string,
-  maxPercent: number | string,
-  category: string,
-  fullMaterialData?: any
-): AdditionElement => {
-  return {
-    element: String(element),
-    elementId: element,
-    minPercent: typeof minPercent === "string" ? parseFloat(minPercent) : minPercent,
-    maxPercent: typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent,
-    category: category,
-    fullMaterialData: fullMaterialData,
-  };
-};
+import { TriangleAlertIcon, ADDITION_DILUTION_FIELD_KEYS, ADDITION_DILUTION_INPUT_CONFIG, ADDITION_DILUTION_TRANSITION_MS, additionDilutionIsEmpty, additionDilutionGetInputValue, additionDilutionParseNumericValue, additionDilutionCreateElement, additionDilutionGetCategoryBadgeClass, additionDilutionValidateInputs, additionDilutionValidateCategories, additionDilutionValidateForm } from "../../pages/create/utils";
+import { AdditionDilutionElement, AdditionDilutionElementCheckboxProps, AdditionDilutionInputProps, AdditionDilutionProps, AdditionDilutionRowProps } from "../../pages/create/types";
 
 
 
-/**
- * Gets the appropriate CSS class for category badge
- */
-const getCategoryBadgeClass = (category: string): string => {
-  return CATEGORY_STYLES[category as keyof typeof CATEGORY_STYLES] || CATEGORY_STYLES.DEFAULT;
-};
 
-// ============================================
-// VALIDATION FUNCTIONS
-// ============================================
+export const validateRawMaterialsForm = additionDilutionValidateForm;
 
-/**
- * Validates addition inputs based on category rules:
- * - LADLE: Both Min and Max required
- * - NODULARIZER: Only Min required
- * - ADDITIVES: Min/Max optional
- */
-const validateAdditionInputs = (
-  selectedElement: string | number,
-  minPercent: number | string,
-  maxPercent: number | string,
-  category: string
-): string | null => {
-  if (!selectedElement) return MESSAGES.SELECT_ELEMENT;
 
-  // Category-specific validation
-  if (category === "LADLE") {
-    if (isEmpty(minPercent)) return "Min % is required for LADLE materials";
-    if (isEmpty(maxPercent)) return "Max % is required for LADLE materials";
-  } else if (category === "NODULARIZER") {
-    if (isEmpty(minPercent)) return "Min % is required for NODULARIZER materials";
-  }
-
-  // Validate Min if provided
-  if (!isEmpty(minPercent)) {
-    const minValue = typeof minPercent === "string" ? parseFloat(minPercent) : minPercent;
-    if (isNaN(minValue)) return "Please enter a valid Min %";
-    if (minValue < 0) return "Min % must be positive";
-  }
-
-  // Validate Max if provided
-  if (!isEmpty(maxPercent)) {
-    const maxValue = typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent;
-    if (isNaN(maxValue)) return "Please enter a valid Max %";
-    if (maxValue < 0) return "Max % must be positive";
-  }
-
-  // Cross-validation: Min <= Max
-  if (!isEmpty(minPercent) && !isEmpty(maxPercent)) {
-    const minValue = typeof minPercent === "string" ? parseFloat(minPercent) : minPercent;
-    const maxValue = typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent;
-    if (minValue > maxValue) return "Min % cannot be greater than Max %";
-  }
-
-  return null;
-};
-
-/**
- * Validates that all required categories are present
- */
-export const validateRawMaterialsCategories = (rawMaterials: AdditionElement[]): string | null => {
-  const categories = rawMaterials.map(material => material.category);
-  const hasAdditives = categories.includes("ADDITIVES");
-  const hasLadle = categories.includes("LADLE");
-  const hasNodularizer = categories.includes("NODULARIZER");
-
-  const missingCategories: string[] = [];
-  if (!hasAdditives) missingCategories.push("Please select at least one ADDITIVES item");
-  if (!hasLadle) missingCategories.push("Please select at least one LADLE item");
-  if (!hasNodularizer) missingCategories.push("Please select at least one NODULARIZER item");
-
-  if (missingCategories.length > 0) {
-    return missingCategories.join("\n");
-  }
-
-  return null;
-};
-
-/**
- * Validates all raw materials in the form
- */
-export const validateRawMaterialsForm = (rawMaterials: AdditionElement[]): { isValid: boolean; errors: string[] } => {
-  const errors: string[] = [];
-  
-  // Category validation
-  const categoryError = validateRawMaterialsCategories(rawMaterials);
-  if (categoryError) {
-    errors.push(categoryError);
-  }
-  
-  // Individual material validation
-  rawMaterials.forEach((material, index) => {
-    const materialError = validateAdditionInputs(
-      material.element,
-      material.minPercent,
-      material.maxPercent,
-      material.category
-    );
-    if (materialError) {
-      errors.push(`Material ${index + 1} (${material.element}): ${materialError}`);
-    }
-  });
-  
-  return {
-    isValid: errors.length === 0,
-    errors: errors
-  };
-};
-
-// ============================================
-// SMALL UI COMPONENTS
-// ============================================
-
-/**
- * Reusable numeric input for addition/dilution percentages
- */
-const AdditionInput: React.FC<AdditionInputProps> = ({
+const AdditionInput: React.FC<AdditionDilutionInputProps> = ({
   value,
-  placeholder = INPUT_CONFIG.PLACEHOLDER,
+  placeholder = ADDITION_DILUTION_INPUT_CONFIG.PLACEHOLDER,
   onChange,
   className = "addition-dilution-input",
   hasError = false,
@@ -320,11 +30,11 @@ const AdditionInput: React.FC<AdditionInputProps> = ({
     <input
       type="number"
       className={`${className} ${hasError ? 'addition-dilution-input-error' : ''}`}
-      step={INPUT_CONFIG.STEP}
-      min={INPUT_CONFIG.MIN}
-      max={INPUT_CONFIG.MAX}
+      step={ADDITION_DILUTION_INPUT_CONFIG.STEP}
+      min={ADDITION_DILUTION_INPUT_CONFIG.MIN}
+      max={ADDITION_DILUTION_INPUT_CONFIG.MAX}
       placeholder={placeholder}
-      value={getInputValue(value)}
+      value={additionDilutionGetInputValue(value)}
       onChange={(e) => onChange(e.target.value)}
     />
   );
@@ -333,7 +43,7 @@ const AdditionInput: React.FC<AdditionInputProps> = ({
 /**
  * Checkbox for selecting elements
  */
-const ElementCheckbox: React.FC<ElementCheckboxProps> = ({
+const ElementCheckbox: React.FC<AdditionDilutionElementCheckboxProps> = ({
   elementSymbol,
   checked,
   onChange,
@@ -360,7 +70,7 @@ const ElementCheckbox: React.FC<ElementCheckboxProps> = ({
 /**
  * Table row for displaying and editing raw materials
  */
-const AdditionElementRow: React.FC<AdditionElementRowProps> = ({
+const AdditionElementRow: React.FC<AdditionDilutionRowProps> = ({
   element,
   index,
   onUpdate,
@@ -370,8 +80,8 @@ const AdditionElementRow: React.FC<AdditionElementRowProps> = ({
   const isMinRequired = element.category === "LADLE" || element.category === "NODULARIZER";
   const isMaxRequired = element.category === "LADLE";
 
-  const hasMinError = isMinRequired && isEmpty(element.minPercent);
-  const hasMaxError = isMaxRequired && isEmpty(element.maxPercent);
+      const hasMinError = isMinRequired && additionDilutionIsEmpty(element.minPercent);
+  const hasMaxError = isMaxRequired && additionDilutionIsEmpty(element.maxPercent);
   const hasValidationError = !!validationError;
 
   return (
@@ -380,7 +90,7 @@ const AdditionElementRow: React.FC<AdditionElementRowProps> = ({
         {element.element || element.elementId}
       </td>
       <td className="addition-dilution-td addition-dilution-td-center">
-        <span className={getCategoryBadgeClass(element.category)}>
+        <span className={additionDilutionGetCategoryBadgeClass(element.category)}>
           {element.category}
         </span>
       </td>
@@ -388,7 +98,7 @@ const AdditionElementRow: React.FC<AdditionElementRowProps> = ({
         <div className={hasValidationError ? "tolerance-section-error-tooltip" : ""}>
           <AdditionInput
             value={element.minPercent}
-            onChange={(value) => onUpdate(index, "minPercent", parseNumericValue(value))}
+            onChange={(value) => onUpdate(index, "minPercent", additionDilutionParseNumericValue(value))}
             className="addition-dilution-table-input"
             placeholder={isMinRequired ? "Required" : "Optional"}
             hasError={hasMinError || hasValidationError}
@@ -409,7 +119,7 @@ const AdditionElementRow: React.FC<AdditionElementRowProps> = ({
         <div className={hasValidationError ? "tolerance-section-error-tooltip" : ""}>
           <AdditionInput
             value={element.maxPercent}
-            onChange={(value) => onUpdate(index, "maxPercent", parseNumericValue(value))}
+            onChange={(value) => onUpdate(index, "maxPercent", additionDilutionParseNumericValue(value))}
             className="addition-dilution-table-input"
             placeholder={isMaxRequired ? "Required" : "Optional"}
             hasError={hasMaxError || hasValidationError}
@@ -564,7 +274,7 @@ const AsyncAutocompleteField = ({ field, value, onChange, error, form }: any) =>
 // MAIN COMPONENT
 // ============================================
 
-const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({ 
+const AdditionDilutionRenderer: React.FC<AdditionDilutionProps> = ({ 
   fields, 
   form, 
   section,
@@ -611,7 +321,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
   
   // Initialize additionElements from targetChemistry
   React.useEffect(() => {
-    const currentElements = form.values[FIELD_KEYS.ADDITION_ELEMENTS] || [];
+    const currentElements = form.values[ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS] || [];
     const targetChemistry = form.values.targetChemistry || [];
 
     if (currentElements.length === 0 && targetChemistry.length > 0) {
@@ -619,7 +329,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
         element: element.element || element.symbol,
         selected: true,
       }));
-      form.setValue(FIELD_KEYS.ADDITION_ELEMENTS, defaultElements);
+      form.setValue(ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS, defaultElements);
     }
   }, [form.values.targetChemistry]);
   
@@ -633,7 +343,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
 
   // Handle element checkbox changes
   const handleElementCheckboxChange = (elementSymbol: string, checked: boolean) => {
-    const currentElements = form.values[FIELD_KEYS.ADDITION_ELEMENTS] || [];
+    const currentElements = form.values[ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS] || [];
     let updatedElements;
 
     if (checked) {
@@ -647,7 +357,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
       updatedElements = currentElements.filter((el: any) => el.element !== elementSymbol);
     }
 
-    form.setValue(FIELD_KEYS.ADDITION_ELEMENTS, updatedElements);
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS, updatedElements);
   };
   
   const toggleCollapsed = () => {
@@ -655,14 +365,14 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
     
     setIsTransitioning(true);
     setIsCollapsed(!isCollapsed);
-    setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
+    setTimeout(() => setIsTransitioning(false), ADDITION_DILUTION_TRANSITION_MS);
   };
 
   // Add raw material handler
   const handleAddRawMaterial = async () => {
-    const selectedMaterial = form.values[FIELD_KEYS.SELECTED_ADDITION_ELEMENT];
-    const minPercent = form.values[FIELD_KEYS.ELEMENT_MIN_PERCENT];
-    const maxPercent = form.values[FIELD_KEYS.ELEMENT_MAX_PERCENT];
+    const selectedMaterial = form.values[ADDITION_DILUTION_FIELD_KEYS.SELECTED_ADDITION_ELEMENT];
+    const minPercent = form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT];
+    const maxPercent = form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT];
 
     // Get material data from inventory
     let materialName = selectedMaterial;
@@ -686,7 +396,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
     }
 
     // Validate inputs
-    const validationError = validateAdditionInputs(
+    const validationError = additionDilutionValidateInputs(
       selectedMaterial,
       minPercent,
       maxPercent,
@@ -698,8 +408,8 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
     }
 
     // Add to rawMaterials
-    const existingRawMaterials = form.values[FIELD_KEYS.RAW_MATERIALS] || [];
-    const newRawMaterial = createAdditionElement(
+    const existingRawMaterials = form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS] || [];
+    const newRawMaterial = additionDilutionCreateElement(
       materialName,
       minPercent,
       maxPercent,
@@ -708,22 +418,22 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
     );
     const updatedRawMaterials = [...existingRawMaterials, newRawMaterial];
 
-    form.setValue(FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
 
     // Clear input fields
-    form.setValue(FIELD_KEYS.SELECTED_ADDITION_ELEMENT, "");
-    form.setValue(FIELD_KEYS.ELEMENT_MIN_PERCENT, "");
-    form.setValue(FIELD_KEYS.ELEMENT_MAX_PERCENT, "");
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.SELECTED_ADDITION_ELEMENT, "");
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT, "");
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT, "");
   };
 
   // Update raw material handler
   const handleUpdateRawMaterial = (index: number, field: string, value: any) => {
-    const updatedRawMaterials = [...(form.values[FIELD_KEYS.RAW_MATERIALS] || [])];
+    const updatedRawMaterials = [...(form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS] || [])];
     updatedRawMaterials[index] = {
       ...updatedRawMaterials[index],
       [field]: value,
     };
-    form.setValue(FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
     
     // Validate Min <= Max for this row
     const updatedElement = updatedRawMaterials[index];
@@ -732,18 +442,18 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
 
   // Delete raw material handler
   const handleDeleteRawMaterial = (index: number) => {
-    const updatedRawMaterials = (form.values[FIELD_KEYS.RAW_MATERIALS] || []).filter(
+    const updatedRawMaterials = (form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS] || []).filter(
       (_: any, i: number) => i !== index
     );
-    form.setValue(FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
+    form.setValue(ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS, updatedRawMaterials);
   };
 
   // Get visible fields for the form
   const visibleFields = fields.filter((field) =>
     [
-      FIELD_KEYS.SELECTED_ADDITION_ELEMENT,
-      FIELD_KEYS.ELEMENT_MIN_PERCENT,
-      FIELD_KEYS.ELEMENT_MAX_PERCENT,
+      ADDITION_DILUTION_FIELD_KEYS.SELECTED_ADDITION_ELEMENT,
+      ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT,
+      ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT,
     ].includes(field.key as any)
   );
 
@@ -770,19 +480,19 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
 
   // Check if element is selected
   const isElementSelected = (elementSymbol: string) => {
-    return (form.values[FIELD_KEYS.ADDITION_ELEMENTS] || []).some(
+    return (form.values[ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS] || []).some(
       (el: any) => el.element === elementSymbol
     );
   };
 
   // Get category validation error
-  const categoryError = (form.values[FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0
-    ? validateRawMaterialsCategories(form.values[FIELD_KEYS.RAW_MATERIALS] || [])
+  const categoryError = (form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0
+    ? additionDilutionValidateCategories(form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS] || [])
     : null;
 
   // Determine if fields are required based on selected material category
   const getSelectedMaterialCategory = () => {
-    const selectedMaterialId = form.values[FIELD_KEYS.SELECTED_ADDITION_ELEMENT];
+    const selectedMaterialId = form.values[ADDITION_DILUTION_FIELD_KEYS.SELECTED_ADDITION_ELEMENT];
     if (!selectedMaterialId) return "ADDITIVES"; // Default
     
     try {
@@ -805,9 +515,9 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
 
   // Check if add button should be disabled
   const isAddButtonDisabled = 
-    !form.values[FIELD_KEYS.SELECTED_ADDITION_ELEMENT] ||
-    (isMinRequired && isEmpty(form.values[FIELD_KEYS.ELEMENT_MIN_PERCENT])) ||
-    (isMaxRequired && isEmpty(form.values[FIELD_KEYS.ELEMENT_MAX_PERCENT])) ||
+    !form.values[ADDITION_DILUTION_FIELD_KEYS.SELECTED_ADDITION_ELEMENT] ||
+    (isMinRequired && additionDilutionIsEmpty(form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT])) ||
+    (isMaxRequired && additionDilutionIsEmpty(form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT])) ||
     !!validationErrors['add-min-max'];
   return (
     <div className="addition-dilution-section">
@@ -891,13 +601,13 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                 </div>
 
                 {/* Addition Elements Error */}
-                {form.errors?.[FIELD_KEYS.ADDITION_ELEMENTS] && (
+                {form.errors?.[ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS] && (
                   <div className="addition-dilution-error-message">
                     <span className="addition-dilution-error-icon">
                       <SystemErrorWarningLine width={16} height={16} />
                     </span>
                     <span className="addition-dilution-error-text">
-                      {form.errors?.[FIELD_KEYS.ADDITION_ELEMENTS]?.[0]}
+                      {form.errors?.[ADDITION_DILUTION_FIELD_KEYS.ADDITION_ELEMENTS]?.[0]}
                     </span>
                   </div>
                 )}
@@ -915,7 +625,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                 </div>
 
                 {/* Configured Materials Table */}
-                {(form.values[FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0 && (
+                {(form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0 && (
                   <div className="addition-dilution-table-section">
                     <label className="addition-dilution-table-label">
                       Configured Materials
@@ -942,7 +652,7 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                           </tr>
                         </thead>
                         <tbody>
-                          {(form.values[FIELD_KEYS.RAW_MATERIALS] || []).map((element: any, index: number) => (
+                          {(form.values[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS] || []).map((element: any, index: number) => (
                             <AdditionElementRow
                               key={index}
                               element={element}
@@ -990,12 +700,12 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                       </label>
                       <div className={validationErrors['add-min-max'] ? "tolerance-section-error-tooltip" : ""}>
                         <AdditionInput
-                          value={form.values[FIELD_KEYS.ELEMENT_MIN_PERCENT]}
+                          value={form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT]}
                           onChange={(value) => {
-                            const newValue = parseNumericValue(value);
-                            form.setValue(FIELD_KEYS.ELEMENT_MIN_PERCENT, newValue);
+                            const newValue = additionDilutionParseNumericValue(value);
+                            form.setValue(ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT, newValue);
                             // Validate Min <= Max
-                            validateMinMaxRange('add-min-max', newValue, form.values[FIELD_KEYS.ELEMENT_MAX_PERCENT]);
+                            validateMinMaxRange('add-min-max', newValue, form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT]);
                           }}
                           className="addition-dilution-add-input"
                           hasError={!!validationErrors['add-min-max']}
@@ -1019,12 +729,12 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                       </label>
                       <div className={validationErrors['add-min-max'] ? "tolerance-section-error-tooltip" : ""}>
                         <AdditionInput
-                          value={form.values[FIELD_KEYS.ELEMENT_MAX_PERCENT]}
+                          value={form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT]}
                           onChange={(value) => {
-                            const newValue = parseNumericValue(value);
-                            form.setValue(FIELD_KEYS.ELEMENT_MAX_PERCENT, newValue);
+                            const newValue = additionDilutionParseNumericValue(value);
+                            form.setValue(ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MAX_PERCENT, newValue);
                             // Validate Min <= Max
-                            validateMinMaxRange('add-min-max', form.values[FIELD_KEYS.ELEMENT_MIN_PERCENT], newValue);
+                            validateMinMaxRange('add-min-max', form.values[ADDITION_DILUTION_FIELD_KEYS.ELEMENT_MIN_PERCENT], newValue);
                           }}
                           className="addition-dilution-add-input"
                           hasError={!!validationErrors['add-min-max']}
@@ -1054,13 +764,13 @@ const AdditionDilutionRenderer: React.FC<AdditionDilutionRendererProps> = ({
                 </div>
                 
                 {/* Raw Materials Field Error */}
-                {(form.errors?.[FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0 && (
+                {(form.errors?.[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS]?.length ?? 0) > 0 && (
                   <div className="addition-dilution-error-message" style={{ marginTop: '16px' }}>
                     <span className="addition-dilution-error-icon">
                       <SystemErrorWarningLine width={16} height={16} />
                     </span>
                     <span className="addition-dilution-error-text">
-                      {form.errors?.[FIELD_KEYS.RAW_MATERIALS]?.[0]}
+                      {form.errors?.[ADDITION_DILUTION_FIELD_KEYS.RAW_MATERIALS]?.[0]}
                     </span>
                   </div>
                 )}

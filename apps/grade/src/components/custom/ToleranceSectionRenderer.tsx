@@ -3,32 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { SystemSettings2Line } from 'now-design-icons';
 import "../../styles/tolerance-section.css";
+import { TriangleAlertIcon } from "../../pages/create/utils";
+import { ToleranceSectionRendererProps } from "../../pages/create/types";
 
-const TriangleAlertIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="#f59f0a" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-    <path d="M12 9v4"></path>
-    <path d="M12 17h.01"></path>
-  </svg>
-);
 
-interface ToleranceSectionRendererProps {
-  field: any;
-  value: any;
-  onChange: (value: any) => void;
-  error?: string[];
-  form: any;
-}
+
 
 // Tolerance Section Renderer - Comprehensive tolerance management
 const ToleranceSectionRenderer = ({ 
@@ -113,10 +92,14 @@ const ToleranceSectionRenderer = ({
   };
 
   const getToleranceRange = (element: any) => {
-    const finalMin = element.finalMin || 0;
-    const finalMax = element.finalMax || 0;
-    const toleranceMin = element.toleranceMin || 0.05;
-    const toleranceMax = element.toleranceMax || 0.05;
+    const finalMin = Number(element.finalMin) || 0;
+    const finalMax = Number(element.finalMax) || 0;
+    const toleranceMin = element.toleranceMin !== undefined && element.toleranceMin !== null && element.toleranceMin !== ""
+      ? Number(element.toleranceMin)
+      : 0.05;
+    const toleranceMax = element.toleranceMax !== undefined && element.toleranceMax !== null && element.toleranceMax !== ""
+      ? Number(element.toleranceMax)
+      : 0.05;
 
     return {
       targetMin: finalMin,

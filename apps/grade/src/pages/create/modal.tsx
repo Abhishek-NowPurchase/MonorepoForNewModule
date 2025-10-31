@@ -3,82 +3,10 @@ import {
   FieldSection,
   SectionedFormModel,
 } from "@dynamic_forms/react";
-import { createApiOptions } from "./apiOptions";
-import { validateRawMaterialsCategories } from "../../components/custom/AdditionDilutionRenderer";
+import { additionDilutionValidateCategories } from "./utils";
+import { createApiOptions, loadElementsAsync, searchChargemixMaterialsAsync } from "./utils";
 
-const loadElementsAsync = async (
-  formValues: any
-): Promise<{ value: any; label: string }[]> => {
-  const elementsData = (window as any).elementsData;
-  const targetChemistry = formValues?.targetChemistry || [];
-
-  if (!elementsData || !Array.isArray(elementsData)) {
-    return [];
-  }
-
-  const selectedElements = targetChemistry.map((item: any) => ({
-    symbol: item.element || item.symbol,
-    id: item.elementId || item.id,
-  }));
-
-  const options = elementsData
-    .filter((element: any) => {
-      const isSelectedBySymbol = selectedElements.some(
-        (selected) => selected.symbol === element.symbol
-      );
-      const isSelectedById = selectedElements.some(
-        (selected) => selected.id === element.id
-      );
-      return !(isSelectedBySymbol || isSelectedById);
-    })
-    .map((element: any) => ({
-      value: element.id,
-      label: element.symbol,
-    }));
-
-  return options;
-};
-
-const searchChargemixMaterialsAsync = async (
-  formValues: any,
-  searchQuery: string = ""
-): Promise<{ value: any; label: string }[]> => {
-  const itemInventoryData = (window as any).itemInventoryData;
-  const chargemixMaterials = formValues?.chargemixMaterials || [];
-
-  if (
-    !itemInventoryData?.results ||
-    !Array.isArray(itemInventoryData.results)
-  ) {
-    return [];
-  }
-
-  const selectedMaterialIds = chargemixMaterials.map(
-    (item: any) => item.materialId || item.material
-  );
-
-  const options = itemInventoryData.results
-    .filter((material: any) => !selectedMaterialIds.includes(material.id))
-    .filter((material: any) => {
-      if (searchQuery) {
-        return material.name.toLowerCase().includes(searchQuery.toLowerCase());
-      }
-      return true;
-    })
-    .map((material: any) => ({
-      value: material.id,
-      label: material.cm_type
-        ? `${material.name} (${material.cm_type})`
-        : material.name,
-    }));
-
-  return options;
-};
-
-const isSpectroAndBathReady = (watched: any) => {
-  const result = watched.bathChemistry === "with" || watched.bathChemistry === "without";
-  return result;
-};
+const isSpectroAndBathReady = (watched: any) => watched.bathChemistry === "with" || watched.bathChemistry === "without";
 
 const isIfKioskAndBathReady = (watched: any) => {
   const userDetail = (window as any).userDetail;
@@ -250,7 +178,7 @@ export const gradeConfigurationModel: FormModel = [
       condition: (watched: any) => watched.gradeType === "DI",
       overrides: {
         hidden: false,
-        validators: { 
+        validators: {
           required: true,
           custom: (value: any) => {
             const numValue = Number(value);
@@ -285,7 +213,7 @@ export const gradeConfigurationModel: FormModel = [
         },
       ];
     },
-    validators: { 
+    validators: {
       required: true,
       custom: (value: any) => {
         if (!value || (value !== "with" && value !== "without")) {
@@ -447,15 +375,15 @@ export const gradeConfigurationModel: FormModel = [
         if (Array.isArray(value) && value.length === 0) {
           return ["You need to add at least 3 materials."];
         }
-        
+
         // Check category validation (ADDITIVES, LADLE, NODULARIZER)
         if (Array.isArray(value) && value.length > 0) {
-          const categoryError = validateRawMaterialsCategories(value);
+          const categoryError = additionDilutionValidateCategories(value);
           if (categoryError) {
             return [categoryError];
           }
         }
-        
+
         return [];
       },
     },

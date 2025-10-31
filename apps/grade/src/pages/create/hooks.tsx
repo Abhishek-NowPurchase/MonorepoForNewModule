@@ -11,7 +11,7 @@ import {
 } from "../../../../shared/Api/rawMaterial";
 import { getElements } from "../../../../shared/Api/elements";
 import { getGradeTagId, createGrade, updateGrade, getGrade } from "./api";
-import { useApiDataManager } from "./apiOptions";
+import { autoSelectFirstOption, fixExistingMaterials, fixExistingElements,useApiDataManager } from "./utils";
 
 export const useUserDetail = () => {
   return useSelector((state: any) => state.userDetail || {});
@@ -19,7 +19,7 @@ export const useUserDetail = () => {
 
 export const useCustomerId = (): number => {
   const userDetail = useSelector((state: any) => state.userDetail);
-  return userDetail?.customer?.id || 243;
+  return userDetail?.customer?.id;
 };
 
 export const useCustomer = () => {
@@ -32,94 +32,18 @@ export const useIsAuthenticated = (): boolean => {
   return !!auth?.token && !!auth?.isLoggedIn;
 };
 
-const autoSelectFirstOption = (
-  data: any,
-  dataKey: string,
-  fieldKey: string,
-  valueField: string,
-  form: any
-) => {
-  const fieldData = data[dataKey];
-  if (fieldData && Array.isArray(fieldData) && fieldData.length > 0) {
-    const firstValue = fieldData[0][valueField];
-    const currentValue = form.values[fieldKey];
 
-    if (!currentValue || currentValue !== firstValue) {
-      form.setValue(fieldKey, firstValue);
-    }
-  }
-};
 
-const fixExistingMaterials = (items: any[], inventoryData: any, fieldName: string, form: any) => {
-  if (!inventoryData?.results) return;
-
-  const fixedItems = items.map((item: any) => {
-    // Check if we have a materialId to look up (for edit case) or if material is a number (for create case)
-    const materialIdToLookup = item.materialId || (typeof item.material === "number" ? item.material : null);
-    
-    if (materialIdToLookup) {
-      const materialObj = inventoryData.results.find((m: any) => m.id == materialIdToLookup);
-      if (materialObj) {
-        return {
-          ...item,
-          material: materialObj.name,
-          materialId: materialIdToLookup,
-          materialSlug: materialObj.slug || "",
-          fullMaterialData: materialObj, // Store the complete material object from inventory API
-          minPercent: item.minPercent ?? 0, // Ensure minPercent defaults to 0
-          maxPercent: item.maxPercent ?? 0, // Ensure maxPercent defaults to 0
-        };
-      }
-    }
-    return item;
-  });
-
-  const hasChanges = fixedItems.some(
-    (item: any, index: number) => item.material !== items[index]?.material
-  );
-
-  if (hasChanges) {
-    form.setValue(fieldName, fixedItems);
-  }
-};
-
-const fixExistingElements = (items: any[], elementsData: any[], form: any) => {
-  if (!elementsData || !Array.isArray(elementsData)) return;
-
-  const fixedItems = items.map((item: any) => {
-    if (typeof item.element === "number" || /^\d+$/.test(item.element)) {
-      const elementObj = elementsData.find((el: any) => el.id == item.element);
-      if (elementObj) {
-        return {
-          ...item,
-          element: elementObj.symbol,
-          elementId: item.element,
-          elementName: elementObj.name || "",
-        };
-      }
-    }
-    return item;
-  });
-
-  const hasChanges = fixedItems.some(
-    (item: any, index: number) => item.element !== items[index]?.element
-  );
-
-  if (hasChanges) {
-    form.setValue("targetChemistry", fixedItems);
-  }
-};
 
 export const useGradeCreateForm = (initialValues: any = {}, gradeId?: string) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const customerId = useCustomerId();
   const userDetail = useUserDetail();
-  
-  // Store userDetail on window for access in modal configuration
+
   useEffect(() => {
     (window as any).userDetail = userDetail;
   }, [userDetail]);
-  
+
   const form = useFormConfig(gradeConfigurationModel, {
     initialValues,
     enableValidation: true,
@@ -190,7 +114,7 @@ export const useGradeCreateForm = (initialValues: any = {}, gradeId?: string) =>
       if (gradeId) {
         try {
           const gradeData = await getGrade(gradeId);
-          
+
           // Transform API response to form values
           const formValues = {
             tagId: gradeData.grade_tag_id,
@@ -207,36 +131,69 @@ export const useGradeCreateForm = (initialValues: any = {}, gradeId?: string) =>
             gradeTagId: gradeData.grade_tag_id,
             rememberChoice: false, // This is a client-side preference, not from API
           };
-          
+
           // Set form values
           Object.entries(formValues).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
               form.setValue(key, value);
             }
           });
-          
-          // Transform target chemistry data
-          if (gradeData.grade_tc && Array.isArray(gradeData.grade_tc)) {
-            const targetChemistry = gradeData.grade_tc.map((tc: any) => ({
+
+          // Transform target chemistry data (edit prefill normalization)
+          const gradeTc: any[] = Array.isArray(gradeData.grade_tc) ? gradeData.grade_tc : [];
+          const bathTc: any[] = Array.isArray(gradeData.bath_tc) ? gradeData.bath_tc : [];
+          let tolArr: any[] = Array.isArray(gradeData.tolerance_settings) ? gradeData.tolerance_settings : [];
+
+          // Build quick lookups
+          const gradeByElementId: Record<number, any> = {};
+          gradeTc.forEach((tc: any) => { if (tc && typeof tc.element === 'number') gradeByElementId[tc.element] = tc; });
+
+          const bathByElementId: Record<number, any> = {};
+          bathTc.forEach((tc: any) => { if (tc && typeof tc.element === 'number') bathByElementId[tc.element] = tc; });
+
+          // If API doesn't return tolerance_settings, fallback to grade_tc.relaxed_min/relaxed_max
+          if (!tolArr.length && gradeTc.length) {
+            tolArr = gradeTc.map((tc: any) => ({
               element: tc.element__symbol,
               elementId: tc.element,
-              elementName: tc.element__symbol, // We'll get the full name from elements data
-              bathMin: tc.min ? parseFloat(tc.min) : '',
-              bathMax: tc.max ? parseFloat(tc.max) : '',
-              finalMin: tc.relaxed_min ? parseFloat(tc.relaxed_min) : '',
-              finalMax: tc.relaxed_max ? parseFloat(tc.relaxed_max) : '',
-              isDefault: false,
+              toleranceMin: tc.relaxed_min ?? '',
+              toleranceMax: tc.relaxed_max ?? '',
             }));
+          }
+
+          const toleranceByElementId: Record<number, { toleranceMin?: number | string; toleranceMax?: number | string }> = {};
+          tolArr.forEach((t: any) => { if (t && typeof t.elementId === 'number') toleranceByElementId[t.elementId] = { toleranceMin: t.toleranceMin, toleranceMax: t.toleranceMax }; });
+
+          const allElementIds = Array.from(new Set([...Object.keys(gradeByElementId), ...Object.keys(bathByElementId)].map(Number)));
+
+          if (allElementIds.length) {
+            const targetChemistry = allElementIds.map((elementId) => {
+              const g = gradeByElementId[elementId];
+              const b = bathByElementId[elementId];
+              const symbol = (g?.element__symbol || b?.element__symbol || '').toString();
+              const name = (g?.name || b?.name || symbol) || '';
+              const tol = toleranceByElementId[elementId] || {};
+
+              return {
+                element: symbol,
+                elementId,
+                elementName: name,
+                bathMin: gradeData.has_bath_chemistry && b && b.min !== undefined && b.min !== null && b.min !== '' ? parseFloat(b.min) : '',
+                bathMax: gradeData.has_bath_chemistry && b && b.max !== undefined && b.max !== null && b.max !== '' ? parseFloat(b.max) : '',
+                finalMin: g && g.min !== undefined && g.min !== null && g.min !== '' ? parseFloat(g.min) : '',
+                finalMax: g && g.max !== undefined && g.max !== null && g.max !== '' ? parseFloat(g.max) : '',
+                toleranceMin: tol.toleranceMin !== undefined && tol.toleranceMin !== null ? tol.toleranceMin : '',
+                toleranceMax: tol.toleranceMax !== undefined && tol.toleranceMax !== null ? tol.toleranceMax : '',
+                isDefault: symbol === 'C',
+              };
+            });
             form.setValue('targetChemistry', targetChemistry);
-            
-            // Transform addition elements from target chemistry
-            const additionElements = gradeData.grade_tc.map((tc: any) => ({
-              element: tc.element__symbol,
-              selected: true,
-            }));
+
+            // Addition elements default to selected for all present elements
+            const additionElements = targetChemistry.map((row: any) => ({ element: row.element, selected: true }));
             form.setValue('additionElements', additionElements);
           }
-          
+
           // Transform raw materials data
           if (gradeData.grade_item && Array.isArray(gradeData.grade_item)) {
             const rawMaterials = gradeData.grade_item.map((item: any) => ({
@@ -249,7 +206,7 @@ export const useGradeCreateForm = (initialValues: any = {}, gradeId?: string) =>
             }));
             form.setValue('rawMaterials', rawMaterials);
           }
-          
+
           // Transform chargemix materials data
           if (gradeData.grade_cms && Array.isArray(gradeData.grade_cms)) {
             const chargemixMaterials = gradeData.grade_cms.map((item: any) => ({
@@ -261,36 +218,43 @@ export const useGradeCreateForm = (initialValues: any = {}, gradeId?: string) =>
             }));
             form.setValue('chargemixMaterials', chargemixMaterials);
           }
-          
-          // Transform tolerance settings (if available)
-          if (gradeData.tolerance_settings && Array.isArray(gradeData.tolerance_settings)) {
-            form.setValue('toleranceSettings', gradeData.tolerance_settings);
+
+          // Normalize and set tolerance settings for edit
+          if (Array.isArray(tolArr)) {
+            const normalizedTolerance = allElementIds.map((elementId) => {
+              const g = gradeByElementId[elementId];
+              const symbol = (g?.element__symbol || '').toString();
+              const tol = toleranceByElementId[elementId] || {};
+              return {
+                element: symbol,
+                elementId,
+                toleranceMin: tol.toleranceMin !== undefined && tol.toleranceMin !== null ? tol.toleranceMin : '',
+                toleranceMax: tol.toleranceMax !== undefined && tol.toleranceMax !== null ? tol.toleranceMax : '',
+              };
+            });
+            form.setValue('toleranceSettings', normalizedTolerance);
           }
-          
+
         } catch (error) {
           console.error('Error fetching grade data:', error);
         }
       }
     };
-    
+
     fetchGradeData();
   }, [gradeId]);
 
   const handleSubmit = form.handleSubmit(async (values: any) => {
-    
+
     setIsSubmitting(true);
     try {
-      // Use updateGrade if gradeId exists (edit mode), otherwise use createGrade (create mode)
-      const result = gradeId 
+      const result = gradeId
         ? await updateGrade(gradeId, values, customerId)
         : await createGrade(values, customerId);
-      
-      // ✅ SUCCESS INDICATOR: Check for id and grade_tag_id
+
       if (result.id && result.grade_tag_id) {
-        // Redirect to /grades
         window.location.href = '/grades';
       }
-      
       return result;
     } catch (error) {
       throw error;

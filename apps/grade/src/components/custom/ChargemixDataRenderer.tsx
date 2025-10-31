@@ -1,5 +1,5 @@
 import React from "react";
-import { 
+import {
   Autocomplete,
   TextField,
   FormControl,
@@ -9,156 +9,12 @@ import "../../styles/chargemix-data.css";
 import { LogosCodepenLine } from "now-design-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { TriangleAlertIcon, CHARGEMIX_FIELD_KEYS as FIELD_KEYS, CHARGEMIX_INPUT_CONFIG as INPUT_CONFIG, CHARGEMIX_MESSAGES as MESSAGES, CHARGEMIX_TRANSITION_MS as TRANSITION_DURATION, chargemixGetInputValue as getInputValue, chargemixParseNumericValue as parseNumericValue, chargemixCreateMaterial as createChargemixMaterial, chargemixValidateInputs as validateChargemixInputs } from "../../pages/create/utils";
+import { ChargemixMaterial, ChargemixMaterialOption as MaterialOption, ChargemixFormField as FormField, ChargemixFormValues as FormValues, ChargemixDataRendererProps, ChargemixInputProps, ChargemixMaterialRowProps } from "../../pages/create/types";
 
 // Triangle Alert Icon for validation errors
-const TriangleAlertIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="#f59f0a" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-    <path d="M12 9v4"></path>
-    <path d="M12 17h.01"></path>
-  </svg>
-);
 
-interface ChargemixMaterial {
-  material: string;
-  materialId: string | number;
-  minPercent: number | string;
-  maxPercent: number | string;
-  fullMaterialData?: {
-    cm_type?: string;
-    name?: string;
-    slug?: string;
-  };
-}
-
-interface MaterialOption {
-  value: string | number;
-  label: string;
-}
-
-interface FormField {
-  key: string;
-  type: string;
-  options?: (values: any, inputValue?: string) => Promise<MaterialOption[]>;
-  meta?: {
-    autoSelectFirst?: boolean;
-  };
-  validators?: {
-    required?: boolean;
-  };
-}
-
-interface FormValues {
-  chargemixMaterials: ChargemixMaterial[];
-  selectedChargemixMaterial: string | number;
-  chargemixMaterialMinPercent: number | string;
-  chargemixMaterialMaxPercent: number | string;
-  [key: string]: any;
-}
-
-interface ChargemixDataRendererProps {
-  fields: FormField[];
-  form: {
-    values: FormValues;
-    setValue: (key: string, value: any) => void;
-    errors?: Record<string, string[]>;
-  };
-  section: {
-    title: string;
-    description: string;
-    collapsed?: boolean;
-  };
-}
-
-const FIELD_KEYS = {
-  CHARGEMIX_MATERIALS: "chargemixMaterials",
-  SELECTED_CHARGEMIX_MATERIAL: "selectedChargemixMaterial",
-  CHARGEMIX_MATERIAL_MIN_PERCENT: "chargemixMaterialMinPercent",
-  CHARGEMIX_MATERIAL_MAX_PERCENT: "chargemixMaterialMaxPercent",
-} as const;
-
-const INPUT_CONFIG = {
-  STEP: 0.1,
-  MIN: 0,
-  MAX: 100,
-  PLACEHOLDER: "0.0",
-} as const;
-
-const MESSAGES = {
-  SELECT_MATERIAL: "Please select a raw material",
-  ENTER_MIN_PERCENT: "Please enter a minimum percentage",
-  ENTER_MAX_PERCENT: "Please enter a maximum percentage",
-  MAX_MUST_BE_GREATER:
-    "Maximum percentage must be greater than minimum percentage",
-} as const;
-
-const TRANSITION_DURATION = 300;
-
-const getInputValue = (value: number | string | null | undefined): string => {
-  return value !== undefined && value !== null && value !== ""
-    ? String(value)
-    : "";
-};
-
-const parseNumericValue = (value: string): number | string => {
-  return value === "" ? "" : parseFloat(value);
-};
-
-const createChargemixMaterial = (
-  material: string | number,
-  minPercent: number | string,
-  maxPercent: number | string,
-  fullMaterialData?: any
-): ChargemixMaterial => {
-  return {
-    material: String(material),
-    materialId: material,
-    minPercent:
-      typeof minPercent === "string" ? parseFloat(minPercent) : minPercent,
-    maxPercent:
-      typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent,
-    fullMaterialData: fullMaterialData || undefined,
-  };
-};
-
-const validateChargemixInputs = (
-  selectedMaterial: string | number,
-  minPercent: number | string,
-  maxPercent: number | string
-): string | null => {
-  if (!selectedMaterial) return MESSAGES.SELECT_MATERIAL;
-  
-  // Only validate Min <= Max when BOTH values are provided (like AdditionDilutionRenderer)
-  if (minPercent !== null && minPercent !== undefined && minPercent !== "" && 
-      maxPercent !== null && maxPercent !== undefined && maxPercent !== "") {
-    const minValue = typeof minPercent === "string" ? parseFloat(minPercent) : minPercent;
-    const maxValue = typeof maxPercent === "string" ? parseFloat(maxPercent) : maxPercent;
-
-    if (!isNaN(minValue) && !isNaN(maxValue) && maxValue < minValue) {
-      return MESSAGES.MAX_MUST_BE_GREATER;
-    }
-  }
-
-  return null;
-};
-
-interface ChargemixInputProps {
-  value: number | string;
-  placeholder?: string;
-  onChange: (value: string) => void;
-  className?: string;
-  hasError?: boolean;
-}
+// types and helpers moved to types.tsx and utils.tsx
 
 const ChargemixInput: React.FC<ChargemixInputProps> = ({
   value,
@@ -181,15 +37,7 @@ const ChargemixInput: React.FC<ChargemixInputProps> = ({
   );
 };
 
-interface ChargemixMaterialRowProps {
-  material: ChargemixMaterial;
-  index: number;
-  onUpdate: (index: number, field: keyof ChargemixMaterial, value: any) => void;
-  onDelete: (index: number) => void;
-  validationError?: string;
-  isMinRequired?: boolean;
-  isMaxRequired?: boolean;
-}
+// ChargemixMaterialRowProps moved to types.tsx
 
 const ChargemixMaterialRow: React.FC<ChargemixMaterialRowProps> = ({
   material,
@@ -201,7 +49,7 @@ const ChargemixMaterialRow: React.FC<ChargemixMaterialRowProps> = ({
   isMaxRequired = false,
 }) => {
   const hasValidationError = !!validationError;
-  
+
   // Check if individual fields have errors (for required field validation)
   const hasMinError = isMinRequired && (material.minPercent === "" || material.minPercent === null || material.minPercent === undefined);
   const hasMaxError = isMaxRequired && (material.maxPercent === "" || material.maxPercent === null || material.maxPercent === undefined);
@@ -283,11 +131,11 @@ const AsyncAutocompleteField = ({
   const [options, setOptions] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
-  
+
   // Find the selected option based on value (with type coercion)
   const selectedOption =
     options.find((option) => option.value == value) || null;
-  
+
   // If we have a value but no selected option (options not loaded yet), create a temporary option
   // Try to find a better label by looking for the value in options or use the value itself
   const getDisplayLabel = (val: string) => {
@@ -295,26 +143,26 @@ const AsyncAutocompleteField = ({
     // First try to find in current options (with type coercion)
     const foundOption = options.find((option) => option.value == val);
     if (foundOption) return foundOption.label;
-    
+
     // If options are empty but we have a value, try to load options synchronously
     if (options.length === 0 && field.options) {
       // For now, return a more user-friendly label
       return `Material ${val}`;
     }
-    
+
     // If not found, return the value as is (might be a name already)
     return val;
   };
-  
+
   const displayOption =
     selectedOption ||
     (value
       ? {
-    value, 
-          label: getDisplayLabel(value),
-        }
+        value,
+        label: getDisplayLabel(value),
+      }
       : null);
-  
+
   React.useEffect(() => {
     const loadOptions = async () => {
       if (field.options) {
@@ -332,12 +180,12 @@ const AsyncAutocompleteField = ({
         }
       }
     };
-    
+
     // Debounce the search
     const timeoutId = setTimeout(() => {
       loadOptions();
     }, 300);
-    
+
     return () => clearTimeout(timeoutId);
   }, [field.options, form.values, inputValue]);
 
@@ -373,44 +221,44 @@ const AsyncAutocompleteField = ({
   };
 
   return (
-      <FormControl 
-        fullWidth 
-        error={error && error.length > 0}
-        required={field.validators?.required}
+    <FormControl
+      fullWidth
+      error={error && error.length > 0}
+      required={field.validators?.required}
       className="chargemix-material-select"
-      >
-        <Autocomplete
-          id={field.key}
-          options={options}
-          value={displayOption}
-          inputValue={inputValue}
-          onInputChange={handleInputChange}
-          onChange={handleChange}
+    >
+      <Autocomplete
+        id={field.key}
+        options={options}
+        value={displayOption}
+        inputValue={inputValue}
+        onInputChange={handleInputChange}
+        onChange={handleChange}
         getOptionLabel={(option) => {
           // For the input field, show only the material name without cm_type
           const labelParts = option.label.split(" (");
           return labelParts[0] || "";
         }}
-          isOptionEqualToValue={(option, value) => option.value === value?.value}
-          loading={loading}
-          freeSolo={false}
-          disableClearable={false}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
+        isOptionEqualToValue={(option, value) => option.value === value?.value}
+        loading={loading}
+        freeSolo={false}
+        disableClearable={false}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
             placeholder="Select raw material..."
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <React.Fragment>
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
                   {loading ? "Loading..." : null}
-                    {params.InputProps.endAdornment}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          )}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )}
         renderOption={(props, option) => {
           // Parse the option label to extract material name and cm_type
           const labelParts = option.label.split(" (");
@@ -428,18 +276,18 @@ const AsyncAutocompleteField = ({
             </li>
           );
         }}
-        />
-        {error && error.length > 0 && (
+      />
+      {error && error.length > 0 && (
         <FormHelperText error>{error.join(", ")}</FormHelperText>
-        )}
-      </FormControl>
+      )}
+    </FormControl>
   );
 };
 
 // Chargemix Data Custom Renderer - Clean UI without unwanted buttons
-const ChargemixDataRenderer = ({ 
-  fields, 
-  form, 
+const ChargemixDataRenderer = ({
+  fields,
+  form,
   section,
 }: ChargemixDataRendererProps) => {
   // State for collapsible functionality
@@ -447,16 +295,16 @@ const ChargemixDataRenderer = ({
     section.collapsed ?? true
   );
   const [isTransitioning, setIsTransitioning] = React.useState(false);
-  const [validationErrors, setValidationErrors] = React.useState<{[key: string]: string}>({});
-  
+  const [validationErrors, setValidationErrors] = React.useState<{ [key: string]: string }>({});
+
   // Validation function for Min <= Max range
   const validateMinMaxRange = (key: string, minValue: number | string | undefined, maxValue: number | string | undefined) => {
     // Only validate when both values are provided and not empty (like AdditionDilutionRenderer)
-    if (minValue !== undefined && minValue !== null && minValue !== "" && 
-        maxValue !== undefined && maxValue !== null && maxValue !== "") {
+    if (minValue !== undefined && minValue !== null && minValue !== "" &&
+      maxValue !== undefined && maxValue !== null && maxValue !== "") {
       const min = typeof minValue === "string" ? parseFloat(minValue) : minValue;
       const max = typeof maxValue === "string" ? parseFloat(maxValue) : maxValue;
-      
+
       if (!isNaN(min) && !isNaN(max) && max < min) {
         setValidationErrors(prev => ({
           ...prev,
@@ -483,7 +331,7 @@ const ChargemixDataRenderer = ({
   const getSelectedMaterialCategory = () => {
     const selectedMaterialId = form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL];
     if (!selectedMaterialId) return "ADDITIVES"; // Default
-    
+
     try {
       const itemInventoryData = (window as any).itemInventoryData;
       if (itemInventoryData?.results) {
@@ -507,21 +355,21 @@ const ChargemixDataRenderer = ({
   };
 
   // Check if add button should be disabled
-  const isAddButtonDisabled = 
+  const isAddButtonDisabled =
     !form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL] ||
     (isMinRequired && isEmpty(form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT])) ||
     (isMaxRequired && isEmpty(form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MAX_PERCENT])) ||
     !!validationErrors['add-min-max'];
-  
+
   const handleFieldChange = (fieldKey: string, value: any) => {
     form.setValue(fieldKey, value);
   };
-  
+
   const toggleCollapsed = () => {
     if (isTransitioning) return; // Prevent rapid clicking during transition
-    
+
     setIsTransitioning(true);
-    
+
     if (isCollapsed) {
       setIsCollapsed(false);
       setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
@@ -532,7 +380,7 @@ const ChargemixDataRenderer = ({
   };
 
   const handleAddMaterial = () => {
-    
+
     const selectedMaterial =
       form.values[FIELD_KEYS.SELECTED_CHARGEMIX_MATERIAL];
     const minPercent = form.values[FIELD_KEYS.CHARGEMIX_MATERIAL_MIN_PERCENT];
@@ -575,7 +423,7 @@ const ChargemixDataRenderer = ({
     const rawValue = form.values[field.key] || field.defaultValue || "";
     const value = rawValue.toString();
     const error = form.errors?.[field.key];
-    
+
     // Only handle select field for material autocomplete
     if (field.type === "select") {
       return (
@@ -608,16 +456,16 @@ const ChargemixDataRenderer = ({
       >
         <div className="chargemix-header-left">
           <span className="chargemix-chevron">
-            <FontAwesomeIcon 
-              icon={isCollapsed ? faChevronRight : faChevronDown} 
-              style={{ color: '#1d2530' }} 
+            <FontAwesomeIcon
+              icon={isCollapsed ? faChevronRight : faChevronDown}
+              style={{ color: '#1d2530' }}
             />
           </span>
           <span className="chargemix-package-icon">
             <LogosCodepenLine width={16} height={16} />
           </span>
           <span className="chargemix-header-title">{section.title}</span>
-      </div>
+        </div>
         <div className="chargemix-header-badge">LogSheet Kiosk</div>
       </button>
 
@@ -635,8 +483,8 @@ const ChargemixDataRenderer = ({
                 {section.title}
               </h3>
               <p className="chargemix-card-description">
-          {section.description}
-        </p>
+                {section.description}
+              </p>
             </div>
             {/* Card Body */}
             <div className="chargemix-card-body">
@@ -674,7 +522,7 @@ const ChargemixDataRenderer = ({
                             const materialCategory = material.fullMaterialData?.cm_type || "ADDITIVES";
                             const isMinRequired = materialCategory === "LADLE" || materialCategory === "NODULARIZER";
                             const isMaxRequired = materialCategory === "LADLE";
-                            
+
                             return (
                               <ChargemixMaterialRow
                                 key={index}
@@ -693,7 +541,7 @@ const ChargemixDataRenderer = ({
                                     FIELD_KEYS.CHARGEMIX_MATERIALS,
                                     updatedMaterials
                                   );
-                                  
+
                                   // Validate Min <= Max for this row
                                   const updatedMaterial = updatedMaterials[index];
                                   validateMinMaxRange(`table-${index}`, updatedMaterial.minPercent, updatedMaterial.maxPercent);
@@ -717,10 +565,10 @@ const ChargemixDataRenderer = ({
                       </tbody>
                     </table>
                   </div>
-        </div>
-      )}
+                </div>
+              )}
 
-      {/* Add New Material Section */}
+              {/* Add New Material Section */}
               <div className="chargemix-add-section">
                 <label className="chargemix-add-label">Add New Material</label>
                 <div className="chargemix-add-controls">
@@ -794,20 +642,20 @@ const ChargemixDataRenderer = ({
                         </div>
                       )}
                     </div>
-        </div>
-            {/* Add Button */}
-              <button 
+                  </div>
+                  {/* Add Button */}
+                  <button
                     className="chargemix-add-button"
-                type="button" 
-                onClick={handleAddMaterial}
+                    type="button"
+                    onClick={handleAddMaterial}
                     disabled={isAddButtonDisabled}
                   >
                     +
-              </button>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
         </div>
       )}
     </div>

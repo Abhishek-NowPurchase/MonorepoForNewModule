@@ -1,31 +1,19 @@
 import React from "react";
 import { Select as MuiSelect, MenuItem, FormControl } from "@mui/material";
 import "../../styles/grade-overview.css";
+import { GradeOverviewRendererProps } from "../../pages/create/types";
+import { gradeOverviewGetField, gradeOverviewGetMetaValue, gradeOverviewGetFieldError, gradeOverviewValidateTemperatureRange } from "../../pages/create/utils";
 
-interface GradeOverviewRendererProps {
-  fields: any[];
-  form: any;
-  section: any;
-}
+
 
 const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
   fields,
   form,
   section,
 }) => {
-  const getField = (key: string) => fields.find((f) => f.key === key);
-
-  const getMetaValue = (field: any, metaKey: string): any => {
-    return (
-      field.meta?.[metaKey] || field.dependencies?.overrides?.meta?.[metaKey]
-    );
-  };
-
-  const getFieldError = (fieldKey: string): string | undefined => {
-    const errors = form.errors?.[fieldKey];
-    if (!errors) return undefined;
-    return Array.isArray(errors) ? errors[0] : errors;
-  };
+  const getField = (key: string) => gradeOverviewGetField(fields, key);
+  const getMetaValue = (field: any, metaKey: string) => gradeOverviewGetMetaValue(field, metaKey);
+  const getFieldError = (fieldKey: string) => gradeOverviewGetFieldError(form.errors, fieldKey);
 
   const handleFieldChange = (key: string, value: any) => {
     form.setValue(key, value);
@@ -37,54 +25,12 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
   };
 
   const validateTemperatureRange = () => {
-    const minValue = Number(form.values.tappingTempMin);
-    const maxValue = Number(form.values.tappingTempMax);
-
-    // Only validate if both values are valid numbers and not empty
-    if (
-      !isNaN(minValue) &&
-      !isNaN(maxValue) &&
-      form.values.tappingTempMin &&
-      form.values.tappingTempMax
-    ) {
-      if (minValue > maxValue) {
-        // Set error for both fields when min > max
-        if (
-          !form.errors?.tappingTempMin?.includes(
-            "Minimum temperature must be less than or equal to maximum temperature"
-          )
-        ) {
-          form.setError("tappingTempMin", [
-            "Minimum temperature must be less than or equal to maximum temperature",
-          ]);
-        }
-        if (
-          !form.errors?.tappingTempMax?.includes(
-            "Maximum temperature must be greater than or equal to minimum temperature"
-          )
-        ) {
-          form.setError("tappingTempMax", [
-            "Maximum temperature must be greater than or equal to minimum temperature",
-          ]);
-        }
-      } else {
-        // Clear errors by removing the keys entirely from the errors object
-        if (
-          form.errors?.tappingTempMin?.includes(
-            "Minimum temperature must be less than or equal to maximum temperature"
-          )
-        ) {
-          delete form.errors.tappingTempMin;
-        }
-        if (
-          form.errors?.tappingTempMax?.includes(
-            "Maximum temperature must be greater than or equal to minimum temperature"
-          )
-        ) {
-          delete form.errors.tappingTempMax;
-        }
+    const clearError = (key: string) => {
+      if (form.errors?.[key]) {
+        delete form.errors[key];
       }
-    }
+    };
+    gradeOverviewValidateTemperatureRange(form.values, form.errors, form.setError, clearError);
   };
 
   const [gradeTypeOptions, setGradeTypeOptions] = React.useState<any[]>([]);
@@ -122,9 +68,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
     if (!field) return null;
 
     const isMonospace = getMetaValue(field, "fontFamily") === "monospace";
-    const inputClassName = `grade-overview-input${
-      isMonospace ? " grade-overview-input-mono" : ""
-    }`;
+    const inputClassName = `grade-overview-input${isMonospace ? " grade-overview-input-mono" : ""
+      }`;
 
     const helpText = getMetaValue(field, "helpText");
     const placeholder = getMetaValue(field, "placeholder");
@@ -141,9 +86,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
         <input
           id={fieldKey}
           type={field.type === "number" ? "number" : "text"}
-          className={`${inputClassName}${
-            error ? " grade-overview-input-error" : ""
-          }`}
+          className={`${inputClassName}${error ? " grade-overview-input-error" : ""
+            }`}
           placeholder={placeholder}
           value={form.values[fieldKey] || ""}
           onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
@@ -186,9 +130,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           <input
             id={minKey}
             type="number"
-            className={`grade-overview-input${
-              minError ? " grade-overview-input-error" : ""
-            }`}
+            className={`grade-overview-input${minError ? " grade-overview-input-error" : ""
+              }`}
             placeholder={minPlaceholder}
             value={form.values[minKey] || ""}
             onChange={(e) => handleFieldChange(minKey, e.target.value)}
@@ -199,9 +142,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
           <input
             id={maxKey}
             type="number"
-            className={`grade-overview-input${
-              maxError ? " grade-overview-input-error" : ""
-            }`}
+            className={`grade-overview-input${maxError ? " grade-overview-input-error" : ""
+              }`}
             placeholder={maxPlaceholder}
             value={form.values[maxKey] || ""}
             onChange={(e) => handleFieldChange(maxKey, e.target.value)}
@@ -236,9 +178,8 @@ const GradeOverviewRenderer: React.FC<GradeOverviewRendererProps> = ({
             value={form.values.gradeType || ""}
             onChange={(e) => handleFieldChange("gradeType", e.target.value)}
             displayEmpty
-            className={`grade-overview-select${
-              error ? " grade-overview-select-error" : ""
-            }`}
+            className={`grade-overview-select${error ? " grade-overview-select-error" : ""
+              }`}
             aria-invalid={!!error}
             aria-describedby={error ? "gradeType-error" : undefined}
             renderValue={(selected) => {

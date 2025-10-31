@@ -3,30 +3,10 @@ import Checkbox from "now-design-atoms/dist/checkbox";
 import "../../styles/bath-chemistry-decision.css";
 import { HealthMedicalFlaskLine } from "now-design-icons";
 import { SystemInformation2Line } from "now-design-icons";
+import { TriangleAlertIcon } from "../../pages/create/utils";
+import { BathChemistryDecisionRendererProps } from "../../pages/create/types";
 
-const TriangleAlertIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="20" 
-    height="20" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="#f59f0a" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-    <path d="M12 9v4"></path>
-    <path d="M12 17h.01"></path>
-  </svg>
-);
 
-interface BathChemistryDecisionRendererProps {
-  fields: any[];
-  form: any;
-  section: any;
-}
 
 const BathChemistryDecisionRenderer = ({
   fields,
@@ -78,6 +58,9 @@ const BathChemistryDecisionRenderer = ({
 
   const handleRadioChange = (optionValue: string) => {
     form.setValue("bathChemistry", optionValue);
+    if (form.errors?.bathChemistry && form.errors.bathChemistry.length > 0) {
+      delete form.errors.bathChemistry;
+    }
   };
 
   const handleRememberChoiceChange = (checked: boolean) => {
