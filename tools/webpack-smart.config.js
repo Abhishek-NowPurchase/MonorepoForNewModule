@@ -77,6 +77,13 @@ const getCurrentModuleConfig = () => {
   const cwd = process.cwd();
   const moduleName = path.basename(cwd);
   
+  // Debug logging
+  console.log('🔍 Webpack Config Debug:');
+  console.log('  - Current working directory:', cwd);
+  console.log('  - Detected module name:', moduleName);
+  console.log('  - Package.json exists:', fs.existsSync(path.join(cwd, 'package.json')));
+  console.log('  - app/mount.js exists:', fs.existsSync(path.join(cwd, 'app', 'mount.js')));
+  
   // Check if we're in a module directory
   const isModule = fs.existsSync(path.join(cwd, 'package.json')) && 
                    fs.existsSync(path.join(cwd, 'app', 'mount.js'));
@@ -95,6 +102,8 @@ const getCurrentModuleConfig = () => {
   console.log(`🚀 Building module: ${moduleName} on port ${port}`);
   console.log(`📁 Entry: ${path.resolve(cwd, "app/mount.js")}`);
   console.log(`📁 Output: ${path.resolve(cwd, "dist")}`);
+  console.log(`🔗 Module Federation name: ${moduleName}`);
+  console.log(`🔗 Remote entry will be: ${moduleName}@http://localhost:${port}/remoteEntry.js`);
   
   return {
     moduleName,
