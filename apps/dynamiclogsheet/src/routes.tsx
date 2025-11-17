@@ -1,11 +1,14 @@
 import React from 'react';
-import DynamicLogSheet from './pages/DynamicLogSheet';
+import Listing from './pages/DynamicLogSheet/Listing';
+import Detail from './pages/DynamicLogSheet/Detail';
+import Edit from './pages/DynamicLogSheet/Edit';
 
 // Minimal route config – one entry per unique path.
 export const routes: Array<{ path: string; component: React.ComponentType }> = [
-  { path: '/orders', component: DynamicLogSheet },
-  { path: '/dynamicLogSheet', component: DynamicLogSheet }
+  { path: '/dynamic-log-sheet', component: Listing },
+  { path: '/dynamic-log-sheet/:id/edit', component: Edit },
+  { path: '/dynamic-log-sheet/:id', component: Detail },
 ];
 
-export const defaultRoute = '/orders';
+export const defaultRoute = '/dynamic-log-sheet';
 

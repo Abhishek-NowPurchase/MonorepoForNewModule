@@ -1,4 +1,3 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const fs = require("fs");
 
@@ -119,9 +118,10 @@ const getCurrentModuleConfig = () => {
 // 🎯 MAIN WEBPACK CONFIGURATION
 module.exports = (env, argv) => {
   const config = getCurrentModuleConfig();
-  
-  // Dynamically load webpack from local module's node_modules
+
+  // Dynamically load webpack and plugins from local module's node_modules
   const { ModuleFederationPlugin } = require(path.join(process.cwd(), "node_modules/webpack")).container;
+  const HtmlWebpackPlugin = require(path.join(process.cwd(), "node_modules/html-webpack-plugin"));
 
   return {
     entry: config.entryPoint,
@@ -133,7 +133,9 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
-      fallback: { events: require.resolve("events/") },
+      fallback: {
+        events: path.join(process.cwd(), "node_modules/events/")
+      },
       symlinks: true  // Enable symlink resolution for yarn link
     },
     devServer: {
@@ -175,6 +177,22 @@ module.exports = (env, argv) => {
                 }
               }
             }
+          ]
+        },
+        {
+          test: /\.(scss|sass)$/,
+          use: [
+            'style-loader',
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: path.resolve(process.cwd(), 'postcss.config.js')
+                }
+              }
+            },
+            'sass-loader'
           ]
         },
         {
