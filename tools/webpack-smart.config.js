@@ -133,6 +133,11 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
+      modules: [
+        path.join(process.cwd(), "node_modules"),
+        path.join(__dirname, "..", "node_modules"),
+        "node_modules"
+      ],
       fallback: {
         events: path.join(process.cwd(), "node_modules/events/")
       },

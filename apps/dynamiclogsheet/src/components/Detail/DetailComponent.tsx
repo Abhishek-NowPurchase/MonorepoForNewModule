@@ -1,10 +1,9 @@
-import React from 'react';
-import { LogSheet } from '../../pages/Detail/types';
-import { formatDate } from '../../pages/Detail/utils';
-import '../../pages/Detail/Detail.scss';
+import React, { useRef } from "react";
+import html2pdf from "html2pdf.js";
+import "../../pages/Detail/Detail.scss";
 
 interface DetailComponentProps {
-  logSheet: LogSheet | null;
+  htmlContent: string | null;
   isLoading: boolean;
   error: string | null;
   onBack: () => void;
@@ -12,30 +11,53 @@ interface DetailComponentProps {
 }
 
 const DetailComponent: React.FC<DetailComponentProps> = ({
-  logSheet,
+  htmlContent,
   isLoading,
   error,
   onBack,
   onEdit,
 }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) return;
+
+    const element = contentRef.current;
+    
+    try {
+      await html2pdf()
+        .set({
+          margin: [0.2, 0.2, 0.2, 0.2],
+          filename: `log-sheet-${new Date().getTime()}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+        })
+        .from(element)
+        .save();
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
+    }
+  };
   if (isLoading) {
     return (
       <div className="page-container">
         <div className="detail-container">
           <div className="empty-state">
-            <p>Loading log sheet details...</p>
+            <p>Loading log sheet preview...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (error || !logSheet) {
+  if (error || !htmlContent) {
     return (
       <div className="page-container">
         <div className="detail-container">
           <div className="empty-state">
-            <p>{error || 'Log sheet not found'}</p>
+            <p>{error || "Log sheet preview not found"}</p>
             <button onClick={onBack} className="back-button">
               Back to List
             </button>
@@ -50,73 +72,37 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
       <div className="detail-header">
         <button onClick={onBack} className="back-button">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M12 5L7 10L12 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M12 5L7 10L12 15"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           Back
         </button>
-        <h1 className="detail-title">Log Sheet Details</h1>
-        <button onClick={onEdit} className="edit-button">
-          Edit
-        </button>
-      </div>
-
-      <div className="detail-container">
-        <div className="detail-card">
-          <div className="detail-section">
-            <h2 className="section-title">Basic Information</h2>
-            <div className="detail-grid">
-              <div className="detail-field">
-                <label className="field-label">ID</label>
-                <div className="field-value">{logSheet.id}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Name</label>
-                <div className="field-value">{logSheet.name || '-'}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Template</label>
-                <div className="field-value">{logSheet.template_name || logSheet.template || '-'}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Status</label>
-                <div className="field-value">
-                  <span className={`status-badge status-${logSheet.status?.toLowerCase()}`}>
-                    {logSheet.status || '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="detail-section">
-            <h2 className="section-title">Additional Details</h2>
-            <div className="detail-grid">
-              <div className="detail-field">
-                <label className="field-label">Created By</label>
-                <div className="field-value">{logSheet.created_by || '-'}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Assigned To</label>
-                <div className="field-value">{logSheet.assigned_to || '-'}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Created At</label>
-                <div className="field-value">{logSheet.created_at ? formatDate(logSheet.created_at) : '-'}</div>
-              </div>
-              <div className="detail-field">
-                <label className="field-label">Updated At</label>
-                <div className="field-value">{logSheet.updated_at ? formatDate(logSheet.updated_at) : '-'}</div>
-              </div>
-            </div>
-          </div>
-
-          {logSheet.description && (
-            <div className="detail-section">
-              <h2 className="section-title">Description</h2>
-              <div className="field-value">{logSheet.description}</div>
-            </div>
-          )}
+        <h1 className="detail-title">Log Sheet Preview</h1>
+        <div className="header-actions">
+          <button onClick={handleDownloadPDF} className="download-button">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M8 11L8 2M8 11L5 8M8 11L11 8M2 13L2 14C2 14.5523 2.44772 15 3 15L13 15C13.5523 15 14 14.5523 14 14L14 13"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Download PDF
+          </button>
+          <button onClick={onEdit} className="edit-button">
+            Edit
+          </button>
         </div>
+      </div>
+      <div className="detail-content">
+        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
     </div>
   );

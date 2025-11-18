@@ -1,7 +1,8 @@
 import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
 import { LogSheet, UpdateLogSheetData } from './types';
 
-const ENDPOINT = '/api/admin/dynamic_logsheet/';
+// const ENDPOINT = '/api/admin/dynamic_logsheet/';
+const ENDPOINT = '/api/admin/dynamic_form/';
 
 /**
  * Fetches the detail of a log sheet from the API endpoint.

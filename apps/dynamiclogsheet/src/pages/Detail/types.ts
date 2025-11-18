@@ -1,13 +1,15 @@
+export interface FormDataSection {
+  data: Record<string, string | number>;
+  order: number;
+  section_name: string;
+}
+
 export interface LogSheet {
   id: number;
-  name: string;
-  template: number;
-  template_name?: string;
-  status: 'Completed' | 'InProgress' | 'PendingReview' | 'Scheduled';
+  form_data: Record<string, FormDataSection>;
+  html_template: string;
+  status: string;
   created_at: string;
-  updated_at: string;
-  created_by?: string;
-  assigned_to?: string;
-  description?: string;
+  modified_at: string;
 }
 

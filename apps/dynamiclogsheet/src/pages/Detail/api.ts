@@ -1,6 +1,7 @@
-import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
+import { getToken } from '../../../../shared/Api/tokenUtils';
 import { LogSheet } from './types';
 
+const BASE_URL = 'https://test-api.nowpurchase.com';
 const ENDPOINT = '/api/admin/dynamic_logsheet/';
 
 /**
@@ -10,10 +11,53 @@ const ENDPOINT = '/api/admin/dynamic_logsheet/';
  * @returns Response from the API.
  */
 export async function fetchLogSheetDetail(id: number | string): Promise<LogSheet> {
-  const response = await authenticatedApiCall(`${ENDPOINT}${id}/`, {
-    method: 'GET'
+  const token = getToken() || localStorage.getItem('tokenv2');
+  
+  if (!token) {
+    throw new Error('No authentication token found. Please login first.');
+  }
+
+  const response = await fetch(`${BASE_URL}${ENDPOINT}${id}/`, {
+    method: 'GET',
+    headers: {
+      'accept': 'application/json',
+      'content-type': 'application/json',
+      'authorization': `Token ${token}`
+    }
   });
 
-  return response;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetches the HTML preview of a log sheet template.
+ *
+ * @param templateId - ID of the template to be fetched.
+ * @returns HTML string from the API.
+ */
+export async function fetchLogSheetPreview(templateId: number | string): Promise<string> {
+  const token = getToken() || localStorage.getItem('tokenv2');
+  
+  if (!token) {
+    throw new Error('No authentication token found. Please login first.');
+  }
+
+  const response = await fetch(`${BASE_URL}/api/admin/dynamic_logsheet/preview/?template_id=${templateId}`, {
+    method: 'GET',
+    headers: {
+      'accept': '*/*',
+      'authorization': `Token ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.text();
 }
 

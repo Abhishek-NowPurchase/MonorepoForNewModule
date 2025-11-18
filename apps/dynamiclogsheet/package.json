@@ -51,6 +51,7 @@
     "date-fns": "^2.30.0",
     "events": "^3.3.0",
     "framer-motion": "^12.23.24",
+    "html2pdf.js": "^0.12.1",
     "mobx": "^6.15.0",
     "mobx-react": "^9.2.1",
     "now-design-atoms": "^1.0.53",
