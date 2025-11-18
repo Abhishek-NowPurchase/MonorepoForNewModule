@@ -1,0 +1,84 @@
+.select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.select-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #303030;
+  margin: 0;
+}
+
+.select-required {
+  color: #e43e2b;
+  margin-left: 2px;
+}
+
+.select-form-control {
+  background-color: #fff;
+}
+
+.select-form-control fieldset {
+  top: -1px !important;
+}
+
+.select-form-control legend {
+  display: none;
+}
+
+.select-input {
+  min-height: 40px;
+  font-size: 14px;
+}
+
+.select-input .MuiSelect-select {
+  padding: 8.5px 32px 8.5px 14px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.select-input .MuiOutlinedInput-notchedOutline {
+  border-color: #eee !important;
+}
+
+.select-input:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #eee !important;
+}
+
+.select-form-control .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #eee !important;
+}
+
+/* Prevent any black/dark borders from MUI defaults */
+.select-form-control .MuiOutlinedInput-root {
+  color: #303030 !important;
+}
+
+.select-form-control .MuiOutlinedInput-root:hover {
+  border-color: #eee !important;
+}
+
+.select-form-control .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #eee !important;
+}
+
+.select-input.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1579be !important;
+  border-width: 1px;
+}
+
+.select-input.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: #e43e2b;
+}
+
+.select-input.Mui-disabled {
+  background-color: #f5f5f5;
+}
+
+.select-input.Mui-disabled .MuiOutlinedInput-notchedOutline {
+  border-color: #eee;
+}
+

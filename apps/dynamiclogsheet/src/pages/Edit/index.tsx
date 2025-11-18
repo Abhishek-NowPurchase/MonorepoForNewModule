@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchLogSheetDetail, updateLogSheet } from '../apis';
-import { LogSheet } from '../types';
+import { fetchLogSheetDetail, updateLogSheet } from './api';
+import { LogSheet } from './types';
 import './Edit.scss';
 
 interface FormData {

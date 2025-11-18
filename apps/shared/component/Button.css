@@ -1,0 +1,229 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css);
+
+.btn {
+  border: 1px solid;
+  width: auto;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    font-size: 12px;
+  }
+}
+
+.btn[data-color-variant='primary'] {
+  color: #1579be;
+}
+
+.btn[data-color-variant='secondary'] {
+  color: #909090;
+}
+
+.btn[data-color-variant='success'] {
+  color: #2ba24c;
+}
+
+.btn[data-color-variant='error'] {
+  color: #e43e2b;
+}
+
+.btn[data-color-variant='warning'] {
+  color: #d58c00;
+}
+
+.btn:not(.btn-with-icon) {
+  padding: 12px 20px;
+}
+
+.btn:not(.btn-with-icon).aui-btn-text {
+  padding: 10px;
+}
+
+.btn:not(.btn-with-icon).aui-btn-primary {
+  padding: 13px 20px;
+}
+
+.btn.btn-with-icon {
+  padding: 9px 20px;
+}
+
+.btn.btn-with-icon.aui-btn-text {
+  padding: 10px;
+}
+
+.btn.btn-with-icon.aui-btn-icon {
+  padding: 10px;
+}
+
+.btn.btn-with-icon.aui-btn-primary {
+  padding: 10px 20px;
+}
+
+.btn i {
+  color: inherit;
+  font-size: 20px;
+  line-height: normal;
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+.btn.font-weight-light {
+  font-weight: 400;
+}
+
+.btn.font-weight-normal {
+  font-weight: 500;
+}
+
+.btn.font-weight-semi-bold {
+  font-weight: 600;
+}
+
+.btn.font-weight-bold {
+  font-weight: 700;
+}
+
+.btn.dir-top-to-bottom {
+  flex-direction: column;
+}
+
+.btn.dir-bottom-to-top {
+  flex-direction: column-reverse;
+}
+
+.btn.dir-ltr {
+  flex-direction: row;
+}
+
+.btn.dir-rtl {
+  flex-direction: row-reverse;
+}
+
+.btn:disabled {
+  background-color: #aaaaaa;
+  color: #fff;
+  border: none;
+  padding: 11px 10px;
+  outline: none;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover,
+.btn:disabled:active {
+  box-shadow: none;
+  transform: none;
+}
+
+.aui-btn-primary {
+  background-color: #1579be;
+  color: #fff;
+  border: none;
+  border-color: #fff;
+}
+
+.aui-btn-primary:hover {
+  box-shadow: 12px 8px 24px 0 rgba(33, 126, 192, 0.2);
+  color: #fff;
+}
+
+.aui-btn-outlined {
+  background-color: #ffffff;
+  color: #1579be;
+  border-color: #1579be;
+}
+
+.aui-btn-outlined:hover {
+  box-shadow: 12px 8px 24px 0 rgba(33, 126, 192, 0.2);
+  color: #1579be;
+}
+
+.aui-btn-secondary {
+  background-color: #e8f2f8;
+  color: #1579be;
+  border-color: #1579be;
+}
+
+.aui-btn-secondary:hover {
+  box-shadow: 12px 8px 24px 0 rgba(33, 126, 192, 0.2);
+  color: #1579be;
+}
+
+.aui-btn-tertiary {
+  background-color: #fbf3e5;
+  color: #d58c00;
+  border-color: #dea333;
+}
+
+.aui-btn-tertiary:hover {
+  box-shadow: 12px 8px 24px 0px rgba(213, 140, 0, 0.2);
+}
+
+.aui-btn-icon {
+  border-color: #eeeeee;
+  background-color: #ffffff;
+  color: #909090;
+}
+
+.aui-btn-icon:hover {
+  box-shadow: 2px 2px 8px rgba(144, 144, 144, 0.6431372549);
+  background-color: rgba(21, 122, 190, 0.1529411765);
+  border-color: #1579be;
+  color: #1579be;
+}
+
+.aui-btn-icon[data-active='true'] {
+  background-color: rgba(21, 122, 190, 0.1529411765);
+  border-color: #1579be;
+  color: #1579be;
+}
+
+.aui-btn-icon[data-active='true'] i {
+  color: #1579be;
+}
+
+.aui-btn-text {
+  border: none;
+  background-color: transparent;
+}
+
+.default-loader {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: inherit;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn.loading {
+  pointer-events: none;
+}
+
+.btn.loading:not(.btn-with-icon) {
+  padding: 10px 20px;
+}
+

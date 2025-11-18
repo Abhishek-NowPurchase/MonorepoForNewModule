@@ -1,7 +1,7 @@
 import React from 'react';
-import Listing from './pages/DynamicLogSheet/Listing';
-import Detail from './pages/DynamicLogSheet/Detail';
-import Edit from './pages/DynamicLogSheet/Edit';
+import Listing from './pages/Listing';
+import Detail from './pages/Detail';
+import Edit from './pages/Edit';
 
 // Minimal route config – one entry per unique path.
 export const routes: Array<{ path: string; component: React.ComponentType }> = [

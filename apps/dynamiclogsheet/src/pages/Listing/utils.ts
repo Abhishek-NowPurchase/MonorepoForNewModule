@@ -43,17 +43,3 @@ export function formatDate(dateString: string): string {
   });
 }
 
-/**
- * Gets display text for status
- * @param status - Status value
- * @returns Display text for status
- */
-export function getStatusDisplay(status: string): string {
-  const statusMap: Record<string, string> = {
-    'Completed': 'Completed',
-    'InProgress': 'In Progress',
-    'PendingReview': 'Pending Review',
-    'Scheduled': 'Scheduled'
-  };
-  return statusMap[status] || status;
-}

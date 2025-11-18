@@ -167,10 +167,20 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            'style-loader',
-            'css-loader',
             {
-              loader: 'postcss-loader',
+              loader: require.resolve('style-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
+              options: {
+                esModule: false
+              }
+            },
+            {
+              loader: require.resolve('css-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
+              options: {
+                esModule: false
+              }
+            },
+            {
+              loader: require.resolve('postcss-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
               options: {
                 postcssOptions: {
                   config: path.resolve(process.cwd(), 'postcss.config.js')
@@ -182,17 +192,32 @@ module.exports = (env, argv) => {
         {
           test: /\.(scss|sass)$/,
           use: [
-            'style-loader',
-            'css-loader',
             {
-              loader: 'postcss-loader',
+              loader: require.resolve('style-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
+              options: {
+                esModule: false
+              }
+            },
+            {
+              loader: require.resolve('css-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
+              options: {
+                esModule: false
+              }
+            },
+            {
+              loader: require.resolve('postcss-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
               options: {
                 postcssOptions: {
                   config: path.resolve(process.cwd(), 'postcss.config.js')
                 }
               }
             },
-            'sass-loader'
+            {
+              loader: require.resolve('sass-loader', { paths: [path.join(process.cwd(), 'node_modules')] }),
+              options: {
+                implementation: require(path.join(process.cwd(), 'node_modules', 'sass'))
+              }
+            }
           ]
         },
         {

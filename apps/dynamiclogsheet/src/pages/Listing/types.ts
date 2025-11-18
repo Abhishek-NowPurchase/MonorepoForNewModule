@@ -41,9 +41,3 @@ export interface TemplateListResponse {
   template_name?: string;
 }
 
-export interface UpdateLogSheetData {
-  name?: string;
-  status?: string;
-  assigned_to?: string;
-  description?: string;
-}
