@@ -12,7 +12,7 @@
 .table-header-cell {
   text-align: left;
   color: #606060;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
   padding: 14px 22px;
@@ -53,11 +53,13 @@
 .table-cell {
   font-size: 13px;
   color: #303030;
-  padding: 14px 22px;
+  padding: 22px 22px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex-shrink: 0;
+  justify-content: center;
+  min-height: 57px;
 }
 
 .empty-state {
