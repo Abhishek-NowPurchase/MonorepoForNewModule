@@ -9,8 +9,13 @@ const Listing: React.FC = () => {
     logSheets,
     isLoading,
     searchValue,
+    page,
+    pageSize,
+    totalCount,
     handleTemplateChange,
     handleSearchChange,
+    handlePageChange,
+    handlePageSizeChange,
     handleRowClick
   } = useListing();
 
@@ -21,8 +26,13 @@ const Listing: React.FC = () => {
       logSheets={logSheets}
       isLoading={isLoading}
       searchValue={searchValue}
+      page={page}
+      pageSize={pageSize}
+      totalCount={totalCount}
       onTemplateChange={handleTemplateChange}
       onSearchChange={handleSearchChange}
+      onPageChange={handlePageChange}
+      onPageSizeChange={handlePageSizeChange}
       onRowClick={handleRowClick}
     />
   );

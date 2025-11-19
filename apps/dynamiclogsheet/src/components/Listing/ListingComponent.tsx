@@ -2,6 +2,7 @@ import React from 'react';
 import { Template, LogSheet } from '../../pages/Listing/types';
 import Header from './Header';
 import ListingTable from './ListingTable';
+import Pagination from '../../../../shared/component/Pagination';
 import '../../pages/Listing/Listing.scss';
 
 interface ListingComponentProps {
@@ -10,8 +11,13 @@ interface ListingComponentProps {
   logSheets: LogSheet[];
   isLoading: boolean;
   searchValue: string;
+  page: number;
+  pageSize: number;
+  totalCount: number;
   onTemplateChange: (template: Template) => void;
   onSearchChange: (value: string) => void;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onRowClick: (logSheet: LogSheet) => void;
 }
 
@@ -21,8 +27,13 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
   logSheets,
   isLoading,
   searchValue,
+  page,
+  pageSize,
+  totalCount,
   onTemplateChange,
   onSearchChange,
+  onPageChange,
+  onPageSizeChange,
   onRowClick
 }) => {
   return (
@@ -40,6 +51,16 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
         isLoading={isLoading}
         onRowClick={onRowClick}
       />
+
+      {!isLoading && totalCount > 0 && (
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
+      )}
     </div>
   );
 };

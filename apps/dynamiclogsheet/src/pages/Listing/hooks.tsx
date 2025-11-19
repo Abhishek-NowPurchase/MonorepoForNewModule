@@ -34,6 +34,9 @@ export const useListing = () => {
   const [logSheets, setLogSheets] = useState<LogSheet[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   // Fetch templates on component mount
   useEffect(() => {
@@ -67,12 +70,16 @@ export const useListing = () => {
         const response = await fetchLogSheetList({
           template: selectedTemplate.id,
           search: searchValue || undefined,
+          page: page,
+          page_size: pageSize,
         });
 
         setLogSheets(response.results || []);
+        setTotalCount(response.count || 0);
       } catch (error) {
         console.error("Error fetching log sheets:", error);
         setLogSheets([]);
+        setTotalCount(0);
       } finally {
         setIsLoading(false);
       }
@@ -84,15 +91,26 @@ export const useListing = () => {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedTemplate, searchValue]);
+  }, [selectedTemplate, searchValue, page, pageSize]);
 
   const handleTemplateChange = (template: Template) => {
     setSelectedTemplate(template);
     saveTemplateId(template.id);
+    setPage(1); // Reset to first page when template changes
   };
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
+    setPage(1); // Reset to first page when search changes
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1); // Reset to first page when page size changes
   };
 
   const handleRowClick = (logSheet: LogSheet) => {
@@ -105,8 +123,13 @@ export const useListing = () => {
     logSheets,
     isLoading,
     searchValue,
+    page,
+    pageSize,
+    totalCount,
     handleTemplateChange,
     handleSearchChange,
+    handlePageChange,
+    handlePageSizeChange,
     handleRowClick,
   };
 };

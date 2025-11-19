@@ -6,7 +6,8 @@
 .table-header {
   display: flex;
   background-color: #ffffff;
-  border: none;
+  border-bottom: 1px solid #eeeeee;
+  border-top: none;
 }
 
 .table-header-cell {
@@ -15,7 +16,7 @@
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
-  padding: 14px 22px;
+  padding: 14px 32px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -53,7 +54,7 @@
 .table-cell {
   font-size: 13px;
   color: #303030;
-  padding: 22px 22px;
+  padding: 22px 32px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

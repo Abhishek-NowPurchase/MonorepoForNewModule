@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 import {
-  FormControl,
   Pagination as MuiPagination,
   PaginationItem,
-} from '@mui/material';
-import Select from './Select';
-import './Pagination.css';
+  PaginationRenderItemParams,
+} from "@mui/material";
+import Select from "./Select";
+import "./Pagination.css";
 
 // Custom SVG Icons for pagination arrows (matching MUI ArrowBackIosNew and ArrowForwardIos)
 const ArrowBackIcon = ({
-  color = '#1976d2',
-  fontSize = '30px',
+  color = "#1976d2",
+  fontSize = "30px",
 }: {
   color?: string;
   fontSize?: string;
@@ -21,7 +21,7 @@ const ArrowBackIcon = ({
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ color, display: 'block' }}
+    style={{ color, display: "block" }}
   >
     <path
       d="M17.77 3.77 16 2 6 12l10 10 1.77-1.77L9.54 12z"
@@ -31,8 +31,8 @@ const ArrowBackIcon = ({
 );
 
 const ArrowForwardIcon = ({
-  color = '#1976d2',
-  fontSize = '30px',
+  color = "#1976d2",
+  fontSize = "30px",
 }: {
   color?: string;
   fontSize?: string;
@@ -43,7 +43,7 @@ const ArrowForwardIcon = ({
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ color, display: 'block' }}
+    style={{ color, display: "block" }}
   >
     <path
       d="M6.23 20.23 8 22l10-10L8 2 6.23 3.77 14.46 12z"
@@ -62,7 +62,7 @@ export interface PaginationProps {
   siblingsCount?: number;
 }
 
-const Pagination = ({
+const Pagination: React.FC<PaginationProps> = ({
   page,
   pageSize,
   totalCount,
@@ -73,7 +73,10 @@ const Pagination = ({
 }) => {
   const pagesCount = Math.ceil(totalCount / pageSize);
 
-  const handlePageChange = (event: any, value: number) => {
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     if (onPageChange) {
       onPageChange(value);
     }
@@ -85,12 +88,12 @@ const Pagination = ({
     }
   };
 
-  const getPaginationStyles = (item: any) => {
-    return item.selected || item.type === 'previous' || item.type === 'next'
+  const getPaginationStyles = (item: PaginationRenderItemParams) => {
+    return item.selected || item.type === "previous" || item.type === "next"
       ? {
-          border: '1px solid rgba(25, 118, 210, 0.5)',
-          backgroundColor: 'rgba(25, 118, 210, 0.12)',
-          fontWeight: 'bolder',
+          border: "1px solid rgba(25, 118, 210, 0.5)",
+          backgroundColor: "rgba(25, 118, 210, 0.12)",
+          fontWeight: "bolder",
         }
       : {};
   };
@@ -127,8 +130,12 @@ const Pagination = ({
               variant="outlined"
               className="pagination-item"
               components={{
-                previous: () => <ArrowBackIcon color="#1976d2" fontSize="30px" />,
-                next: () => <ArrowForwardIcon color="#1976d2" fontSize="30px" />,
+                previous: () => (
+                  <ArrowBackIcon color="#1976d2" fontSize="16px" />
+                ),
+                next: () => (
+                  <ArrowForwardIcon color="#1976d2" fontSize="16px" />
+                ),
               }}
             />
           )}
@@ -139,4 +146,3 @@ const Pagination = ({
 };
 
 export default Pagination;
-
