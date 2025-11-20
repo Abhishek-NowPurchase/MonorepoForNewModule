@@ -1,0 +1,76 @@
+.filter-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.filter-drawer-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  animation: filter-drawer-slide-in 0.3s ease-out;
+}
+
+@keyframes filter-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.filter-drawer {
+  width: 400px;
+  height: 100%;
+  background-color: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-drawer-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #909090;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.filter-drawer-close-button:hover {
+  color: #303030;
+}
+
+.filter-drawer-header {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303030;
+  padding: 24px 24px 16px 24px;
+}
+
+.filter-drawer-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 0;
+}
+
+.filter-drawer-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+

@@ -134,7 +134,7 @@ const SearchInput = ({
         )}
       </div>
     </div>
-  );
+  ) as any;
 };
 
 export default SearchInput;

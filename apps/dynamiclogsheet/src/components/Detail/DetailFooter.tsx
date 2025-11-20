@@ -37,4 +37,3 @@ export const DetailFooter: React.FC<DetailFooterProps> = ({
     </div>
   </div>
 );
-

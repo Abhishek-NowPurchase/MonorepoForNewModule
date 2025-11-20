@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Template } from '../../pages/Listing/types';
-import FilterDrawer from './FilterDrawer';
-import { SearchInput, FilterButton } from '../../../../shared/component';
+import { SearchInput, FilterButton, FilterDrawer, Button, Select } from '../../../../shared/component';
+import { ResetIcon } from '../../../../shared/component/icons';
 import './Header.scss';
 
 interface HeaderProps {
@@ -20,6 +20,9 @@ const Header: React.FC<HeaderProps> = ({
   onSearchChange
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [tempSelectedTemplate, setTempSelectedTemplate] = useState<number | null>(
+    selectedTemplate?.id || null
+  );
 
   const filterCount = selectedTemplate ? 1 : 0;
 
@@ -31,6 +34,28 @@ const Header: React.FC<HeaderProps> = ({
       }
     }
   };
+
+  const handleFilterClose = () => {
+    setIsFilterOpen(false);
+    // Reset temp state when closing
+    setTempSelectedTemplate(selectedTemplate?.id || null);
+  };
+
+  const handleApply = () => {
+    handleFilterApply(tempSelectedTemplate);
+    handleFilterClose();
+  };
+
+  const handleReset = () => {
+    setTempSelectedTemplate(templates.length > 0 ? templates[0].id : null);
+    handleFilterApply(templates.length > 0 ? templates[0].id : null);
+    handleFilterClose();
+  };
+
+  // Update temp state when selectedTemplate changes externally
+  useEffect(() => {
+    setTempSelectedTemplate(selectedTemplate?.id || null);
+  }, [selectedTemplate]);
 
   return (
     <>
@@ -57,20 +82,39 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Drawer Overlay */}
-      {isFilterOpen && (
-        <>
-          <div className="drawer-overlay" onClick={() => setIsFilterOpen(false)} />
-          <div className="drawer-container">
-            <FilterDrawer
-              templates={templates}
-              selectedTemplate={selectedTemplate}
-              onApply={handleFilterApply}
-              onClose={() => setIsFilterOpen(false)}
-            />
-          </div>
-        </>
-      )}
+      <FilterDrawer
+        isOpen={isFilterOpen}
+        onClose={handleFilterClose}
+        title="Filters"
+      >
+        <Select
+          label="Template"
+          value={tempSelectedTemplate || ''}
+          options={templates.map((template) => ({
+            value: template.id,
+            label: template.template_name || template.name || '',
+          }))}
+          onChange={(value) => setTempSelectedTemplate(Number(value))}
+          placeholder="Select Template"
+          fullWidth
+          className="filter-drawer-content-select"
+        />
+
+        <div className="filter-drawer-content-btn-container">
+          <button className="filter-drawer-content-reset-button" onClick={handleReset}>
+            <ResetIcon width={16} height={16} strokeWidth={1.5} />
+            Reset
+          </button>
+          <Button
+            variant="primary"
+            icon="check"
+            text="Apply"
+            weight="bold"
+            onClick={handleApply}
+            className="filter-drawer-content-apply-button"
+          />
+        </div>
+      </FilterDrawer>
     </>
   );
 };

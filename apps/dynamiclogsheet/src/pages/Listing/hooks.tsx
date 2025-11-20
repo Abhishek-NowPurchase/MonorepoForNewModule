@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchLogSheetList, fetchTemplateList } from "./api";
 import { Template, LogSheet } from "./types";
+import { useDebounce } from "../../../../shared/hooks";
 
 const STORAGE_KEY = "dynamicLogSheet_selectedTemplateId";
 
@@ -34,6 +35,7 @@ export const useListing = () => {
   const [logSheets, setLogSheets] = useState<LogSheet[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchValue, setSearchValue] = useState<string>("");
+  const debouncedSearchValue = useDebounce(searchValue, 300);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -69,7 +71,7 @@ export const useListing = () => {
       try {
         const response = await fetchLogSheetList({
           template: selectedTemplate.id,
-          search: searchValue || undefined,
+          search: debouncedSearchValue || undefined,
           page: page,
           page_size: pageSize,
         });
@@ -85,13 +87,8 @@ export const useListing = () => {
       }
     };
 
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      loadLogSheets();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [selectedTemplate, searchValue, page, pageSize]);
+    loadLogSheets();
+  }, [selectedTemplate, debouncedSearchValue, page, pageSize]);
 
   const handleTemplateChange = (template: Template) => {
     setSelectedTemplate(template);
