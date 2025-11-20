@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import html2pdf from "html2pdf.js";
+import { Loader } from "../../../../shared/component";
 import "../../pages/Detail/Detail.scss";
 
 interface DetailComponentProps {
@@ -42,13 +43,11 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
   };
   if (isLoading) {
     return (
-      <div className="page-container">
-        <div className="detail-container">
-          <div className="empty-state">
-            <p>Loading log sheet preview...</p>
-          </div>
-        </div>
-      </div>
+      <Loader
+        size="medium"
+        message="Loading log sheet preview..."
+        fullScreen={true}
+      />
     );
   }
 
@@ -69,8 +68,13 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
 
   return (
     <div className="page-container">
-      <div className="detail-header">
-        <button onClick={onBack} className="back-button">
+      <div className="detail-content" style={{ paddingBottom: '80px' }}>
+        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </div>
+      
+      {/* Fixed Footer */}
+      <div className="detail-footer">
+        <button onClick={onBack} className="detail-footer-btn detail-footer-btn--secondary">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path
               d="M12 5L7 10L12 15"
@@ -80,11 +84,10 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
               strokeLinejoin="round"
             />
           </svg>
-          Back
+          BACK
         </button>
-        <h1 className="detail-title">Log Sheet Preview</h1>
-        <div className="header-actions">
-          <button onClick={handleDownloadPDF} className="download-button">
+        <div className="detail-footer-actions">
+          <button onClick={handleDownloadPDF} className="detail-footer-btn detail-footer-btn--secondary">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path
                 d="M8 11L8 2M8 11L5 8M8 11L11 8M2 13L2 14C2 14.5523 2.44772 15 3 15L13 15C13.5523 15 14 14.5523 14 14L14 13"
@@ -94,15 +97,12 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-            Download PDF
+            DOWNLOAD PDF
           </button>
-          <button onClick={onEdit} className="edit-button">
-            Edit
+          <button onClick={onEdit} className="detail-footer-btn detail-footer-btn--primary">
+            EDIT
           </button>
         </div>
-      </div>
-      <div className="detail-content">
-        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
     </div>
   );

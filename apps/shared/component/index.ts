@@ -18,3 +18,5 @@ export { default as Table } from './Table';
 export type { TableProps, TableColumn } from './Table';
 export { default as Pagination } from './Pagination';
 export type { PaginationProps } from './Pagination';
+export { default as Loader } from './Loader';
+export type { LoaderProps } from './Loader';
