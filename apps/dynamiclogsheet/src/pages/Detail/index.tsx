@@ -11,8 +11,6 @@ const Detail: React.FC = () => {
     handleBack,
     handleEdit
   } = useDetail();
-  
-  console.log('Detail logSheet:', logSheet);
 
   return (
     <DetailComponent

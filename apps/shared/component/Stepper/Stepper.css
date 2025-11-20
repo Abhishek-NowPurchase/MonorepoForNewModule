@@ -1,0 +1,105 @@
+.stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.stepper-wrapper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  position: relative;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+/* Step Circle */
+.stepper-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper-circle--clickable {
+  cursor: pointer;
+}
+
+.stepper-circle--active {
+  background-color: #1579be;
+  color: #ffffff;
+  border: 2px solid #1579be;
+  box-shadow: 0 0 0 2px rgba(21, 121, 190, 0.1);
+}
+
+.stepper-circle--completed {
+  background-color: #1579be;
+  color: #ffffff;
+}
+
+.stepper-number {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.stepper-checkmark {
+  width: 14px;
+  height: 14px;
+}
+
+/* Step Label */
+.stepper-label-container {
+  margin-top: 12px;
+  text-align: center;
+  max-width: 150px;
+}
+
+.stepper-label {
+  font-size: 13px;
+  font-family: 'Oxanium', sans-serif;
+  font-weight: 400;
+  color: #999;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+}
+
+.stepper-label--active {
+  font-weight: 600;
+  color: #1579be;
+}
+
+.stepper-label--completed {
+  color: #1579be;
+}
+
+/* Connecting Line */
+.stepper-connector {
+  flex: 1;
+  height: 0;
+  border-top: 1px dashed #aaa;
+  margin: 0 8px;
+  margin-top: 12px; /* Center of 24px circle (24/2 = 12px) */
+  align-self: flex-start;
+  z-index: 0;
+  transition: all 0.3s ease;
+}
+

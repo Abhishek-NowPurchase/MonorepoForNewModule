@@ -193,99 +193,72 @@
   }
 }
 
-/* ===== FOOTER ACTIONS (Professional Naming) ===== */
-.edit-form-footer {
+/* Footer styles are now in shared/component/Footer/Footer.css */
+
+/* ===== EDIT COMPONENT STYLES ===== */
+.edit-component-container {
+  padding: 24px;
+  padding-bottom: 80px; // Space for fixed footer
   width: 100%;
+  box-sizing: border-box;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 10px 16px;
-  background: #fff;
-  gap: 12px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  border-top: 1px solid #e5e7eb;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  min-height: 100%;
+  background-color: #fff;
 }
 
-/* Base Button Styles (Professional Naming) */
-.edit-form-btn {
-  border: 1px solid;
-  width: auto;
-  border-radius: 4px;
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
+/* ===== MULTI-STEP FORM CONTAINER ===== */
+.multi-step-form-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease-in-out;
-  outline: none;
-  font-weight: 500;
-  padding: 9px 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
-.edit-form-btn:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
+.multi-step-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.edit-form-btn i {
-  font-size: 16px;
-  line-height: 1;
+.multi-step-content-wrapper {
+  flex: 1;
+  overflow-y: auto;
 }
 
-/* Secondary Button (Cancel) - Professional Naming */
-.edit-form-btn--secondary {
-  background-color: #e8f2f8;
-  color: #1579be;
-  border-color: #1579be;
+/* ===== SINGLE FORM CONTAINER ===== */
+.single-form-container {
+  flex: 1;
+  border-radius: 8px;
+  padding: 24px;
 }
 
-.edit-form-btn--secondary:hover:not(:disabled) {
-  background-color: #d1e7f0;
-  border-color: #0f5a8a;
-  color: #0f5a8a;
+/* ===== FORM CONTENT ===== */
+.form-content-empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
 }
 
-.edit-form-btn--secondary:active:not(:disabled) {
-  background-color: #b8d9e8;
-  border-color: #0a4a73;
-  color: #0a4a73;
+.form-content-error {
+  padding: 24px;
+  text-align: center;
+  color: #d32f2f;
 }
 
-/* Primary Button (Submit) - Professional Naming */
-.edit-form-btn--primary {
-  background-color: #1579be;
-  color: #fff;
-  border: none;
-  border-color: #fff;
-  padding: 10px 20px;
+.form-content-error pre {
+  margin-top: 16px;
+  font-size: 12px;
+  text-align: left;
 }
 
-.edit-form-btn--primary:hover:not(:disabled) {
-  background-color: #0f5a8a;
-  border-color: #0f5a8a;
-}
-
-.edit-form-btn--primary:active:not(:disabled) {
-  background-color: #0a4a73;
-  border-color: #0a4a73;
-}
-
-.edit-form-btn--primary:disabled,
-.edit-form-btn--secondary:disabled {
-  background-color: #f5f5f5;
-  border-color: #d9d9d9;
-  color: rgba(0, 0, 0, 0.25);
-  cursor: not-allowed;
-  opacity: 0.6;
+/* ===== FOOTER LOADING ICON ===== */
+.footer-loading-icon {
+  animation: spin 1s linear infinite;
 }
 
 /* Spin Animation for Loading Icon */

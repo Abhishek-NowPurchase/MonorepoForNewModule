@@ -1,7 +1,6 @@
 import React from "react";
-import { Loader, EmptyState } from "../../../../shared/component";
+import { Loader, EmptyState, Footer, BackIcon, DownloadIcon } from "../../../../shared/component";
 import { usePDFDownload } from "../../../../shared/hooks";
-import { DetailFooter } from "./DetailFooter";
 import "../../pages/Detail/Detail.scss";
 
 interface DetailComponentProps {
@@ -56,11 +55,30 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
         <div ref={contentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
 
-      <DetailFooter
-        onBack={onBack}
-        onDownloadPDF={handleLogSheetPDFDownload}
-        onEdit={onEdit}
-      />
+      <Footer>
+        <button
+          onClick={onBack}
+          className="shared-footer-btn shared-footer-btn--secondary"
+        >
+          <BackIcon />
+          BACK
+        </button>
+        <div className="shared-footer-actions">
+          <button
+            onClick={handleLogSheetPDFDownload}
+            className="shared-footer-btn shared-footer-btn--secondary"
+          >
+            <DownloadIcon />
+            DOWNLOAD PDF
+          </button>
+          <button
+            onClick={onEdit}
+            className="shared-footer-btn shared-footer-btn--primary"
+          >
+            EDIT
+          </button>
+        </div>
+      </Footer>
     </div>
   );
 };

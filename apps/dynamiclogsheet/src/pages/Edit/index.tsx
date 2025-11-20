@@ -13,7 +13,6 @@ const Edit: React.FC = () => {
     handleCancel,
     handleSave,
   } = useEdit();
-  console.log("----->", logSheet, formData, isLoading, isSaving, error);
   return (
     <EditComponent
       logSheet={logSheet}

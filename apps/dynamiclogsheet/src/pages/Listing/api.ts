@@ -1,6 +1,6 @@
 import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
+import { createQueryParam } from '../../../../shared/utils';
 import { ApiParams, LogSheetListResponse, TemplateListResponse } from './types';
-import { createQueryParam } from './utils';
 
 const ENDPOINTS = {
   LOG_SHEET_LIST: '/api/admin/dynamic_logsheet/',
