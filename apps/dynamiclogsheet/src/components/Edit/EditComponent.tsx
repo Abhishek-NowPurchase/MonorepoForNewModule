@@ -50,7 +50,10 @@ import {
   FormViewer,
 } from "@react-form-builder/core";
 import { useMemo, useState, useEffect, useRef } from "react";
-import { LogSheet, LogSheetSection } from "../../pages/Edit/types";
+import {
+  LogSheet,
+  LogSheetSection,
+} from "../../../../shared/Api/dynamicLogSheet";
 import { FormData } from "../../pages/Edit/hooks";
 import { Loader } from "../../../../shared/component";
 import "../../pages/Edit/Edit.scss";

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchLogSheetDetail, updateLogSheet } from './api';
-import { LogSheet } from './types';
+import {
+  fetchLogSheetDetail,
+  updateLogSheet,
+  LogSheet,
+} from '../../../../shared/Api/dynamicLogSheet';
 
 export interface FormData {
   name: string;

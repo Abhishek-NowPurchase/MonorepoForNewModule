@@ -42,10 +42,10 @@ const Loader = ({
       <div className="loader-fullscreen">
         {content}
       </div>
-    );
+    ) as any;
   }
 
-  return content;
+  return content as any;
 };
 
 export default Loader;

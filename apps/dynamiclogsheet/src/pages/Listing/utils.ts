@@ -1,4 +1,5 @@
 import { ApiParams } from './types';
+export { formatDate } from '../../../../shared/utils';
 
 /**
  * Creates a URL query string from API parameters
@@ -27,19 +28,6 @@ export function createQueryParam(apiParams: ApiParams): string {
   return params.toString();
 }
 
-/**
- * Formats a date string to a readable format
- * @param dateString - ISO date string
- * @returns Formatted date string
- */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
+// formatDate is now imported from shared/utils
+// This file only contains Listing-specific utilities
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LogSheet } from '../../pages/Listing/types';
-import { formatDate } from '../../pages/Listing/utils';
+import { formatDate } from '../../../../shared/utils';
 import './ListingTable.scss';
 
 interface ListingTableProps {

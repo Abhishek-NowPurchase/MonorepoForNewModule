@@ -20,3 +20,7 @@ export { default as Pagination } from './Pagination';
 export type { PaginationProps } from './Pagination';
 export { default as Loader } from './Loader';
 export type { LoaderProps } from './Loader';
+export { BackIcon, DownloadIcon } from './icons';
+export type { BackIconProps, DownloadIconProps } from './icons';
+export { EmptyState } from './EmptyState';
+export type { EmptyStateProps } from './EmptyState';
