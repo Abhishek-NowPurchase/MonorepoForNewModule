@@ -18,8 +18,10 @@ const ListingTable: React.FC<ListingTableProps> = ({ logSheets, isLoading, onRow
   // Define columns configuration
   const columns: Column[] = [
     { key: 'id', label: 'ID' },
-    { key: 'name', label: 'NAME' },
-    { key: 'created_date', label: 'CREATED DATE' }
+    { key: 'created_by', label: 'CREATED BY' },
+    { key: 'created_at', label: 'CREATED AT' },
+    { key: 'modified_at', label: 'MODIFIED AT' },
+    { key: 'status', label: 'STATUS' }
   ];
 
   // Calculate equal width for each column
@@ -45,10 +47,14 @@ const ListingTable: React.FC<ListingTableProps> = ({ logSheets, isLoading, onRow
     switch (column.key) {
       case 'id':
         return logSheet.id;
-      case 'name':
-        return logSheet.name || '-';
-      case 'created_date':
+      case 'created_by':
+        return logSheet.created_by || '-';
+      case 'created_at':
         return formatDate(logSheet.created_at);
+      case 'modified_at':
+        return formatDate(logSheet.modified_at);
+      case 'status':
+        return logSheet.status || '-'
       default:
         return '-';
     }
