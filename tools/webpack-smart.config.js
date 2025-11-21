@@ -169,7 +169,10 @@ const getCurrentModuleConfig = () => {
   const port = portMap[moduleName] || process.env.PORT || 3107;
   
   console.log(`🚀 Building module: ${moduleName} on port ${port}`);
-  console.log(`📁 Entry: ${path.resolve(cwd, "app/mount.js")}`);
+  const standaloneEntryPath = path.resolve(cwd, "app/index.js");
+  const mountEntryPath = path.resolve(cwd, "app/mount.js");
+  const entryPoint = fs.existsSync(standaloneEntryPath) ? standaloneEntryPath : mountEntryPath;
+  console.log(`📁 Entry: ${entryPoint}`);
   console.log(`📁 Output: ${path.resolve(cwd, "dist")}`);
   console.log(`🔗 Module Federation name: ${moduleName}`);
   console.log(`🔗 Remote entry will be: ${moduleName}@http://localhost:${port}/remoteEntry.js`);
@@ -177,7 +180,7 @@ const getCurrentModuleConfig = () => {
   return {
     moduleName,
     port,
-    entryPoint: path.resolve(cwd, "app/mount.js"),
+    entryPoint,
     publicDir: path.resolve(cwd, "public"),
     outputPath: path.resolve(cwd, "dist"),
     allModules,
