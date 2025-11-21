@@ -6,3 +6,6 @@ node_modules/
 dist/
 *.log
 package-lock.json
+# Environment variables (keep examples tracked)
+*.env
+!.env.example

@@ -1,6 +1,6 @@
 import React from "react";
 import { Footer } from "../../../../../shared/component";
-import "../../pages/Edit/Edit.scss";
+import "../../../pages/Edit/Edit.scss";
 
 interface EditFooterProps {
   isSaving: boolean;
