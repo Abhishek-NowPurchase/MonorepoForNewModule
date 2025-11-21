@@ -1,7 +1,13 @@
 // Centralized API utility for all API calls
 import { getToken } from './tokenUtils';
 
-const BASE_URL = 'https://test-api.nowpurchase.com';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+if (!BASE_URL) {
+  throw new Error(
+    'Missing REACT_APP_API_BASE_URL. Please configure it in apps/dynamiclogsheet/.env'
+  );
+}
 
 const DEFAULT_HEADERS = {
   'accept': 'application/json',

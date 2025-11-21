@@ -25,6 +25,7 @@ export interface ApiParams {
   search?: string;
   page?: number;
   page_size?: number;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface LogSheetListResponse {

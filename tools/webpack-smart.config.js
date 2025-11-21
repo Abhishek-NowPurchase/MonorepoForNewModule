@@ -1,6 +1,76 @@
 const path = require("path");
 const fs = require("fs");
 
+// 📦 ENVIRONMENT VARIABLE SUPPORT
+const parseEnvFile = (filePath) => {
+  if (!fs.existsSync(filePath)) {
+    return {};
+  }
+
+  const content = fs.readFileSync(filePath, "utf8");
+  return content.split(/\r?\n/).reduce((acc, line) => {
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith("#")) {
+      return acc;
+    }
+
+    const delimiterIndex = trimmed.indexOf("=");
+
+    if (delimiterIndex === -1) {
+      return acc;
+    }
+
+    const key = trimmed.slice(0, delimiterIndex).trim();
+    let value = trimmed.slice(delimiterIndex + 1).trim();
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    acc[key] = value;
+    return acc;
+  }, {});
+};
+
+const getClientEnvDefinitions = () => {
+  const cwd = process.cwd();
+  const envFromFile = parseEnvFile(path.join(cwd, ".env"));
+  const allowedKeys = new Set(
+    Object.keys({
+      ...envFromFile,
+      ...process.env
+    }).filter(
+      (key) => key === "NODE_ENV" || key.startsWith("REACT_APP_")
+    )
+  );
+
+  const resolvedEnv = {};
+  allowedKeys.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(envFromFile, key)) {
+      resolvedEnv[key] = envFromFile[key];
+    } else if (process.env[key]) {
+      resolvedEnv[key] = process.env[key];
+    }
+  });
+  if (!resolvedEnv.NODE_ENV) {
+    resolvedEnv.NODE_ENV = process.env.NODE_ENV || "development";
+  }
+
+  const definitions = {
+    "process.env": JSON.stringify(resolvedEnv)
+  };
+
+  Object.entries(resolvedEnv).forEach(([key, value]) => {
+    definitions[`process.env.${key}`] = JSON.stringify(value);
+  });
+
+  return definitions;
+};
+
 // 🚀 SMART MODULE DISCOVERY SYSTEM
 const discoverModules = () => {
   const appsDir = path.resolve(__dirname, '..', 'apps');
@@ -120,8 +190,11 @@ module.exports = (env, argv) => {
   const config = getCurrentModuleConfig();
 
   // Dynamically load webpack and plugins from local module's node_modules
-  const { ModuleFederationPlugin } = require(path.join(process.cwd(), "node_modules/webpack")).container;
+  const webpackInstance = require(path.join(process.cwd(), "node_modules/webpack"));
+  const { ModuleFederationPlugin } = webpackInstance.container;
+  const { DefinePlugin } = webpackInstance;
   const HtmlWebpackPlugin = require(path.join(process.cwd(), "node_modules/html-webpack-plugin"));
+  const envDefinitions = getClientEnvDefinitions();
 
   return {
     entry: config.entryPoint,
@@ -255,7 +328,8 @@ module.exports = (env, argv) => {
             import: false
           }
         }
-      })
+      }),
+      new DefinePlugin(envDefinitions)
     ]
   };
 };

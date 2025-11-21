@@ -2,9 +2,18 @@ import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
 import { createQueryParam } from '../../../../shared/utils';
 import { ApiParams, LogSheetListResponse, TemplateListResponse } from './types';
 
+const LOG_SHEET_LIST = process.env.REACT_APP_LOG_SHEET_ENDPOINT;
+const TEMPLATE_DROPDOWN = process.env.REACT_APP_TEMPLATE_DROPDOWN_ENDPOINT;
+
+if (!LOG_SHEET_LIST || !TEMPLATE_DROPDOWN) {
+  throw new Error(
+    'Missing REACT_APP_LOG_SHEET_ENDPOINT or REACT_APP_TEMPLATE_DROPDOWN_ENDPOINT. Set them in apps/dynamiclogsheet/.env'
+  );
+}
+
 const ENDPOINTS = {
-  LOG_SHEET_LIST: '/api/admin/dynamic_logsheet/',
-  TEMPLATE_DROPDOWN: '/api/admin/dynamic_form/template/dropdown/',
+  LOG_SHEET_LIST,
+  TEMPLATE_DROPDOWN,
 } as const;
 
 /**
