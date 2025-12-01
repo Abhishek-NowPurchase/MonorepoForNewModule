@@ -1,0 +1,12 @@
+[build]
+  # Base directory is apps/grade (set in Netlify UI)
+  # Build command - just run npm run build (no workspace flag needed)
+  command = "npm run build"
+  # Publish directory where webpack outputs the build
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
