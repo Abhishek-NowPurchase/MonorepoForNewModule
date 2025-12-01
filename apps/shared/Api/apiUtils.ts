@@ -1,13 +1,52 @@
 // Centralized API utility for all API calls
 import { getToken } from './tokenUtils';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+/**
+ * Automatically detects the API base URL based on the current hostname.
+ * 
+ * Mapping:
+ * - test.nowpurchase.com → https://test-api.nowpurchase.com (Staging)
+ * - app.nowpurchase.com → https://api.nowpurchase.com (Production)
+ * - localhost/127.0.0.1 → Uses REACT_APP_API_BASE_URL or defaults to production
+ * 
+ * Can be overridden with REACT_APP_API_BASE_URL environment variable for local development.
+ */
+const getApiBaseUrl = (): string => {
+  // Allow manual override via environment variable (useful for local development)
+  if (process.env.REACT_APP_API_BASE_URL) {
+    console.log('[API Config] Using environment variable override:', process.env.REACT_APP_API_BASE_URL);
+    return process.env.REACT_APP_API_BASE_URL;
+  }
 
-if (!BASE_URL) {
-  throw new Error(
-    'Missing REACT_APP_API_BASE_URL. Please configure it in apps/dynamiclogsheet/.env'
-  );
-}
+  // Handle server-side rendering or build-time (window is not available)
+  if (typeof window === 'undefined') {
+    // Default to production API during build/SSR
+    console.log('[API Config] Build/SSR mode: Defaulting to production API');
+    return 'https://api.nowpurchase.com';
+  }
+
+  // Get current hostname (normalize to lowercase for comparison)
+  const hostname = window.location.hostname.toLowerCase().trim();
+
+  // Explicit mapping for staging environment
+  if (hostname === 'test.nowpurchase.com') {
+    console.log('[API Config] Staging detected:', hostname, '→ Using test-api.nowpurchase.com');
+    return 'https://test-api.nowpurchase.com';
+  }
+
+  // Explicit mapping for production environment
+  if (hostname === 'app.nowpurchase.com') {
+    console.log('[API Config] Production detected:', hostname, '→ Using api.nowpurchase.com');
+    return 'https://api.nowpurchase.com';
+  }
+
+  // Fallback: for localhost, development, or any other hostname, default to production
+  // This ensures we never accidentally use staging API in production
+  console.log('[API Config] Unknown hostname:', hostname, '→ Defaulting to production API');
+  return 'https://api.nowpurchase.com';
+};
+
+const BASE_URL = getApiBaseUrl();
 
 const DEFAULT_HEADERS = {
   'accept': 'application/json',
