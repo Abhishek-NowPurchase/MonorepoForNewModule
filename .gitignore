@@ -9,3 +9,7 @@ package-lock.json
 # Environment variables (keep examples tracked)
 *.env
 !.env.example
+
+# Repository sync files (local-only, never push to remotes)
+sync-repos.sh
+REPOSITORY_SYNC.md
