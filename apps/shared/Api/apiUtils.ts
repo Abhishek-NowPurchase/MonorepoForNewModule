@@ -7,7 +7,7 @@ import { getToken } from './tokenUtils';
  * Mapping:
  * - test.nowpurchase.com → https://test-api.nowpurchase.com (Staging)
  * - app.nowpurchase.com → https://api.nowpurchase.com (Production)
- * - localhost/127.0.0.1 → Uses REACT_APP_API_BASE_URL or defaults to production
+ * - localhost → https://test-api.nowpurchase.com (Local Development)
  * 
  * Can be overridden with REACT_APP_API_BASE_URL environment variable for local development.
  */
@@ -40,7 +40,13 @@ const getApiBaseUrl = (): string => {
     return 'https://api.nowpurchase.com';
   }
 
-  // Fallback: for localhost, development, or any other hostname, default to production
+  // Explicit mapping for localhost (local development)
+  if (hostname === 'localhost') {
+    console.log('[API Config] Localhost detected:', hostname, '→ Using test-api.nowpurchase.com');
+    return 'https://test-api.nowpurchase.com';
+  }
+
+  // Fallback: for any other hostname, default to production
   // This ensures we never accidentally use staging API in production
   console.log('[API Config] Unknown hostname:', hostname, '→ Defaulting to production API');
   return 'https://api.nowpurchase.com';
