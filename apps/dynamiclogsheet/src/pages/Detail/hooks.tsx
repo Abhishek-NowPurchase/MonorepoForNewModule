@@ -1,52 +1,53 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchLogSheetDetail, LogSheet } from '../../../../shared/Api/dynamicLogSheet';
 import { renderHtmlTemplate } from '../../../../shared/utils';
+import { DataChangeContext } from '../../contexts/DataChangeContext';
 
 export const useDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const onDataChange = useContext(DataChangeContext);
   const [logSheet, setLogSheet] = useState<LogSheet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const hasSentDataRef = useRef<string | null>(null);
 
+  // Send Preview data to Agnipariksha when detail page loads
   useEffect(() => {
-    const loadLogSheetDetail = async () => {
-      if (!id) return;
+    if (id && onDataChange && hasSentDataRef.current !== id) {
+      onDataChange({ id, action: 'Preview' });
+      hasSentDataRef.current = id;
+    }
+  }, [id, onDataChange]);
 
-      setIsLoading(true);
-      setError(null);
+  // Load log sheet detail
+  useEffect(() => {
+    if (!id) return;
 
-      try {
-        const data = await fetchLogSheetDetail(id);
-        setLogSheet(data);
-      } catch (err) {
-        console.error('Error fetching log sheet detail:', err);
-        setError('Failed to load log sheet details');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setIsLoading(true);
+    setError(null);
 
-    loadLogSheetDetail();
+    fetchLogSheetDetail(id)
+      .then(setLogSheet)
+      .catch(() => setError('Failed to load log sheet details'))
+      .finally(() => setIsLoading(false));
   }, [id]);
 
   // Render HTML content from template and form data
   const htmlContent = useMemo(() => {
-    if (!logSheet?.html_template || !logSheet?.form_data) {
-      return null;
-    }
+    if (!logSheet?.html_template || !logSheet?.form_data) return null;
     return renderHtmlTemplate(logSheet.html_template, logSheet.form_data);
   }, [logSheet]);
 
-  const handleBack = () => {
-    navigate('/dynamic-log-sheet');
-  };
+  const handleBack = () => navigate('/dynamic-log-sheet');
 
   const handleEdit = () => {
-    if (id) {
-      navigate(`/dynamic-log-sheet/${id}/edit`);
+    if (!id) return;
+    if (onDataChange) {
+      onDataChange({ id, action: 'Edit' });
     }
+    navigate(`/dynamic-log-sheet/${id}/edit`);
   };
 
   return {
