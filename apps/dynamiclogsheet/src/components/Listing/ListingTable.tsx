@@ -1,31 +1,30 @@
-import React from 'react';
-import { LogSheet } from '../../pages/Listing/types';
-import { formatDate } from '../../../../shared/utils';
-import './ListingTable.scss';
+import React, { useMemo } from "react";
+import { LogSheet, FieldConfig } from "../../pages/Listing/types";
+import { formatDate } from "../../../../shared/utils";
+import "./ListingTable.scss";
 
 interface ListingTableProps {
   logSheets: LogSheet[];
+  fieldConfigs: FieldConfig[];
   isLoading: boolean;
   onRowClick: (logSheet: LogSheet) => void;
 }
 
-interface Column {
-  key: string;
-  label: string;
-}
-
-const ListingTable: React.FC<ListingTableProps> = ({ logSheets, isLoading, onRowClick }) => {
-  // Define columns configuration
-  const columns: Column[] = [
-    { key: 'id', label: 'ID' },
-    { key: 'created_by', label: 'CREATED BY' },
-    { key: 'created_at', label: 'CREATED AT' },
-    { key: 'modified_at', label: 'MODIFIED AT' },
-    { key: 'status', label: 'STATUS' }
-  ];
+const ListingTable: React.FC<ListingTableProps> = ({
+  logSheets,
+  fieldConfigs,
+  isLoading,
+  onRowClick,
+}) => {
+  // Sort by order and filter visible columns
+  const visibleColumns = useMemo(() => {
+    return fieldConfigs
+      .filter((config) => config.is_visible)
+      .sort((a, b) => a.order - b.order);
+  }, [fieldConfigs]);
 
   // Calculate equal width for each column
-  const columnWidth = `${100 / columns.length}%`;
+  const columnWidth = `${100 / visibleColumns.length}%`;
 
   if (isLoading) {
     return (
@@ -43,34 +42,40 @@ const ListingTable: React.FC<ListingTableProps> = ({ logSheets, isLoading, onRow
     );
   }
 
-  const renderCellContent = (column: Column, logSheet: LogSheet): string | number => {
-    switch (column.key) {
-      case 'id':
-        return logSheet.id;
-      case 'created_by':
-        return logSheet.created_by || '-';
-      case 'created_at':
-        return formatDate(logSheet.created_at);
-      case 'modified_at':
-        return formatDate(logSheet.modified_at);
-      case 'status':
-        return logSheet.status || '-'
-      default:
-        return '-';
+  const renderCellContent = (
+    fieldConfig: FieldConfig,
+    logSheet: LogSheet
+  ): string | number => {
+    const value = (logSheet as any)[fieldConfig.field_key];
+
+    // Handle different field types
+    if (value === null || value === undefined) {
+      return "-";
     }
+
+    // Format dates if field type suggests it or field key contains date-related terms
+    if (
+      fieldConfig.field_type === "date" ||
+      fieldConfig.field_key.includes("_at") ||
+      fieldConfig.field_key.includes("date")
+    ) {
+      return formatDate(value);
+    }
+
+    return value;
   };
 
   return (
     <div className="table-container">
       {/* Header */}
       <div className="table-header">
-        {columns.map((column) => (
+        {visibleColumns.map((fieldConfig) => (
           <div
-            key={column.key}
+            key={fieldConfig.field_key}
             className="table-header-cell"
             style={{ width: columnWidth }}
           >
-            {column.label}
+            {fieldConfig.label}
           </div>
         ))}
       </div>
@@ -83,13 +88,13 @@ const ListingTable: React.FC<ListingTableProps> = ({ logSheets, isLoading, onRow
             className="table-row"
             onClick={() => onRowClick(logSheet)}
           >
-            {columns.map((column) => (
+            {visibleColumns.map((fieldConfig) => (
               <div
-                key={column.key}
+                key={fieldConfig.field_key}
                 className="table-cell"
                 style={{ width: columnWidth }}
               >
-                {renderCellContent(column, logSheet)}
+                {renderCellContent(fieldConfig, logSheet)}
               </div>
             ))}
           </div>

@@ -43,3 +43,15 @@ export interface TemplateListResponse {
   template_name?: string;
 }
 
+export interface FieldConfig {
+  field_key: string;
+  field_type: string;
+  label: string;
+  is_visible: boolean;
+  is_filterable: boolean;
+  is_sortable: boolean;
+  filter_type: string;
+  filter_options: any[];
+  order: number;
+}
+

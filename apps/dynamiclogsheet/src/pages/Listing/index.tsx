@@ -7,6 +7,7 @@ const Listing: React.FC = () => {
     templates,
     selectedTemplate,
     logSheets,
+    fieldConfigs,
     isLoading,
     searchValue,
     page,
@@ -24,6 +25,7 @@ const Listing: React.FC = () => {
       templates={templates}
       selectedTemplate={selectedTemplate}
       logSheets={logSheets}
+      fieldConfigs={fieldConfigs}
       isLoading={isLoading}
       searchValue={searchValue}
       page={page}
