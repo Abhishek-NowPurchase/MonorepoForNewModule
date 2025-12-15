@@ -1,9 +1,10 @@
 import { authenticatedApiCall } from '../../../../shared/Api/apiUtils';
 import { createQueryParam } from '../../../../shared/utils';
-import { ApiParams, LogSheetListResponse, TemplateListResponse } from './types';
+import { ApiParams, LogSheetListResponse, TemplateListResponse, FieldConfig } from './types';
 
 const LOG_SHEET_LIST = process.env.REACT_APP_LOG_SHEET_ENDPOINT;
 const TEMPLATE_DROPDOWN = process.env.REACT_APP_TEMPLATE_DROPDOWN_ENDPOINT;
+const FIELD_CONFIG = process.env.REACT_APP_FIELD_CONFIG_ENDPOINT;
 
 if (!LOG_SHEET_LIST || !TEMPLATE_DROPDOWN) {
   throw new Error(
@@ -14,6 +15,7 @@ if (!LOG_SHEET_LIST || !TEMPLATE_DROPDOWN) {
 const ENDPOINTS = {
   LOG_SHEET_LIST,
   TEMPLATE_DROPDOWN,
+  FIELD_CONFIG,
 } as const;
 
 /**
@@ -46,5 +48,26 @@ export async function fetchTemplateList(): Promise<TemplateListResponse[]> {
   });
 
   return response;
+}
+
+/**
+ * Fetches field configurations for a specific template from the API endpoint.
+ *
+ * @param templateId - The ID of the template to fetch field configs for.
+ * @returns Response from the API containing field configurations.
+ */
+export async function fetchFieldConfigs(templateId: number): Promise<FieldConfig[]> {
+  if (!ENDPOINTS.FIELD_CONFIG) {
+    throw new Error('REACT_APP_FIELD_CONFIG_ENDPOINT is not configured in .env file');
+  }
+
+  const endpoint = `${ENDPOINTS.FIELD_CONFIG}?template_id=${templateId}`;
+
+  const response = await authenticatedApiCall(endpoint, {
+    method: 'GET'
+  });
+
+  // API returns { config: [...] }, extract the config array
+  return response.config || [];
 }
 

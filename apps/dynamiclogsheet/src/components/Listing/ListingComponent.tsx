@@ -1,5 +1,5 @@
 import React from 'react';
-import { Template, LogSheet } from '../../pages/Listing/types';
+import { Template, LogSheet, FieldConfig } from '../../pages/Listing/types';
 import Header from './Header';
 import ListingTable from './ListingTable';
 import Pagination from '../../../../shared/component/Pagination';
@@ -9,6 +9,7 @@ interface ListingComponentProps {
   templates: Template[];
   selectedTemplate: Template | null;
   logSheets: LogSheet[];
+  fieldConfigs: FieldConfig[];
   isLoading: boolean;
   searchValue: string;
   page: number;
@@ -25,6 +26,7 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
   templates,
   selectedTemplate,
   logSheets,
+  fieldConfigs,
   isLoading,
   searchValue,
   page,
@@ -48,6 +50,7 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
 
       <ListingTable
         logSheets={logSheets}
+        fieldConfigs={fieldConfigs}
         isLoading={isLoading}
         onRowClick={onRowClick}
       />

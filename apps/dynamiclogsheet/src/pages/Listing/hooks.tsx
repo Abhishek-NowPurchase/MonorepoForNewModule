@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchLogSheetList, fetchTemplateList } from "./api";
-import { Template, LogSheet } from "./types";
+import { fetchLogSheetList, fetchTemplateList, fetchFieldConfigs } from "./api";
+import { Template, LogSheet, FieldConfig } from "./types";
 import { useDebounce } from "../../../../shared/hooks";
 
 const STORAGE_KEY = "dynamicLogSheet_selectedTemplateId";
@@ -33,6 +33,7 @@ export const useListing = () => {
     null
   );
   const [logSheets, setLogSheets] = useState<LogSheet[]>([]);
+  const [fieldConfigs, setFieldConfigs] = useState<FieldConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchValue, setSearchValue] = useState<string>("");
   const debouncedSearchValue = useDebounce(searchValue, 300);
@@ -58,6 +59,26 @@ export const useListing = () => {
 
     loadTemplates();
   }, []);
+
+  // Fetch field configs when selected template changes
+  useEffect(() => {
+    const loadFieldConfigs = async () => {
+      if (!selectedTemplate) {
+        setFieldConfigs([]);
+        return;
+      }
+
+      try {
+        const configs = await fetchFieldConfigs(selectedTemplate.id);
+        setFieldConfigs(configs);
+      } catch (error) {
+        console.error("Error fetching field configs:", error);
+        setFieldConfigs([]);
+      }
+    };
+
+    loadFieldConfigs();
+  }, [selectedTemplate]);
 
   // Fetch log sheets when selected template changes or search value changes
   useEffect(() => {
@@ -118,6 +139,7 @@ export const useListing = () => {
     templates,
     selectedTemplate,
     logSheets,
+    fieldConfigs,
     isLoading,
     searchValue,
     page,
