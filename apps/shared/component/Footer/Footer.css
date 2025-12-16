@@ -101,6 +101,11 @@
   opacity: 0.6;
 }
 
+/* Footer Loading Icon Animation */
+.footer-loading-icon {
+  animation: spin 1s linear infinite;
+}
+
 /* Spin Animation for Loading Icon */
 @keyframes spin {
   from {

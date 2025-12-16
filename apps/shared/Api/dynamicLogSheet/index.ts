@@ -76,6 +76,27 @@ export async function fetchLogSheetDetail(
 }
 
 /**
+ * Creates a new log sheet with the provided data.
+ *
+ * @param data - Data to create the log sheet with.
+ * @returns Response from the API.
+ */
+export async function createLogSheet(
+  data: {
+    template: number | string;
+    form_data: Record<string, FormDataSection>;
+    status?: string;
+  }
+): Promise<LogSheet> {
+  const response = await authenticatedApiCall(ENDPOINT, {
+    method: "POST",
+    body: data,
+  });
+
+  return response;
+}
+
+/**
  * Updates a log sheet with the provided data.
  *
  * @param id - ID of the log sheet to be updated.

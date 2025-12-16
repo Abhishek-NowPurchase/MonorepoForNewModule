@@ -71,3 +71,19 @@ export async function fetchFieldConfigs(templateId: number): Promise<FieldConfig
   return response.config || [];
 }
 
+/**
+ * Fetches dynamic form data from the API endpoint.
+ * 
+ * @param formId - The ID of the dynamic form to fetch.
+ * @returns Response from the API containing dynamic form data.
+ */
+export async function fetchDynamicForm(formId: number): Promise<any> {
+  const endpoint = `/api/admin/dynamic_form/${formId}/`;
+  
+  const response = await authenticatedApiCall(endpoint, {
+    method: 'GET'
+  });
+
+  return response;
+}
+

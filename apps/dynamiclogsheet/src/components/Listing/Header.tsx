@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Template } from '../../pages/Listing/types';
 import { SearchInput, FilterButton, FilterDrawer, Button, Select } from '../../../../shared/component';
 import { ResetIcon } from '../../../../shared/component/icons';
@@ -19,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   searchValue,
   onSearchChange
 }) => {
+  const navigate = useNavigate();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [tempSelectedTemplate, setTempSelectedTemplate] = useState<number | null>(
     selectedTemplate?.id || null
@@ -78,6 +80,21 @@ const Header: React.FC<HeaderProps> = ({
             onClick={() => setIsFilterOpen(true)}
             active={filterCount > 0}
             aria-label="Filter"
+          />
+
+          <Button
+            variant="primary"
+            icon="add"
+            text="New Log Sheet"
+            onClick={() => {
+              const templateId = selectedTemplate?.id;
+              if (templateId) {
+                navigate(`/dynamic-log-sheet/new?template=${templateId}`);
+              } else {
+                // If no template selected, navigate without template param (will show error or use default)
+                navigate('/dynamic-log-sheet/new');
+              }
+            }}
           />
         </div>
       </div>

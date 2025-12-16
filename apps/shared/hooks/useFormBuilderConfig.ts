@@ -42,6 +42,9 @@ import {
   rsWizardStep,
   RsLocalizationWrapper,
 } from "@react-form-builder/components-rsuite";
+import {
+  rSuiteTableComponents,
+} from "@react-form-builder/components-rsuite-table";
 import { BiDi, createView } from "@react-form-builder/core";
 import { useMemo } from "react";
 
@@ -97,6 +100,8 @@ export const useFormBuilderConfig = () => {
       rsUploader,
       rsWizard,
       rsWizardStep,
+      // Table components for dynamic rows
+      ...rSuiteTableComponents,
     ].map((def) => def.build().model);
 
     return createView(components)
