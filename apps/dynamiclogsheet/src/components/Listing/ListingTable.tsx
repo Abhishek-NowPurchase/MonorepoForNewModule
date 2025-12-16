@@ -17,14 +17,31 @@ const ListingTable: React.FC<ListingTableProps> = ({
   onRowClick,
 }) => {
   // Sort by order and filter visible columns
+  // If no fieldConfigs, use default columns based on common log sheet fields
   const visibleColumns = useMemo(() => {
+    if (fieldConfigs.length === 0 && logSheets.length > 0) {
+      // Fallback: Show default columns if no field configs are available
+      const defaultFields: FieldConfig[] = [
+        { field_key: 'id', label: 'ID', order: 1, field_type: 'number', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+        { field_key: 'template_name', label: 'Template', order: 2, field_type: 'string', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+        { field_key: 'created_by', label: 'Created By', order: 3, field_type: 'string', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+        { field_key: 'status', label: 'Status', order: 4, field_type: 'string', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+        { field_key: 'created_at', label: 'Created At', order: 5, field_type: 'date', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+        { field_key: 'modified_at', label: 'Modified At', order: 6, field_type: 'date', is_visible: true, is_filterable: false, is_sortable: true, filter_type: '', filter_options: [] },
+      ];
+      return defaultFields.filter((field) => {
+        // Only show fields that exist in at least one log sheet
+        return logSheets.some((sheet) => (sheet as any)[field.field_key] !== undefined);
+      });
+    }
+    
     return fieldConfigs
       .filter((config) => config.is_visible)
       .sort((a, b) => a.order - b.order);
-  }, [fieldConfigs]);
+  }, [fieldConfigs, logSheets]);
 
-  // Calculate equal width for each column
-  const columnWidth = `${100 / visibleColumns.length}%`;
+  // Calculate equal width for each column (only if we have columns)
+  const columnWidth = visibleColumns.length > 0 ? `${100 / visibleColumns.length}%` : 'auto';
 
   if (isLoading) {
     return (
@@ -38,6 +55,15 @@ const ListingTable: React.FC<ListingTableProps> = ({
     return (
       <div className="empty-state">
         <p>No log sheets found</p>
+      </div>
+    );
+  }
+
+  // If no visible columns configured, show default columns or error message
+  if (visibleColumns.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>No columns configured for this template. Please configure field settings.</p>
       </div>
     );
   }
