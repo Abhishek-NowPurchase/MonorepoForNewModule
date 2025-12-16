@@ -274,18 +274,39 @@ const NewPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: '40px 40px 120px 40px' }}>
-      <FormRenderer
-        formJson={formJsonString}
-        formName={formData.template_name || 'New Log Sheet'}
-        getForm={getForm}
-        initialData={formValues.default || {}}
-        viewWithCss={viewWithCss}
-        actions={actions}
-        handleFormDataChange={handleFormDataChange}
-        viewerRef={viewerRef}
-        sectionIndex={0}
-      />
+    <div style={{ 
+      minHeight: 'calc(100vh - 80px)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: '40px 20px 120px 20px',
+      backgroundColor: '#f5f5f5', // White background
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '210mm', // A4 width (210mm = 8.27 inches)
+        minHeight: '297mm', // A4 height (297mm = 11.69 inches)
+        margin: '0 auto',
+        backgroundColor: '#ffffff', // White paper
+        border: '1px solid #d0d0d0', // Subtle border
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1)', // Paper shadow
+        borderRadius: '2px', // Slight rounded corners
+        padding: '40px 50px', // Internal padding like margins on paper
+        boxSizing: 'border-box',
+      }}>
+        <FormRenderer
+          formJson={formJsonString}
+          formName={formData.template_name || 'New Log Sheet'}
+          getForm={getForm}
+          initialData={formValues.default || {}}
+          viewWithCss={viewWithCss}
+          actions={actions}
+          handleFormDataChange={handleFormDataChange}
+          viewerRef={viewerRef}
+          sectionIndex={0}
+        />
+      </div>
       <NewPageFooter
         isSubmitting={isSubmitting}
         isLoading={isLoading}
