@@ -8,16 +8,9 @@ import { getToken } from './tokenUtils';
  * - test.nowpurchase.com → https://test-api.nowpurchase.com (Staging)
  * - app.nowpurchase.com → https://api.nowpurchase.com (Production)
  * - localhost → https://test-api.nowpurchase.com (Local Development)
- * 
- * Can be overridden with REACT_APP_API_BASE_URL environment variable for local development.
+ * - Any other hostname → https://api.nowpurchase.com (Production - safe fallback)
  */
 const getApiBaseUrl = (): string => {
-  // Allow manual override via environment variable (useful for local development)
-  if (process.env.REACT_APP_API_BASE_URL) {
-    console.log('[API Config] Using environment variable override:', process.env.REACT_APP_API_BASE_URL);
-    return process.env.REACT_APP_API_BASE_URL;
-  }
-
   // Handle server-side rendering or build-time (window is not available)
   if (typeof window === 'undefined') {
     // Default to production API during build/SSR
