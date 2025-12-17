@@ -296,16 +296,16 @@ const NewPage: React.FC = () => {
       alignItems: 'center',
       justifyContent: 'flex-start',
       padding: '40px 20px 120px 20px',
-      backgroundColor: '#ffffff', // White background
+      backgroundColor: '#f5f5f5', // White background
     }}>
       <div style={{
         width: '100%',
         maxWidth: '210mm', // A4 width (210mm = 8.27 inches)
         minHeight: '297mm', // A4 height (297mm = 11.69 inches)
         margin: '0 auto',
-        backgroundColor: '#ffffff', // White paper
-        border: '1px solid #d0d0d0', // Subtle border
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1)', // Paper shadow
+        backgroundColor: '#f5f5f5', // White paper
+        // border: '1px solid #d0d0d0', // Subtle border
+        // boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1)', // Paper shadow
         borderRadius: '2px', // Slight rounded corners
         padding: '40px 50px', // Internal padding like margins on paper
         boxSizing: 'border-box',
