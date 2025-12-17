@@ -59,6 +59,11 @@ const Header: React.FC<HeaderProps> = ({
     setTempSelectedTemplate(selectedTemplate?.id || null);
   }, [selectedTemplate]);
 
+  // Check if selected template has "Web" platform (case-insensitive)
+  const hasWebPlatform = selectedTemplate?.platforms?.some(
+    platform => platform?.toLowerCase() === 'web'
+  ) ?? false;
+
   return (
     <>
       <div className="header-container">
@@ -82,21 +87,23 @@ const Header: React.FC<HeaderProps> = ({
             aria-label="Filter"
           />
 
-          <Button
-            variant="primary"
-            icon="add"
-            text="New Log Sheet"
-            onClick={() => {
-              const templateId = selectedTemplate?.id;
-              if (templateId) {
-                navigate(`/dynamic-log-sheet/new/${templateId}`);
-              } else {
-                // If no template selected, show error or redirect to listing
-                // You might want to show a toast/alert here instead
-                console.warn('No template selected. Please select a template first.');
-              }
-            }}
-          />
+          {hasWebPlatform && (
+            <Button
+              variant="primary"
+              icon="add"
+              text="New Log Sheet"
+              onClick={() => {
+                const templateId = selectedTemplate?.id;
+                if (templateId) {
+                  navigate(`/dynamic-log-sheet/new/${templateId}`);
+                } else {
+                  // If no template selected, show error or redirect to listing
+                  // You might want to show a toast/alert here instead
+                  console.warn('No template selected. Please select a template first.');
+                }
+              }}
+            />
+          )}
         </div>
       </div>
 

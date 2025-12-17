@@ -4,6 +4,7 @@ export interface Template {
   version: string;
   template_name?: string;
   description?: string;
+  platforms?: string[];
 }
 
 export interface LogSheet {
