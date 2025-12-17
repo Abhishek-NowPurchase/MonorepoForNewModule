@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { fetchLogSheetList, fetchTemplateList, fetchFieldConfigs } from "./api";
 import { Template, LogSheet, FieldConfig } from "./types";
-import { useDebounce } from "../../../../shared/hooks";
+import { useCategoryFromRoute } from "../../utils/routeUtils";
 
 const STORAGE_KEY = "dynamicLogSheet_selectedTemplateId";
 
@@ -28,6 +28,7 @@ const getTemplateToSelect = (templates: Template[]): Template | null => {
 
 export const useListing = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null
@@ -35,11 +36,26 @@ export const useListing = () => {
   const [logSheets, setLogSheets] = useState<LogSheet[]>([]);
   const [fieldConfigs, setFieldConfigs] = useState<FieldConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchValue, setSearchValue] = useState<string>("");
-  const debouncedSearchValue = useDebounce(searchValue, 300);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);
+
+  // Determine category from route
+  const categoryRoute = useCategoryFromRoute();
+  // Map route category to API category number: 1 = Master, 2 = Operational
+  const categoryNumber = useMemo(() => {
+    return categoryRoute === 'operational' ? 2 : 1;
+  }, [categoryRoute]);
+
+  // Filter templates by category number
+  // Only show templates that have the matching category number
+  // Exclude templates with category: null
+  const filteredTemplates = useMemo(() => {
+    return templates.filter(template => {
+      // Only include templates that have a category and it matches the current route
+      return template.category === categoryNumber;
+    });
+  }, [templates, categoryNumber]);
 
   // Fetch templates on component mount
   useEffect(() => {
@@ -47,11 +63,6 @@ export const useListing = () => {
       try {
         const templateList = await fetchTemplateList();
         setTemplates(templateList);
-
-        const templateToSelect = getTemplateToSelect(templateList);
-        if (templateToSelect) {
-          setSelectedTemplate(templateToSelect);
-        }
       } catch (error) {
         console.error("Error fetching templates:", error);
       }
@@ -59,6 +70,27 @@ export const useListing = () => {
 
     loadTemplates();
   }, []);
+
+  // Update selected template when category or templates change
+  useEffect(() => {
+    if (filteredTemplates.length > 0) {
+      const savedId = getSavedTemplateId();
+      const templateToSelect = savedId
+        ? filteredTemplates.find((t) => t.id === savedId) || filteredTemplates[0]
+        : filteredTemplates[0];
+      
+      // Only update if the template is different or if no template is selected
+      if (templateToSelect && (!selectedTemplate || templateToSelect.id !== selectedTemplate.id)) {
+        setSelectedTemplate(templateToSelect);
+      }
+    } else {
+      // If no templates match the category, clear selection
+      if (selectedTemplate) {
+        setSelectedTemplate(null);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredTemplates, categoryRoute]);
 
   // Fetch field configs when selected template changes
   useEffect(() => {
@@ -80,7 +112,7 @@ export const useListing = () => {
     loadFieldConfigs();
   }, [selectedTemplate]);
 
-  // Fetch log sheets when selected template changes or search value changes
+  // Fetch log sheets when selected template changes
   useEffect(() => {
     const loadLogSheets = async () => {
       if (!selectedTemplate) {
@@ -92,9 +124,9 @@ export const useListing = () => {
       try {
         const response = await fetchLogSheetList({
           template: selectedTemplate.id,
-          search: debouncedSearchValue || undefined,
           page: page,
           page_size: pageSize,
+          category: categoryNumber,
         });
 
         setLogSheets(response.results || []);
@@ -109,17 +141,12 @@ export const useListing = () => {
     };
 
     loadLogSheets();
-  }, [selectedTemplate, debouncedSearchValue, page, pageSize]);
+  }, [selectedTemplate, page, pageSize, categoryNumber]);
 
   const handleTemplateChange = (template: Template) => {
     setSelectedTemplate(template);
     saveTemplateId(template.id);
     setPage(1); // Reset to first page when template changes
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchValue(value);
-    setPage(1); // Reset to first page when search changes
   };
 
   const handlePageChange = (newPage: number) => {
@@ -132,21 +159,19 @@ export const useListing = () => {
   };
 
   const handleRowClick = (logSheet: LogSheet) => {
-    navigate(`/dynamic-log-sheet/${logSheet.id}`);
+    navigate(`/dynamic-log-sheet/${categoryRoute}/${logSheet.id}`);
   };
 
   return {
-    templates,
+    templates: filteredTemplates,
     selectedTemplate,
     logSheets,
     fieldConfigs,
     isLoading,
-    searchValue,
     page,
     pageSize,
     totalCount,
     handleTemplateChange,
-    handleSearchChange,
     handlePageChange,
     handlePageSizeChange,
     handleRowClick,

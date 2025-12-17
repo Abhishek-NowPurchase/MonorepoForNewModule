@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef, useContext } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import type { IFormViewer } from '@react-form-builder/core';
 import { DataChangeContext } from '../../contexts/DataChangeContext';
 import { fetchDynamicForm } from '../Listing/api';
@@ -8,9 +8,12 @@ import { useFormBuilderConfig } from '../../../../shared/hooks';
 import { parseFormJson, stringifyFormJson, convertDatesToISOInObject } from '../../../../shared/utils';
 import { createLogSheet } from '../../../../shared/Api/dynamicLogSheet';
 import { NewPageFooter } from '../../components/NewPage/NewPageFooter';
+import { getCategoryFromPath } from '../../utils/routeUtils';
 
 const NewPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const category = getCategoryFromPath(location.pathname);
   const params = useParams<{ template_id: string }>();
   const onDataChange = useContext(DataChangeContext);
   const [formData, setFormData] = useState<any>(null);
@@ -204,7 +207,7 @@ const NewPage: React.FC = () => {
 
   // Handle cancel - navigate back to listing
   const handleCancel = () => {
-    navigate('/dynamic-log-sheet');
+    navigate(`/dynamic-log-sheet/${category}`);
   };
 
   // Handle form submission with validation
@@ -247,7 +250,7 @@ const NewPage: React.FC = () => {
       });
 
       // Navigate back to listing on success
-      navigate('/dynamic-log-sheet');
+      navigate(`/dynamic-log-sheet/${category}`);
     } catch (err: any) {
       setError(err.message || 'Failed to create log sheet');
       setIsSubmitting(false);
@@ -276,7 +279,7 @@ const NewPage: React.FC = () => {
       <div style={{ padding: '40px' }}>
         <h1>Error</h1>
         <p>{error}</p>
-        <button onClick={() => navigate('/dynamic-log-sheet')}>
+        <button onClick={() => navigate(`/dynamic-log-sheet/${category}`)}>
           Back to Listing
         </button>
       </div>
@@ -288,7 +291,7 @@ const NewPage: React.FC = () => {
       <div style={{ padding: '40px' }}>
         <h1>New Log Sheet</h1>
         <p>No form data available.</p>
-        <button onClick={() => navigate('/dynamic-log-sheet')}>
+        <button onClick={() => navigate(`/dynamic-log-sheet/${category}`)}>
           Back to Listing
         </button>
       </div>
@@ -307,7 +310,7 @@ const NewPage: React.FC = () => {
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '210mm', // A4 width (210mm = 8.27 inches)
+        maxWidth: '310mm', // A4 width (210mm = 8.27 inches)
         minHeight: '297mm', // A4 height (297mm = 11.69 inches)
         margin: '0 auto',
         backgroundColor: '#f5f5f5', // White paper

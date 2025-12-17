@@ -11,12 +11,10 @@ interface ListingComponentProps {
   logSheets: LogSheet[];
   fieldConfigs: FieldConfig[];
   isLoading: boolean;
-  searchValue: string;
   page: number;
   pageSize: number;
   totalCount: number;
   onTemplateChange: (template: Template) => void;
-  onSearchChange: (value: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onRowClick: (logSheet: LogSheet) => void;
@@ -28,12 +26,10 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
   logSheets,
   fieldConfigs,
   isLoading,
-  searchValue,
   page,
   pageSize,
   totalCount,
   onTemplateChange,
-  onSearchChange,
   onPageChange,
   onPageSizeChange,
   onRowClick
@@ -44,8 +40,6 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
         templates={templates}
         selectedTemplate={selectedTemplate}
         onTemplateChange={onTemplateChange}
-        searchValue={searchValue}
-        onSearchChange={onSearchChange}
       />
 
       <ListingTable

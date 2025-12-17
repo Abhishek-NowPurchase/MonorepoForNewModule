@@ -1,12 +1,18 @@
 import React, { useMemo } from "react";
-import { LogSheet, FieldConfig } from "../../pages/Listing/types";
+import { useLocation } from "react-router-dom";
+import { LogSheet, FieldConfig, Template } from "../../pages/Listing/types";
 import { formatDate } from "../../../../shared/utils";
+import { Select } from "../../../../shared/component";
+import { getCategoryFromPath } from "../../utils/routeUtils";
 import "./ListingTable.scss";
 
 interface ListingTableProps {
   logSheets: LogSheet[];
   fieldConfigs: FieldConfig[];
   isLoading: boolean;
+  templates: Template[];
+  selectedTemplate: Template | null;
+  onTemplateChange: (template: Template) => void;
   onRowClick: (logSheet: LogSheet) => void;
 }
 
@@ -14,8 +20,22 @@ const ListingTable: React.FC<ListingTableProps> = ({
   logSheets,
   fieldConfigs,
   isLoading,
+  templates,
+  selectedTemplate,
+  onTemplateChange,
   onRowClick,
 }) => {
+  const location = useLocation();
+  const category = getCategoryFromPath(location.pathname);
+
+  // Handle template selection change - apply immediately
+  const handleTemplateSelectChange = (value: string | number) => {
+    const templateId = Number(value);
+    const selected = templates.find(t => t.id === templateId);
+    if (selected) {
+      onTemplateChange(selected);
+    }
+  };
   // Sort by order and filter visible columns
   // If no fieldConfigs, use default columns based on common log sheet fields
   const visibleColumns = useMemo(() => {

@@ -1,12 +1,15 @@
 import { useEffect, useState, useMemo, useContext, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { fetchLogSheetDetail, LogSheet } from '../../../../shared/Api/dynamicLogSheet';
 import { renderHtmlTemplate } from '../../../../shared/utils';
 import { DataChangeContext } from '../../contexts/DataChangeContext';
+import { getCategoryFromPath } from '../../utils/routeUtils';
 
 export const useDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const category = getCategoryFromPath(location.pathname);
   const onDataChange = useContext(DataChangeContext);
   const [logSheet, setLogSheet] = useState<LogSheet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -40,14 +43,16 @@ export const useDetail = () => {
     return renderHtmlTemplate(logSheet.html_template, logSheet.form_data);
   }, [logSheet]);
 
-  const handleBack = () => {navigate('/dynamic-log-sheet');};
+  const handleBack = () => {
+    navigate(`/dynamic-log-sheet/${category}`);
+  };
 
   const handleEdit = () => {
     if (!id) return;
     if (onDataChange) {
       onDataChange({ id, action: 'Edit' });
     }
-    navigate(`/dynamic-log-sheet/${id}/edit`);
+    navigate(`/dynamic-log-sheet/${category}/${id}/edit`);
   };
 
   return {

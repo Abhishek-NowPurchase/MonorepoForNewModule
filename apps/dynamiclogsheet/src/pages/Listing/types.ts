@@ -5,6 +5,8 @@ export interface Template {
   template_name?: string;
   description?: string;
   platforms?: string[];
+  category?: number | null; // 1 = Master, 2 = Operational, null = No category
+  category_name?: string; // "Master" or "Operational"
 }
 
 export interface LogSheet {
@@ -27,6 +29,7 @@ export interface ApiParams {
   search?: string;
   page?: number;
   page_size?: number;
+  category?: number; // 1 = Master, 2 = Operational
   [key: string]: string | number | boolean | undefined;
 }
 

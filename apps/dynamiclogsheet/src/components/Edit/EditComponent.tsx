@@ -51,6 +51,13 @@ const EditComponent: React.FC<EditComponentProps> = ({
     logSheet
   );
 
+  // Get form JSON functions (needed before useFormData)
+  const { getForm, getCurrentSectionForm, getFormJson } = useFormJson({
+    logSheet,
+    getAllSectionsJson,
+    selectedSectionIndex,
+  });
+
   // Manage form data
   const {
     formValues,
@@ -62,13 +69,8 @@ const EditComponent: React.FC<EditComponentProps> = ({
     isMultiStep,
     selectedSectionIndex,
     getAllSectionsJson,
-  });
-
-  // Get form JSON functions
-  const { getForm, getCurrentSectionForm, getFormJson } = useFormJson({
-    logSheet,
-    getAllSectionsJson,
-    selectedSectionIndex,
+    getCurrentSectionFormJson: getCurrentSectionForm,
+    getFormJson,
   });
 
   const currentSection = getAllSectionsJson[selectedSectionIndex];

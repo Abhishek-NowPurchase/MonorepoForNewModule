@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   fetchLogSheetDetail,
   updateLogSheet,
   LogSheet,
 } from '../../../../shared/Api/dynamicLogSheet';
 import { DataChangeContext } from '../../contexts/DataChangeContext';
+import { getCategoryFromPath } from '../../utils/routeUtils';
 
 export interface FormData {
   name: string;
@@ -18,6 +19,8 @@ export const useEdit = () => {
   const params = useParams<{ id: string }>();
   const id = params?.id;
   const navigate = useNavigate();
+  const location = useLocation();
+  const category = getCategoryFromPath(location.pathname);
   const onDataChange = useContext(DataChangeContext);
   const hasSentDataRef = useRef<string | null>(null);
   const [logSheet, setLogSheet] = useState<LogSheet | null>(null);
@@ -74,7 +77,7 @@ export const useEdit = () => {
 
   const handleCancel = () => {
     if (id) {
-      navigate(`/dynamic-log-sheet/${id}`);
+      navigate(`/dynamic-log-sheet/${category}/${id}`);
     }
   };
 
@@ -106,7 +109,7 @@ export const useEdit = () => {
       await updateLogSheet(id, updateData);
 
       // Navigate back to detail page
-      navigate(`/dynamic-log-sheet/${id}`);
+      navigate(`/dynamic-log-sheet/${category}/${id}`);
     } catch (err) {
       setError('Failed to save log sheet');
     } finally {
