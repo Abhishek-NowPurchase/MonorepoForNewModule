@@ -135,6 +135,7 @@
 }
 
 .aui-btn-primary:hover {
+  background-color: #1579be !important;
   box-shadow: 12px 8px 24px 0 rgba(33, 126, 192, 0.2);
   color: #fff;
 }
