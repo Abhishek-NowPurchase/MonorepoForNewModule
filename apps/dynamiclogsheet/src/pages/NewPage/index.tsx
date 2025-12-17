@@ -35,14 +35,21 @@ const NewPage: React.FC = () => {
   const { viewWithCss } = useFormBuilderConfig();
 
   // Send data to Agnipariksha for header display when template changes
+  // Update when templateId changes OR when formData loads (to get template_name)
   useEffect(() => {
-    if (templateId && onDataChange && hasSentDataRef.current !== String(templateId)) {
-      onDataChange({ 
-        template: templateId, 
-        template_name: formData?.template_name,
-        action: 'New' 
-      });
-      hasSentDataRef.current = String(templateId);
+    if (templateId && onDataChange) {
+      // Update if templateId changed (first time) OR if formData loaded with template_name
+      const isNewTemplate = hasSentDataRef.current !== String(templateId);
+      const hasTemplateName = formData?.template_name;
+      
+      if (isNewTemplate || hasTemplateName) {
+        onDataChange({ 
+          template: templateId, 
+          template_name: formData?.template_name,
+          action: 'New' 
+        });
+        hasSentDataRef.current = String(templateId);
+      }
     }
   }, [templateId, formData?.template_name, onDataChange]);
 
