@@ -23,10 +23,10 @@ export const useDetail = () => {
 
   // Load log sheet detail
   useEffect(() => {
-    if (!id) return;
+      if (!id) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
     fetchLogSheetDetail(id)
       .then(setLogSheet)
@@ -40,7 +40,7 @@ export const useDetail = () => {
     return renderHtmlTemplate(logSheet.html_template, logSheet.form_data);
   }, [logSheet]);
 
-  const handleBack = () => navigate('/dynamic-log-sheet');
+  const handleBack = () => {navigate('/dynamic-log-sheet');};
 
   const handleEdit = () => {
     if (!id) return;

@@ -89,10 +89,11 @@ const Header: React.FC<HeaderProps> = ({
             onClick={() => {
               const templateId = selectedTemplate?.id;
               if (templateId) {
-                navigate(`/dynamic-log-sheet/new?template=${templateId}`);
+                navigate(`/dynamic-log-sheet/new/${templateId}`);
               } else {
-                // If no template selected, navigate without template param (will show error or use default)
-                navigate('/dynamic-log-sheet/new');
+                // If no template selected, show error or redirect to listing
+                // You might want to show a toast/alert here instead
+                console.warn('No template selected. Please select a template first.');
               }
             }}
           />

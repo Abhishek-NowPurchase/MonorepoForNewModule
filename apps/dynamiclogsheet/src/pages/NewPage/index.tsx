@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState, useMemo, useRef, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { IFormViewer } from '@react-form-builder/core';
+import { DataChangeContext } from '../../contexts/DataChangeContext';
 import { fetchDynamicForm } from '../Listing/api';
 import { FormRenderer, Loader } from '../../../../shared/component';
 import { useFormBuilderConfig } from '../../../../shared/hooks';
@@ -10,26 +11,40 @@ import { NewPageFooter } from '../../components/NewPage/NewPageFooter';
 
 const NewPage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const params = useParams<{ template_id: string }>();
+  const onDataChange = useContext(DataChangeContext);
   const [formData, setFormData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const viewerRef = useRef<IFormViewer | null>(null);
+  const hasSentDataRef = useRef<string | null>(null);
 
-  // Get template ID from URL query parameter
+  // Get template ID from URL path parameter
   const templateId = useMemo(() => {
-    const templateParam = searchParams.get('template');
+    const templateParam = params?.template_id;
     if (templateParam) {
       const parsed = parseInt(templateParam, 10);
       return isNaN(parsed) ? null : parsed;
     }
     return null;
-  }, [searchParams]);
+  }, [params?.template_id]);
 
   // Initialize form builder configuration
   const { viewWithCss } = useFormBuilderConfig();
+
+  // Send data to Agnipariksha for header display when template changes
+  useEffect(() => {
+    if (templateId && onDataChange && hasSentDataRef.current !== String(templateId)) {
+      onDataChange({ 
+        template: templateId, 
+        template_name: formData?.template_name,
+        action: 'New' 
+      });
+      hasSentDataRef.current = String(templateId);
+    }
+  }, [templateId, formData?.template_name, onDataChange]);
 
   useEffect(() => {
     const loadFormData = async () => {
@@ -281,7 +296,7 @@ const NewPage: React.FC = () => {
       alignItems: 'center',
       justifyContent: 'flex-start',
       padding: '40px 20px 120px 20px',
-      backgroundColor: '#f5f5f5', // White background
+      backgroundColor: '#ffffff', // White background
     }}>
       <div style={{
         width: '100%',

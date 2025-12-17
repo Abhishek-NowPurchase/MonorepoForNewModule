@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchLogSheetDetail,
   updateLogSheet,
   LogSheet,
 } from '../../../../shared/Api/dynamicLogSheet';
+import { DataChangeContext } from '../../contexts/DataChangeContext';
 
 export interface FormData {
   name: string;
@@ -14,8 +15,11 @@ export interface FormData {
 }
 
 export const useEdit = () => {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const navigate = useNavigate();
+  const onDataChange = useContext(DataChangeContext);
+  const hasSentDataRef = useRef<string | null>(null);
   const [logSheet, setLogSheet] = useState<LogSheet | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -26,6 +30,14 @@ export const useEdit = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Send data to parent for header enrichment (not for routing - URL is source of truth)
+  useEffect(() => {
+    if (id && onDataChange && hasSentDataRef.current !== id) {
+      onDataChange({ id, action: 'Edit' });
+      hasSentDataRef.current = id;
+    }
+  }, [id, onDataChange]);
 
   useEffect(() => {
     const loadLogSheetDetail = async () => {
