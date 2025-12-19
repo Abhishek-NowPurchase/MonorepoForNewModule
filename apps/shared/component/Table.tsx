@@ -60,11 +60,12 @@ const TableHeadComponent = <T extends Record<string, any> = any>({
   headerClassNames?: string;
 }) => (
   <TableHead>
-    <TableRow className={headerClassNames || ''}>
+    <TableRow className={`table-header-row ${headerClassNames || ''}`}>
       {tableSchema.map((column) => (
         <TableCell
           key={column.id}
           align={column.align}
+          className="table-header-cell"
           style={{ ...column?.headerStyle, ...column.style }}
         >
           {column.header}

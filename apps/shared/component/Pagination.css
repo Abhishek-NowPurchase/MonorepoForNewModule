@@ -2,11 +2,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 60px;
-  background: #eeeeee;
-  border-width: 1px 0px;
+  background: #FFF;
+  /* border-width: 1px 0px;
   border-style: solid;
-  border-color: #eeeeee;
+  border-color: #eeeeee; */
   align-items: center;
+  border-radius: 16px;
+  padding: 10px 20px;
 }
 
 .pagination-rows-per-page {
@@ -17,12 +19,21 @@
 }
 
 .pagination-rows-label {
-  font-size: 0.9rem;
+  /* font-size: 0.9rem; */
   color: #303030;
+
+  color: var(--color-grey-600, #808080);
+font-family: Oxanium;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: 18px; /* 150% */
 }
 
 .pagination-select-container {
   min-width: 60px;
+  /* width: 60px;
+height: 40px; */
 }
 
 .pagination-select-container .select-form-control {
@@ -37,21 +48,109 @@
 }
 
 .pagination-item {
-  border-radius: 4px !important;
-  background: #ffffff;
+  border-radius: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  margin: 0 4px !important;
+  color: #808080 !important;
+  font-family: 'Oxanium', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
 }
 
 /* Override MUI default styles for pagination buttons */
 .pagination-controls .MuiPaginationItem-root {
-  border-radius: 4px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  margin: 0 4px !important;
+  color: #808080 !important;
+  font-family: 'Oxanium', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  background: transparent !important;
 }
 
-.pagination-controls .MuiPaginationItem-previousNext {
-  border-radius: 4px !important;
-}
-
+/* Inactive page numbers - light grey, no background */
 .pagination-controls .MuiPaginationItem-page {
-  border-radius: 4px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #808080 !important;
+  font-family: 'Oxanium', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+/* Active/Selected page - light blue background with darker blue text */
+.pagination-controls .MuiPaginationItem-page.Mui-selected {
+  background: #E3F2FD !important;
+  border: none !important;
+  color: #1976D2 !important;
+  font-weight: 500 !important;
+}
+
+.pagination-controls .MuiPaginationItem-page.Mui-selected:hover {
+  background: #BBDEFB !important;
+}
+
+/* Previous/Next buttons */
+.pagination-controls .MuiPaginationItem-previousNext {
+  border-radius: 8px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  margin: 0 4px !important;
+}
+
+/* Previous button - grey when disabled, no background when enabled */
+.pagination-controls .MuiPaginationItem-previous {
+  background: transparent !important;
+  border: none !important;
+  color: #808080 !important;
+}
+
+.pagination-controls .MuiPaginationItem-previous.Mui-disabled {
+  color: #BDBDBD !important;
+  background: transparent !important;
+}
+
+/* Next button - light blue background with darker blue arrow when enabled */
+.pagination-controls .MuiPaginationItem-next {
+  background: #E3F2FD !important;
+  border: none !important;
+  color: #1976D2 !important;
+}
+
+.pagination-controls .MuiPaginationItem-next:hover {
+  background: #BBDEFB !important;
+}
+
+.pagination-controls .MuiPaginationItem-next.Mui-disabled {
+  background: transparent !important;
+  color: #BDBDBD !important;
+}
+
+/* Ellipsis - light grey */
+.pagination-controls .MuiPaginationItem-ellipsis {
+  color: #808080 !important;
+  background: transparent !important;
+  border: none !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  margin: 0 4px !important;
+}
+
+/* Hover states for inactive pages */
+.pagination-controls .MuiPaginationItem-page:hover:not(.Mui-selected) {
+  background: #F5F5F5 !important;
+  color: #808080 !important;
 }
 
 @media (max-width: 768px) {

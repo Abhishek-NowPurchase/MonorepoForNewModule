@@ -1,64 +1,149 @@
 /* Table Container */
 .table-container {
   overflow-x: hidden;
-  border-radius: 0 !important;
-}
-
-/* Table Styles */
-.table {
-  width: 100%;
-}
-
-.table tr td {
-  border: none;
-}
-
-/* Table Row Effects */
-.table-row {
-  transition: all 0.2s ease-in-out;
-}
-
-.table-row:nth-child(odd) {
-  background-color: #f5f5f5;
-}
-
-.table-row:nth-child(even) {
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-}
-
-.table-row:hover {
-  box-shadow: 4px 4px 40px 2px rgba(0, 0, 0, 0.16);
+  overflow-y: hidden;
+  border-radius: 16px !important;
   background-color: #fff !important;
 }
 
-.table-row-clickable {
-  cursor: pointer;
+.table-container .MuiPaper-root {
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  overflow: hidden !important;
 }
 
-/* Table Header */
-.table-header-row {
-  background-color: #f5f5f5;
+/* Table Styles - Override MUI defaults */
+.table-container .MuiTable-root {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
 }
 
-.table-header-cell {
-  font-weight: 600;
-  font-size: 14px;
-  color: #303030;
-  padding: 12px 16px;
+.table-container .MuiTable-root tbody tr td {
+  border: none !important;
 }
 
-/* Table Cell */
-.table-cell {
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #303030;
+.table-container .MuiTable-root thead tr {
+  margin-bottom: 0 !important;
+}
+
+/* Table Row Effects - Override MUI TableRow */
+.table-container .MuiTableRow-root.table-row {
+  height: 60px !important;
+  background-color: #fff !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+  transition: all 0.2s ease-in-out !important;
+  display: table-row !important;
+}
+
+/* Remove border from last row */
+.table-container .MuiTableRow-root.table-row:last-child {
+  border-bottom: none !important;
+}
+
+.table-container .MuiTableRow-root.table-row:nth-child(odd) {
+  background-color: #fff !important;
+}
+
+.table-container .MuiTableRow-root.table-row:nth-child(even) {
+  background-color: #fff !important;
+}
+
+.table-container .MuiTableRow-root.table-row:hover {
+  background-color: #f2f2f2 !important;
+  box-shadow: none !important;
+}
+
+.table-container .MuiTableRow-root.table-row-clickable {
+  cursor: pointer !important;
+}
+
+/* Table Header Row - Override MUI TableHead */
+.table-container .MuiTableHead-root .MuiTableRow-root.table-header-row {
+  background-color: #f2f2f2 !important;
+  height: 40px !important;
+}
+
+/* Round top corners of header */
+.table-container .MuiTableHead-root .MuiTableRow-root.table-header-row .MuiTableCell-root:first-child {
+  border-top-left-radius: 16px !important;
+}
+
+.table-container .MuiTableHead-root .MuiTableRow-root.table-header-row .MuiTableCell-root:last-child {
+  border-top-right-radius: 16px !important;
+}
+
+.table-container .MuiTableHead-root .MuiTableRow-root.table-header-row:hover {
+  background-color: #f2f2f2 !important;
+}
+
+/* Table Header Cell - Override MUI TableCell in header */
+.table-container .MuiTableHead-root .MuiTableCell-root.table-header-cell,
+.table-container .MuiTableHead-root .MuiTableCell-root,
+.table-container .MuiTableHead-root .MuiTableCell-root * {
+  background-color: #f2f2f2 !important;
+  color: #808080 !important;
+  font-family: 'Urbanist', sans-serif !important;
+  font-size: 12px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 16px !important;
+  padding: 12px 16px !important;
+  border: none !important;
+  height: 40px !important;
+}
+
+/* Force Urbanist font on header text content */
+.table-container .MuiTableHead-root .MuiTableCell-root {
+  font-family: 'Urbanist', sans-serif !important;
+}
+
+.table-container .MuiTableHead-root .MuiTableCell-root span,
+.table-container .MuiTableHead-root .MuiTableCell-root div,
+.table-container .MuiTableHead-root .MuiTableCell-root p {
+  font-family: 'Urbanist', sans-serif !important;
+}
+
+/* Table Cell - Override MUI TableCell in body */
+.table-container .MuiTableBody-root .MuiTableCell-root.table-cell,
+.table-container .MuiTableBody-root .MuiTableCell-root {
+  color: var(--color-grey-1000, #1a1a1a) !important;
+  text-align: center !important;
+  font-family: 'Oxanium', sans-serif !important;
+  font-size: 12px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 16px !important;
+  padding: 12px 16px !important;
+  border: none !important;
+  background-color: transparent !important;
+}
+
+/* Ensure row background is applied to cells */
+.table-container .MuiTableRow-root.table-row .MuiTableCell-root {
+  background-color: inherit !important;
+}
+
+.table-container .MuiTableRow-root.table-row:hover .MuiTableCell-root {
+  background-color: #f2f2f2 !important;
+}
+
+/* Round bottom corners of last row */
+.table-container .MuiTableBody-root .MuiTableRow-root.table-row:last-child .MuiTableCell-root:first-child {
+  border-bottom-left-radius: 16px !important;
+}
+
+.table-container .MuiTableBody-root .MuiTableRow-root.table-row:last-child .MuiTableCell-root:last-child {
+  border-bottom-right-radius: 16px !important;
 }
 
 /* Loading and Empty States */
-.table-loading-cell,
-.table-empty-cell {
-  padding: 40px 16px;
-  color: #909090;
-  font-size: 14px;
+.table-container .table-loading-cell,
+.table-container .table-empty-cell {
+  padding: 40px 16px !important;
+  color: #909090 !important;
+  font-size: 14px !important;
 }

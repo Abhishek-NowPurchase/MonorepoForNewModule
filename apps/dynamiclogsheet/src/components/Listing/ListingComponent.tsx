@@ -41,13 +41,15 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
         selectedTemplate={selectedTemplate}
         onTemplateChange={onTemplateChange}
       />
-
+      <div style={{marginTop: '20px', marginBottom: '20px'}}>
       <ListingTable
         logSheets={logSheets}
         fieldConfigs={fieldConfigs}
         isLoading={isLoading}
         onRowClick={onRowClick}
       />
+      </div>
+     
 
       {!isLoading && totalCount > 0 && (
         <Pagination

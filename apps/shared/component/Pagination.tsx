@@ -89,13 +89,8 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   const getPaginationStyles = (item: PaginationRenderItemParams) => {
-    return item.selected || item.type === "previous" || item.type === "next"
-      ? {
-          border: "1px solid rgba(25, 118, 210, 0.5)",
-          backgroundColor: "rgba(25, 118, 210, 0.12)",
-          fontWeight: "bolder",
-        }
-      : {};
+    // Styles are now handled by CSS, return empty object
+    return {};
   };
 
   return (
@@ -131,10 +126,16 @@ const Pagination: React.FC<PaginationProps> = ({
               className="pagination-item"
               components={{
                 previous: () => (
-                  <ArrowBackIcon color="#1976d2" fontSize="16px" />
+                  <ArrowBackIcon 
+                    color="currentColor" 
+                    fontSize="16px" 
+                  />
                 ),
                 next: () => (
-                  <ArrowForwardIcon color="#1976d2" fontSize="16px" />
+                  <ArrowForwardIcon 
+                    color="currentColor" 
+                    fontSize="16px" 
+                  />
                 ),
               }}
             />

@@ -1,18 +1,12 @@
 import React, { useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import { LogSheet, FieldConfig, Template } from "../../pages/Listing/types";
+import { LogSheet, FieldConfig } from "../../pages/Listing/types";
 import { formatDate } from "../../../../shared/utils";
-import { Select } from "../../../../shared/component";
-import { getCategoryFromPath } from "../../utils/routeUtils";
-import "./ListingTable.scss";
+import { Table, TableColumn } from "../../../../shared/component";
 
 interface ListingTableProps {
   logSheets: LogSheet[];
   fieldConfigs: FieldConfig[];
   isLoading: boolean;
-  templates: Template[];
-  selectedTemplate: Template | null;
-  onTemplateChange: (template: Template) => void;
   onRowClick: (logSheet: LogSheet) => void;
 }
 
@@ -20,22 +14,8 @@ const ListingTable: React.FC<ListingTableProps> = ({
   logSheets,
   fieldConfigs,
   isLoading,
-  templates,
-  selectedTemplate,
-  onTemplateChange,
   onRowClick,
 }) => {
-  const location = useLocation();
-  const category = getCategoryFromPath(location.pathname);
-
-  // Handle template selection change - apply immediately
-  const handleTemplateSelectChange = (value: string | number) => {
-    const templateId = Number(value);
-    const selected = templates.find(t => t.id === templateId);
-    if (selected) {
-      onTemplateChange(selected);
-    }
-  };
   // Sort by order and filter visible columns
   // If no fieldConfigs, use default columns based on common log sheet fields
   const visibleColumns = useMemo(() => {
@@ -60,93 +40,59 @@ const ListingTable: React.FC<ListingTableProps> = ({
       .sort((a, b) => a.order - b.order);
   }, [fieldConfigs, logSheets]);
 
-  // Calculate equal width for each column (only if we have columns)
-  const columnWidth = visibleColumns.length > 0 ? `${100 / visibleColumns.length}%` : 'auto';
-
-  if (isLoading) {
-    return (
-      <div className="empty-state">
-        <p>Loading log sheets...</p>
-      </div>
-    );
-  }
-
-  if (logSheets.length === 0) {
-    return (
-      <div className="empty-state">
-        <p>No log sheets found</p>
-      </div>
-    );
-  }
-
-  // If no visible columns configured, show default columns or error message
-  if (visibleColumns.length === 0) {
-    return (
-      <div className="empty-state">
-        <p>No columns configured for this template. Please configure field settings.</p>
-      </div>
-    );
-  }
-
-  const renderCellContent = (
-    fieldConfig: FieldConfig,
-    logSheet: LogSheet
-  ): string | number => {
-    const value = (logSheet as any)[fieldConfig.field_key];
-
-    // Handle different field types
-    if (value === null || value === undefined) {
-      return "-";
+  // Convert FieldConfig to TableColumn format for shared Table component
+  const tableSchema: TableColumn<LogSheet>[] = useMemo(() => {
+    if (visibleColumns.length === 0) {
+      return [];
     }
 
-    // Format dates if field type suggests it or field key contains date-related terms
-    if (
-      fieldConfig.field_type === "date" ||
-      fieldConfig.field_key.includes("_at") ||
-      fieldConfig.field_key.includes("date")
-    ) {
-      return formatDate(value);
-    }
+    // Calculate equal width for each column
+    const columnWidth = `${100 / visibleColumns.length}%`;
 
-    return value;
-  };
+    return visibleColumns.map((fieldConfig) => ({
+      id: fieldConfig.field_key,
+      header: fieldConfig.label,
+      align: 'center' as const,
+      width: columnWidth,
+      data: (row: LogSheet) => {
+        const value = (row as any)[fieldConfig.field_key];
+        
+        // Handle different field types
+        if (value === null || value === undefined) {
+          return "-";
+        }
+
+        // Format dates if field type suggests it or field key contains date-related terms
+        if (
+          fieldConfig.field_type === "date" ||
+          fieldConfig.field_key.includes("_at") ||
+          fieldConfig.field_key.includes("date")
+        ) {
+          return formatDate(value);
+        }
+
+        return value;
+      },
+    }));
+  }, [visibleColumns]);
+
+  // Determine empty message based on state
+  const emptyMessage = useMemo(() => {
+    if (visibleColumns.length === 0) {
+      return "No columns configured for this template. Please configure field settings.";
+    }
+    return "No log sheets found";
+  }, [visibleColumns.length]);
 
   return (
-    <div className="table-container">
-      {/* Header */}
-      <div className="table-header">
-        {visibleColumns.map((fieldConfig) => (
-          <div
-            key={fieldConfig.field_key}
-            className="table-header-cell"
-            style={{ width: columnWidth }}
-          >
-            {fieldConfig.label}
-          </div>
-        ))}
-      </div>
-
-      {/* Rows */}
-      <div className="table-body">
-        {logSheets.map((logSheet) => (
-          <div
-            key={logSheet.id}
-            className="table-row"
-            onClick={() => onRowClick(logSheet)}
-          >
-            {visibleColumns.map((fieldConfig) => (
-              <div
-                key={fieldConfig.field_key}
-                className="table-cell"
-                style={{ width: columnWidth }}
-              >
-                {renderCellContent(fieldConfig, logSheet)}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
+    <Table<LogSheet>
+      tableSchema={tableSchema}
+      tableData={logSheets}
+      onRowClick={(_, row) => onRowClick(row)}
+      loading={isLoading}
+      emptyMessage={emptyMessage}
+      pagination={false}
+    />
   );
 };
 
