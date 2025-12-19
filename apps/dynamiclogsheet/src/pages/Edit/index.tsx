@@ -88,7 +88,7 @@ const Edit: React.FC = () => {
   }
 
   return (
-    <div>
+    <div style={{padding: '40px'}}>
       <FormRenderer
           formJson={formJsonString}
           formName={logSheet.template_name || logSheet.name || 'Edit Log Sheet'}
