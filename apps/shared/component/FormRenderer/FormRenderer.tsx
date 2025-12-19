@@ -17,22 +17,6 @@ export interface FormRendererProps {
   errorMessage?: string;
 }
 
-/**
- * Generic form renderer component that renders forms using @react-form-builder
- * 
- * @example
- * ```typescript
- * <FormRenderer
- *   formJson={formJson}
- *   formName="My Form"
- *   getForm={() => formJson}
- *   initialData={{}}
- *   viewWithCss={viewWithCss}
- *   actions={actions}
- *   handleFormDataChange={handleChange}
- * />
- * ```
- */
 export const FormRenderer: React.FC<FormRendererProps> = ({
   formJson,
   formName,
@@ -46,15 +30,12 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
   emptyMessage = "No form data available.",
   errorMessage = "Error: Invalid form data format.",
 }) => {
-  // Store initial data in a ref so it doesn't change on every render
-  // This prevents FormViewer from re-initializing when formData reference changes
   const initialDataRef = useRef(initialData);
+  console.log('initialData------>');
 
-  // Only update initial data when section changes, not when individual field values change
   useEffect(() => {
     initialDataRef.current = initialData;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionIndex]); // Only update when section changes, not on every field update
+  }, [sectionIndex]);
 
   if (!formJson || formJson.trim() === "") {
     return (
@@ -65,20 +46,20 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
   }
 
   try {
-    // Validate JSON before rendering
     JSON.parse(formJson);
-    
     return (
-      <FormViewer
-        key={`form-${sectionIndex}`}
-        view={viewWithCss}
-        formName={formName}
-        getForm={getForm}
-        actions={actions}
-        initialData={initialDataRef.current}
-        onFormDataChange={handleFormDataChange}
-        viewerRef={viewerRef}
-      />
+      <div className="mui-skin">
+        <FormViewer
+          key={`form-${sectionIndex}`}
+          view={viewWithCss}
+          formName={formName}
+          getForm={getForm}
+          actions={actions}
+          initialData={initialDataRef.current}
+          onFormDataChange={handleFormDataChange}
+          viewerRef={viewerRef}
+        />
+      </div>
     );
   } catch (e) {
     return (
@@ -91,4 +72,3 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
 };
 
 export default FormRenderer;
-

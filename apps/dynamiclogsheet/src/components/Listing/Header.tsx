@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({
     <div className="header-container">
       <div className="left-section">
         <div className="filter-dropdown-container">
-          <label className="filter-label">Template</label>
+          {/* <label className="filter-label">Template</label> */}
           <Select
             value={selectedTemplate?.id || ''}
             options={templates.map((template) => ({

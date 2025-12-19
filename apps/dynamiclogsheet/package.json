@@ -41,7 +41,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.0.0",
-    "@mui/material": "^7.3.4",
+    "@mui/material": "^7.3.6",
     "@react-form-builder/components-rsuite": "^7.9.0",
     "@react-form-builder/components-rsuite-table": "^7.9.0",
     "@react-form-builder/core": "^7.9.0",

@@ -26,6 +26,8 @@ export { FilterDrawer } from './FilterDrawer';
 export type { FilterDrawerProps } from './FilterDrawer';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
+export { ErrorDisplay } from './ErrorDisplay';
+export type { ErrorDisplayProps } from './ErrorDisplay';
 export { Stepper } from './Stepper';
 export type { StepperProps, StepperStep } from './Stepper';
 export { Footer } from './Footer';

@@ -1,18 +1,294 @@
-.form-renderer-empty {
-  padding: 24px;
-  text-align: center;
-  color: #666;
-}
+/* =========================================================
+   MATERIAL-LIKE UI SKIN (PURE CSS, PRODUCTION SAFE)
+   ========================================================= */
 
-.form-renderer-error {
-  padding: 24px;
-  text-align: center;
-  color: #d32f2f;
-}
-
-.form-renderer-error pre {
-  margin-top: 16px;
-  font-size: 12px;
-  text-align: left;
-}
-
+   .mui-skin {
+    /* =========================
+       DESIGN TOKENS (Material-ish)
+       ========================= */
+    --mui-radius: 6px;
+    --mui-gap: 16px;
+  
+    --mui-border-color: #e0e3e7;
+    --mui-border: 1px solid var(--mui-border-color);
+  
+    --mui-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.06),
+      0 2px 8px rgba(0, 0, 0, 0.04);
+  
+    --mui-label: #616161;
+    --mui-text: #212121;
+    --mui-placeholder: #9e9e9e;
+  
+    --mui-primary: #1976d2;
+    --mui-primary-focus: rgba(25, 118, 210, 0.15);
+    --mui-danger: #e53935;
+    --mui-danger-focus: rgba(229, 57, 53, 0.12);
+  
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    color: var(--mui-text);
+  }
+  
+  /* =========================================================
+     FORM LAYOUT CONTAINERS
+     ========================================================= */
+  
+  /* Override root Screen component justify-content from form JSON */
+  /* The form JSON sets justifyContent: "center" on the root Screen component */
+  /* We override it to flex-start so content aligns to the top */
+  /* Target the root form container - FormViewer wraps content in optimajet-formviewer */
+  /* Using !important to override inline styles from form JSON */
+  .mui-skin .optimajet-formviewer > div:first-child,
+  .mui-skin .optimajet-formviewer > div:first-child > div:first-child,
+  .mui-skin [data-component="Screen"] {
+    justify-content: flex-start !important;
+    -webkit-justify-content: flex-start !important;
+    -ms-flex-pack: start !important;
+  }
+  
+  /* Additional override for any nested flex containers with center alignment */
+  .mui-skin .optimajet-formviewer div[style*="justify-content: center"],
+  .mui-skin .optimajet-formviewer div[style*="justifyContent"] {
+    justify-content: flex-start !important;
+    -webkit-justify-content: flex-start !important;
+  }
+  
+  .mui-skin .rs-container,
+  .mui-skin .form-container,
+  .mui-skin [data-component="RsContainer"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mui-gap);
+  }
+  
+  /* =========================================================
+     CARD / SECTION (Material Paper)
+     ========================================================= */
+  
+  .mui-skin .mui-card {
+    background: #ffffff;
+    border: var(--mui-border);
+    border-radius: var(--mui-radius);
+    box-shadow: var(--mui-shadow);
+    padding: 16px;
+  }
+  
+  /* =========================================================
+     INPUT BASE STYLES
+     ========================================================= */
+  
+  .mui-skin input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .mui-skin textarea,
+  .mui-skin select,
+  .mui-skin [data-component="RsTextField"] input,
+  .mui-skin [data-component="RsNumber"] input,
+  .mui-skin [data-component="RsDatePicker"] input,
+  .mui-skin [data-component="RsTextArea"] textarea,
+  .mui-skin [data-component="RsSelect"] select {
+    width: 100%;
+    height: 44px;
+  
+    border: var(--mui-border);
+    border-radius: var(--mui-radius);
+  
+    background-color: #ffffff;
+    padding: 10px 12px;
+  
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--mui-text);
+  
+    outline: none;
+    appearance: none;
+  
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
+  }
+  
+  /* =========================================================
+     TEXTAREA
+     ========================================================= */
+  
+  .mui-skin textarea,
+  .mui-skin [data-component="RsTextArea"] textarea {
+    min-height: 88px;
+    height: auto;
+    resize: vertical;
+  }
+  
+  /* =========================================================
+     SELECT
+     ========================================================= */
+  
+  .mui-skin select {
+    padding-right: 32px;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  
+  /* =========================================================
+     PLACEHOLDER
+     ========================================================= */
+  
+  .mui-skin input::placeholder,
+  .mui-skin textarea::placeholder {
+    color: var(--mui-placeholder);
+    opacity: 1;
+  }
+  
+  /* =========================================================
+     HOVER
+     ========================================================= */
+  
+  .mui-skin input:hover,
+  .mui-skin textarea:hover,
+  .mui-skin select:hover {
+    border-color: #b0bec5;
+  }
+  
+  /* =========================================================
+     FOCUS (Material Blue Ring)
+     ========================================================= */
+  
+  .mui-skin input:focus,
+  .mui-skin textarea:focus,
+  .mui-skin select:focus {
+    border-color: var(--mui-primary);
+    box-shadow: 0 0 0 3px var(--mui-primary-focus);
+  }
+  
+  /* =========================================================
+     DISABLED / READONLY
+     ========================================================= */
+  
+  .mui-skin input:disabled,
+  .mui-skin textarea:disabled,
+  .mui-skin select:disabled {
+    background-color: #f5f7fa;
+    color: #9e9e9e;
+    border-color: var(--mui-border-color);
+    cursor: not-allowed;
+  }
+  
+  .mui-skin input[readonly],
+  .mui-skin textarea[readonly] {
+    background-color: #f9fafb;
+  }
+  
+  /* =========================================================
+     ERROR / INVALID
+     ========================================================= */
+  
+  .mui-skin input[aria-invalid="true"],
+  .mui-skin textarea[aria-invalid="true"],
+  .mui-skin select[aria-invalid="true"],
+  .mui-skin .is-invalid input,
+  .mui-skin .is-invalid textarea,
+  .mui-skin .is-invalid select,
+  .mui-skin input:invalid,
+  .mui-skin textarea:invalid,
+  .mui-skin select:invalid {
+    border-color: var(--mui-danger);
+    box-shadow: 0 0 0 3px var(--mui-danger-focus);
+  }
+  
+  /* =========================================================
+     AUTOFILL (WEBKIT FIX)
+     ========================================================= */
+  
+  .mui-skin input:-webkit-autofill,
+  .mui-skin textarea:-webkit-autofill,
+  .mui-skin select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: var(--mui-text) !important;
+    transition: background-color 9999s ease-out;
+  }
+  
+  /* =========================================================
+     COMPACT INPUTS (TABLES / GRIDS)
+     ========================================================= */
+  
+  .mui-skin .fe-grid input,
+  .mui-skin .fe-grid select,
+  .mui-skin .fe-grid textarea,
+  .mui-skin table input,
+  .mui-skin table select,
+  .mui-skin table textarea {
+    height: 40px;
+    border-radius: 8px;
+  }
+  
+  /* =========================================================
+     LABELS & HEADERS
+     ========================================================= */
+  
+  .mui-skin label,
+  .mui-skin .rs-label,
+  .mui-skin [data-component="RsLabel"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  
+    margin-bottom: 6px;
+  
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--mui-label);
+  }
+  
+  .mui-skin h1,
+  .mui-skin h2,
+  .mui-skin h3,
+  .mui-skin h4,
+  .mui-skin h5,
+  .mui-skin h6,
+  .mui-skin .rs-header,
+  .mui-skin [data-component="RsHeader"] {
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  /* =========================================================
+     CHECKBOX / RADIO GROUP LAYOUT
+     ========================================================= */
+  
+  .mui-skin .rs-checkbox,
+  .mui-skin .rs-radio-group,
+  .mui-skin [data-component="RsCheckbox"],
+  .mui-skin [data-component="RsRadioGroup"] {
+    display: grid;
+    gap: 8px;
+  }
+  
+  /* =========================================================
+     BUTTONS (Material Filled Style)
+     ========================================================= */
+  
+  .mui-skin button {
+    border: none;
+    border-radius: 8px;
+  
+    padding: 10px 16px;
+  
+    background-color: var(--mui-primary);
+    color: #ffffff;
+  
+    font-weight: 500;
+    cursor: pointer;
+  
+    transition:
+      background-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  
+  .mui-skin button:hover {
+    background-color: #1565c0;
+  }
+  
+  .mui-skin button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
