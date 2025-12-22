@@ -35,31 +35,35 @@ const ListingComponent: React.FC<ListingComponentProps> = ({
   onRowClick
 }) => {
   return (
-    <div className="page-container">
-      <Header
-        templates={templates}
-        selectedTemplate={selectedTemplate}
-        onTemplateChange={onTemplateChange}
-      />
-      <div style={{marginTop: '20px', marginBottom: '20px'}}>
-      <ListingTable
-        logSheets={logSheets}
-        fieldConfigs={fieldConfigs}
-        isLoading={isLoading}
-        onRowClick={onRowClick}
-      />
-      </div>
-     
-
-      {!isLoading && totalCount > 0 && (
-        <Pagination
-          page={page}
-          pageSize={pageSize}
-          totalCount={totalCount}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
+    <div className="page-container-listing">
+      <div className="header-section">
+        <Header
+          templates={templates}
+          selectedTemplate={selectedTemplate}
+          onTemplateChange={onTemplateChange}
         />
-      )}
+      </div>
+      
+      <div className="table-section">
+        <ListingTable
+          logSheets={logSheets}
+          fieldConfigs={fieldConfigs}
+          isLoading={isLoading}
+          onRowClick={onRowClick}
+        />
+      </div>
+
+      <div className="pagination-section">
+        {!isLoading && totalCount > 0 && (
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </div>
     </div>
   );
 };

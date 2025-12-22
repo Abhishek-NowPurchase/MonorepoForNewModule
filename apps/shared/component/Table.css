@@ -1,16 +1,53 @@
 /* Table Container */
 .table-container {
-  overflow-x: hidden;
-  overflow-y: hidden;
   border-radius: 16px !important;
   background-color: #fff !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
 }
 
-.table-container .MuiPaper-root {
+/* Material-UI TableContainer - This is the actual scrollable container */
+.table-container.MuiTableContainer-root {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-radius: 16px !important;
+  background-color: #fff !important;
+  /* Hide scrollbar but keep scrolling functionality */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari, etc.) */
+.table-container.MuiTableContainer-root::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* When TableContainer uses Paper component */
+.table-container.MuiPaper-root {
   border-radius: 16px !important;
   box-shadow: none !important;
-  background-color: transparent !important;
-  overflow: hidden !important;
+  background-color: #fff !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: block !important;
+  /* Hide scrollbar but keep scrolling functionality */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari, etc.) */
+.table-container.MuiPaper-root::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Table Styles - Override MUI defaults */
@@ -19,7 +56,6 @@
   border-collapse: collapse !important;
   border-spacing: 0 !important;
   border-radius: 16px !important;
-  overflow: hidden !important;
 }
 
 .table-container .MuiTable-root tbody tr td {
@@ -65,6 +101,18 @@
 .table-container .MuiTableHead-root .MuiTableRow-root.table-header-row {
   background-color: #f2f2f2 !important;
   height: 40px !important;
+}
+
+/* Sticky Header Support - Material-UI handles sticky positioning automatically when stickyHeader={true} */
+/* We just need to ensure the background color persists */
+.table-container .MuiTableHead-root .MuiTableCell-root {
+  background-color: #f2f2f2 !important;
+}
+
+/* When sticky header is active, ensure proper z-index */
+.table-container .MuiTable-stickyHeader .MuiTableHead-root .MuiTableCell-root {
+  z-index: 1 !important;
+  background-color: #f2f2f2 !important;
 }
 
 /* Round top corners of header */

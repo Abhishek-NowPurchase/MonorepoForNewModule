@@ -128,14 +128,17 @@
 }
 
 .aui-btn-primary {
-  background-color: #1579be;
+  background-color: #1579BE;
   color: #fff;
   border: none;
   border-color: #fff;
+  border-radius: 8px;
+  padding: 10px 16px;
+
 }
 
 .aui-btn-primary:hover {
-  background-color: #1579be !important;
+  background-color: #1579BE !important;
   box-shadow: 12px 8px 24px 0 rgba(33, 126, 192, 0.2);
   color: #fff;
 }

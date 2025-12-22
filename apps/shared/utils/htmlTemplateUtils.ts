@@ -48,3 +48,32 @@ export const renderHtmlTemplate = (
   return renderedHtml;
 };
 
+/**
+ * Replaces relative resource URLs with CDN base URL
+ * 
+ * @param html - HTML string containing relative resource URLs
+ * @param cdnBaseUrl - Base URL for CDN (default: "https://cdn.nowpurchase.com/foundary")
+ * @returns HTML string with CDN URLs
+ * 
+ * @example
+ * ```typescript
+ * const html = '<img src="resources/image.jpg" />';
+ * const processed = replaceResourceUrls(html);
+ * // Returns: '<img src="https://cdn.nowpurchase.com/foundary/resources/image.jpg" />'
+ * ```
+ */
+export const replaceResourceUrls = (
+  html: string,
+  cdnBaseUrl: string = "https://cdn.nowpurchase.com/foundary"
+): string => {
+  if (!html) return html;
+  
+  // Replace href="resources/..." or href='resources/...' with CDN URL (preserve quote style)
+  html = html.replace(/href=(["'])resources\//g, (match, quote) => `href=${quote}${cdnBaseUrl}/resources/`);
+  
+  // Replace src="resources/..." or src='resources/...' with CDN URL (preserve quote style)
+  html = html.replace(/src=(["'])resources\//g, (match, quote) => `src=${quote}${cdnBaseUrl}/resources/`);
+  
+  return html;
+};
+

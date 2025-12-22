@@ -5,6 +5,7 @@ import { FormRenderer, Loader, ErrorDisplay, EmptyState } from '../../../../shar
 import { useFormBuilderConfig } from '../../../../shared/hooks';
 import { NewPageFooter } from '../../components/NewPage/NewPageFooter';
 import { getCategoryFromPath } from '../../utils/routeUtils';
+import './NewPage.scss';
 import {
   useTemplateId,
   useDataChangeNotifier,
@@ -84,7 +85,8 @@ const NewPage: React.FC = () => {
   }
 
   return (
-    <div style={{padding: '40px'}}>
+  <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',width: '100%'}}>
+      <div className="new-page-container">
       <FormRenderer
           formJson={formJsonString}
           formName={formData.template_name || 'New Log Sheet'}
@@ -103,6 +105,7 @@ const NewPage: React.FC = () => {
         onSubmit={handleSubmit}
       />
     </div>
+  </div>
   );
 };
 

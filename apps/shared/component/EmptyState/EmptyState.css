@@ -1,5 +1,5 @@
 /* Empty State Styles */
-.page-container {
+.page-container-empty-state {
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -62,7 +62,7 @@
 }
 
 @media (max-width: 768px) {
-  .page-container {
+  .page-container-empty-state {
     padding: 16px;
   }
 

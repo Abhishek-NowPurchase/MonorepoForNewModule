@@ -9,6 +9,7 @@
   align-items: center;
   border-radius: 16px;
   padding: 10px 20px;
+  width: 100%;
 }
 
 .pagination-rows-per-page {

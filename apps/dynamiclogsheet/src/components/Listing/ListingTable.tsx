@@ -92,6 +92,7 @@ const ListingTable: React.FC<ListingTableProps> = ({
       loading={isLoading}
       emptyMessage={emptyMessage}
       pagination={false}
+      stickyHeader={true}
     />
   );
 };

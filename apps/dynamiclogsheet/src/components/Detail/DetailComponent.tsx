@@ -1,6 +1,13 @@
-import React from "react";
-import { Loader, EmptyState, Footer, BackIcon, DownloadIcon } from "../../../../shared/component";
+import React, { useMemo } from "react";
+import {
+  Loader,
+  EmptyState,
+  Footer,
+  BackIcon,
+  DownloadIcon,
+} from "../../../../shared/component";
 import { usePDFDownload } from "../../../../shared/hooks";
+import { replaceResourceUrls } from "../../../../shared/utils";
 import "../../pages/Detail/Detail.scss";
 
 interface DetailComponentProps {
@@ -22,6 +29,12 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
     showAlert: true,
   });
 
+  // Process HTML content to replace resource URLs with CDN URLs
+  const processedHtmlContent = useMemo(() => {
+    if (!htmlContent) return null;
+    return replaceResourceUrls(htmlContent);
+  }, [htmlContent]);
+
   // Custom PDF download handler with log sheet specific filename
   const handleLogSheetPDFDownload = () => {
     handleDownloadPDF({
@@ -40,7 +53,7 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
     );
   }
 
-  if (error || !htmlContent) {
+  if (error || !htmlContent || !processedHtmlContent) {
     return (
       <EmptyState
         message={error || "Log sheet preview not found"}
@@ -50,10 +63,20 @@ const DetailComponent: React.FC<DetailComponentProps> = ({
   }
 
   return (
-    <div className="page-container">
-      <div className="detail-content" style={{ paddingBottom: "80px" }}>
-        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      </div>
+    <div className="page-container-detail">
+      {/* <div className="detail-content"> */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: "50px",
+          }}
+          ref={contentRef}
+          dangerouslySetInnerHTML={{ __html: processedHtmlContent }}
+        />
+      {/* </div> */}
 
       <Footer>
         <button

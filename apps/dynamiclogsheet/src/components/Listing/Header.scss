@@ -3,17 +3,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 30px;
+  padding: 20px;
   background-color: #fff;
   border-bottom: 1px solid #eee;
-  height: 100px;
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
-
-  display: flex;
-  padding: 20px;
-  justify-content: space-between;
-  align-items: center;
-  align-self: stretch;
   border-radius: 16px;
   background: var(--color-neutral-100, #fff);
 }
@@ -48,4 +43,78 @@
 
 .inline-filter-select {
   width: 100%;
+}
+
+/* Status Toggle Styles */
+.status-toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.status-toggle {
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  position: relative;
+  min-width: 160px;
+  height: 40px;
+
+  &:focus {
+    outline: 2px dashed #1890ff;
+    outline-offset: 2px;
+  }
+}
+
+.status-toggle-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #999;
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+  background-color: #fff;
+  height: 100%;
+  box-sizing: border-box;
+
+  &.active {
+    color: #1890ff;
+    font-weight: 600;
+  }
+}
+
+.status-toggle.pending .status-toggle-option:first-child {
+  background-color: #E6F4FF !important;
+  color: #1890ff;
+  font-weight: 600;
+}
+
+.status-toggle.complete .status-toggle-option:last-child {
+  background-color: #E6F4FF !important;
+  color: #1890ff;
+  font-weight: 600;
+}
+
+.status-toggle-divider {
+  color: #CCCCCC;
+  font-weight: 400;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
 }

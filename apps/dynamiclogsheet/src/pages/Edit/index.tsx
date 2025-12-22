@@ -88,7 +88,8 @@ const Edit: React.FC = () => {
   }
 
   return (
-    <div style={{padding: '40px'}}>
+    <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',width: '100%'}}>
+      <div className="new-page-container">
       <FormRenderer
           formJson={formJsonString}
           formName={logSheet.template_name || logSheet.name || 'Edit Log Sheet'}
@@ -107,6 +108,7 @@ const Edit: React.FC = () => {
         onSubmit={handleSubmit}
       />
     </div>
+  </div>
   );
 };
 

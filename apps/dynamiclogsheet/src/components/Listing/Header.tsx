@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Template } from '../../pages/Listing/types';
 import { Button, Select } from '../../../../shared/component';
@@ -19,6 +19,7 @@ const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const category = getCategoryFromPath(location.pathname);
+  const [statusFilter, setStatusFilter] = useState<'pending' | 'complete'>('pending');
 
   // Handle template selection change - apply immediately
   const handleTemplateSelectChange = (value: string | number) => {
@@ -33,6 +34,11 @@ const Header: React.FC<HeaderProps> = ({
   const hasWebPlatform = selectedTemplate?.platforms?.some(
     platform => platform?.toLowerCase() === 'web'
   ) ?? false;
+
+  // Handle status toggle change
+  const handleStatusToggle = () => {
+    setStatusFilter(prev => prev === 'pending' ? 'complete' : 'pending');
+  };
 
   return (
     <div className="header-container">
@@ -49,6 +55,22 @@ const Header: React.FC<HeaderProps> = ({
             // placeholder="Select Template"
             className="inline-filter-select"
           />
+        </div>
+        <div className="status-toggle-container">
+          <button
+            type="button"
+            className={`status-toggle ${statusFilter === 'complete' ? 'complete' : 'pending'}`}
+            onClick={handleStatusToggle}
+            aria-label={`Filter by ${statusFilter}`}
+          >
+            <span className={`status-toggle-option ${statusFilter === 'pending' ? 'active' : ''}`}>
+              Pending
+            </span>
+            <span className="status-toggle-divider">|</span>
+            <span className={`status-toggle-option ${statusFilter === 'complete' ? 'active' : ''}`}>
+              Complete
+            </span>
+          </button>
         </div>
       </div>
 

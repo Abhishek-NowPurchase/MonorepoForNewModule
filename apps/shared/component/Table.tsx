@@ -145,6 +145,7 @@ const Table = <T extends Record<string, any> = any>({
       component={Paper}
       className={`table-container ${customTableContainerClass || ''}`}
       id={customTableId}
+      sx={stickyHeader ? { maxHeight: '100%', height: '100%' } : {}}
     >
       <MuiTable
         stickyHeader={stickyHeader}

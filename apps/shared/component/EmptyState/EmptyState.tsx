@@ -14,7 +14,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   backButtonText = "Back to List",
   className = "",
 }) => (
-  <div className={`page-container ${className}`}>
+  <div className={`page-container-empty-state ${className}`}>
     <div className="detail-container">
       <div className="empty-state">
         <p>{message}</p>

@@ -62,123 +62,883 @@
   }
   
   /* =========================================================
-     CARD / SECTION (Material Paper)
+     CARD / SECTION (MUI Card - Exact Specifications)
      ========================================================= */
   
-  .mui-skin .mui-card {
-    background: #ffffff;
-    border: var(--mui-border);
-    border-radius: var(--mui-radius);
-    box-shadow: var(--mui-shadow);
-    padding: 16px;
+  /* MUI Card Base Styles (based on Paper component) */
+  /* Card uses Paper with elevation variant by default */
+  .mui-skin .mui-card,
+  .mui-skin [data-component="RsCard"],
+  .mui-skin .rs-card,
+  .mui-skin .rs-panel {
+    /* MUI Paper base styles */
+    background-color: #ffffff; /* palette.background.paper */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    
+    /* MUI Paper transition */
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; /* theme.transitions.create('box-shadow') */
+    
+    /* MUI Paper border-radius (default shape.borderRadius = 4px) */
+    border-radius: 4px;
+    
+    /* MUI Card specific - overflow hidden */
+    overflow: hidden;
+    
+    /* MUI Paper elevation variant (default elevation = 1) */
+    /* Shadow for elevation 1: exact MUI shadow values */
+    box-shadow: 
+      0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+      0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    
+    /* Box sizing */
+    box-sizing: border-box;
+    
+    /* Remove any default borders */
+    border: none;
+  }
+  
+  /* MUI Card Raised Variant (elevation 8) */
+  .mui-skin .mui-card[data-raised="true"],
+  .mui-skin .mui-card.raised,
+  .mui-skin [data-component="RsCard"][data-raised="true"],
+  .mui-skin [data-component="RsCard"].raised {
+    /* Shadow for elevation 8: exact MUI shadow values */
+    box-shadow: 
+      0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+      0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+      0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Outlined Variant */
+  .mui-skin .mui-card[data-variant="outlined"],
+  .mui-skin .mui-card.outlined,
+  .mui-skin [data-component="RsCard"][data-variant="outlined"],
+  .mui-skin [data-component="RsCard"].outlined {
+    /* MUI Paper outlined variant - border instead of shadow */
+    border: 1px solid rgba(0, 0, 0, 0.12); /* palette.divider */
+    box-shadow: none; /* Outlined variant has no shadow */
+  }
+  
+  /* MUI Card Square Variant (no border-radius) */
+  .mui-skin .mui-card[data-square="true"],
+  .mui-skin .mui-card.square,
+  .mui-skin [data-component="RsCard"][data-square="true"],
+  .mui-skin [data-component="RsCard"].square {
+    border-radius: 0;
+  }
+  
+  /* MUI Card Elevation 0 (no shadow) */
+  .mui-skin .mui-card[data-elevation="0"],
+  .mui-skin .mui-card.elevation-0,
+  .mui-skin [data-component="RsCard"][data-elevation="0"],
+  .mui-skin [data-component="RsCard"].elevation-0 {
+    box-shadow: none;
+  }
+  
+  /* MUI Card Elevation 2 */
+  .mui-skin .mui-card[data-elevation="2"],
+  .mui-skin .mui-card.elevation-2,
+  .mui-skin [data-component="RsCard"][data-elevation="2"],
+  .mui-skin [data-component="RsCard"].elevation-2 {
+    box-shadow: 
+      0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 3 */
+  .mui-skin .mui-card[data-elevation="3"],
+  .mui-skin .mui-card.elevation-3,
+  .mui-skin [data-component="RsCard"][data-elevation="3"],
+  .mui-skin [data-component="RsCard"].elevation-3 {
+    box-shadow: 
+      0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+      0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 4 */
+  .mui-skin .mui-card[data-elevation="4"],
+  .mui-skin .mui-card.elevation-4,
+  .mui-skin [data-component="RsCard"][data-elevation="4"],
+  .mui-skin [data-component="RsCard"].elevation-4 {
+    box-shadow: 
+      0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 5 */
+  .mui-skin .mui-card[data-elevation="5"],
+  .mui-skin .mui-card.elevation-5,
+  .mui-skin [data-component="RsCard"][data-elevation="5"],
+  .mui-skin [data-component="RsCard"].elevation-5 {
+    box-shadow: 
+      0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0px 5px 8px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 14px 0px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 6 */
+  .mui-skin .mui-card[data-elevation="6"],
+  .mui-skin .mui-card.elevation-6,
+  .mui-skin [data-component="RsCard"][data-elevation="6"],
+  .mui-skin [data-component="RsCard"].elevation-6 {
+    box-shadow: 
+      0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 7 */
+  .mui-skin .mui-card[data-elevation="7"],
+  .mui-skin .mui-card.elevation-7,
+  .mui-skin [data-component="RsCard"][data-elevation="7"],
+  .mui-skin [data-component="RsCard"].elevation-7 {
+    box-shadow: 
+      0px 4px 5px -2px rgba(0, 0, 0, 0.2),
+      0px 7px 10px 1px rgba(0, 0, 0, 0.14),
+      0px 2px 16px 1px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 8 (raised Card) */
+  .mui-skin .mui-card[data-elevation="8"],
+  .mui-skin .mui-card.elevation-8,
+  .mui-skin [data-component="RsCard"][data-elevation="8"],
+  .mui-skin [data-component="RsCard"].elevation-8 {
+    box-shadow: 
+      0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+      0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+      0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 9 */
+  .mui-skin .mui-card[data-elevation="9"],
+  .mui-skin .mui-card.elevation-9,
+  .mui-skin [data-component="RsCard"][data-elevation="9"],
+  .mui-skin [data-component="RsCard"].elevation-9 {
+    box-shadow: 
+      0px 5px 6px -3px rgba(0, 0, 0, 0.2),
+      0px 9px 12px 1px rgba(0, 0, 0, 0.14),
+      0px 3px 16px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 10 */
+  .mui-skin .mui-card[data-elevation="10"],
+  .mui-skin .mui-card.elevation-10,
+  .mui-skin [data-component="RsCard"][data-elevation="10"],
+  .mui-skin [data-component="RsCard"].elevation-10 {
+    box-shadow: 
+      0px 6px 6px -3px rgba(0, 0, 0, 0.2),
+      0px 10px 14px 1px rgba(0, 0, 0, 0.14),
+      0px 4px 18px 3px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 12 */
+  .mui-skin .mui-card[data-elevation="12"],
+  .mui-skin .mui-card.elevation-12,
+  .mui-skin [data-component="RsCard"][data-elevation="12"],
+  .mui-skin [data-component="RsCard"].elevation-12 {
+    box-shadow: 
+      0px 7px 8px -4px rgba(0, 0, 0, 0.2),
+      0px 12px 17px 2px rgba(0, 0, 0, 0.14),
+      0px 5px 22px 4px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 16 */
+  .mui-skin .mui-card[data-elevation="16"],
+  .mui-skin .mui-card.elevation-16,
+  .mui-skin [data-component="RsCard"][data-elevation="16"],
+  .mui-skin [data-component="RsCard"].elevation-16 {
+    box-shadow: 
+      0px 8px 10px -5px rgba(0, 0, 0, 0.2),
+      0px 16px 24px 2px rgba(0, 0, 0, 0.14),
+      0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* MUI Card Elevation 24 */
+  .mui-skin .mui-card[data-elevation="24"],
+  .mui-skin .mui-card.elevation-24,
+  .mui-skin [data-component="RsCard"][data-elevation="24"],
+  .mui-skin [data-component="RsCard"].elevation-24 {
+    box-shadow: 
+      0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+      0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+      0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Ensure Card maintains proper display */
+  .mui-skin .mui-card,
+  .mui-skin [data-component="RsCard"],
+  .mui-skin .rs-card {
+    display: block;
+    position: relative;
   }
   
   /* =========================================================
-     INPUT BASE STYLES
+     CARD HEADER (MUI CardHeader - Exact Specifications)
      ========================================================= */
   
-  .mui-skin input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-  .mui-skin textarea,
-  .mui-skin select,
+  /* MUI CardHeader Root */
+  .mui-skin [data-component="RsCardHeader"],
+  .mui-skin .rs-card-header,
+  .mui-skin .mui-card-header {
+    /* MUI CardHeader root styles */
+    display: flex;
+    align-items: center;
+    padding: 16px; /* MUI exact padding */
+  }
+  
+  /* MUI CardHeader Avatar */
+  .mui-skin [data-component="RsCardHeader"] [data-slot="avatar"],
+  .mui-skin .rs-card-header [data-slot="avatar"],
+  .mui-skin .mui-card-header [data-slot="avatar"],
+  .mui-skin [data-component="RsCardHeader"] .MuiCardHeader-avatar,
+  .mui-skin .rs-card-header .MuiCardHeader-avatar,
+  .mui-skin .mui-card-header .MuiCardHeader-avatar {
+    /* MUI CardHeaderAvatar styles */
+    display: flex;
+    flex: 0 0 auto;
+    margin-right: 16px; /* MUI exact margin */
+  }
+  
+  /* MUI CardHeader Content */
+  .mui-skin [data-component="RsCardHeader"] [data-slot="content"],
+  .mui-skin .rs-card-header [data-slot="content"],
+  .mui-skin .mui-card-header [data-slot="content"],
+  .mui-skin [data-component="RsCardHeader"] .MuiCardHeader-content,
+  .mui-skin .rs-card-header .MuiCardHeader-content,
+  .mui-skin .mui-card-header .MuiCardHeader-content {
+    /* MUI CardHeaderContent styles */
+    flex: 1 1 auto;
+  }
+  
+  /* MUI CardHeader Title (without avatar - h5 variant) */
+  .mui-skin [data-component="RsCardHeader"]:not(:has([data-slot="avatar"])) [data-slot="title"],
+  .mui-skin .rs-card-header:not(:has([data-slot="avatar"])) [data-slot="title"],
+  .mui-skin .mui-card-header:not(:has([data-slot="avatar"])) [data-slot="title"],
+  .mui-skin [data-component="RsCardHeader"]:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-title,
+  .mui-skin .rs-card-header:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-title,
+  .mui-skin .mui-card-header:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-title,
+  .mui-skin [data-component="RsCardHeader"] [data-slot="title"][data-variant="h5"],
+  .mui-skin .rs-card-header [data-slot="title"][data-variant="h5"],
+  .mui-skin .mui-card-header [data-slot="title"][data-variant="h5"] {
+    /* MUI Typography h5 variant */
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.334; /* MUI h5 lineHeight */
+    letter-spacing: 0em; /* MUI h5 letterSpacing (0/24) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+  }
+  
+  /* MUI CardHeader Title (with avatar - body2 variant) */
+  .mui-skin [data-component="RsCardHeader"]:has([data-slot="avatar"]) [data-slot="title"],
+  .mui-skin .rs-card-header:has([data-slot="avatar"]) [data-slot="title"],
+  .mui-skin .mui-card-header:has([data-slot="avatar"]) [data-slot="title"],
+  .mui-skin [data-component="RsCardHeader"]:has(.MuiCardHeader-avatar) .MuiCardHeader-title,
+  .mui-skin .rs-card-header:has(.MuiCardHeader-avatar) .MuiCardHeader-title,
+  .mui-skin .mui-card-header:has(.MuiCardHeader-avatar) .MuiCardHeader-title,
+  .mui-skin [data-component="RsCardHeader"] [data-slot="title"][data-variant="body2"],
+  .mui-skin .rs-card-header [data-slot="title"][data-variant="body2"],
+  .mui-skin .mui-card-header [data-slot="title"][data-variant="body2"] {
+    /* MUI Typography body2 variant */
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.43; /* MUI body2 lineHeight */
+    letter-spacing: 0.01071em; /* MUI body2 letterSpacing (0.15/14) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+  }
+  
+  /* MUI CardHeader Subheader (without avatar - body1 variant, textSecondary color) */
+  .mui-skin [data-component="RsCardHeader"]:not(:has([data-slot="avatar"])) [data-slot="subheader"],
+  .mui-skin .rs-card-header:not(:has([data-slot="avatar"])) [data-slot="subheader"],
+  .mui-skin .mui-card-header:not(:has([data-slot="avatar"])) [data-slot="subheader"],
+  .mui-skin [data-component="RsCardHeader"]:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-subheader,
+  .mui-skin .rs-card-header:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-subheader,
+  .mui-skin .mui-card-header:not(:has(.MuiCardHeader-avatar)) .MuiCardHeader-subheader,
+  .mui-skin [data-component="RsCardHeader"] [data-slot="subheader"][data-variant="body1"],
+  .mui-skin .rs-card-header [data-slot="subheader"][data-variant="body1"],
+  .mui-skin .mui-card-header [data-slot="subheader"][data-variant="body1"] {
+    /* MUI Typography body1 variant with textSecondary color */
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1rem; /* 16px */
+    line-height: 1.5; /* MUI body1 lineHeight */
+    letter-spacing: 0.00938em; /* MUI body1 letterSpacing (0.15/16) */
+    color: rgba(0, 0, 0, 0.6); /* palette.text.secondary */
+  }
+  
+  /* MUI CardHeader Subheader (with avatar - body2 variant, textSecondary color) */
+  .mui-skin [data-component="RsCardHeader"]:has([data-slot="avatar"]) [data-slot="subheader"],
+  .mui-skin .rs-card-header:has([data-slot="avatar"]) [data-slot="subheader"],
+  .mui-skin .mui-card-header:has([data-slot="avatar"]) [data-slot="subheader"],
+  .mui-skin [data-component="RsCardHeader"]:has(.MuiCardHeader-avatar) .MuiCardHeader-subheader,
+  .mui-skin .rs-card-header:has(.MuiCardHeader-avatar) .MuiCardHeader-subheader,
+  .mui-skin .mui-card-header:has(.MuiCardHeader-avatar) .MuiCardHeader-subheader,
+  .mui-skin [data-component="RsCardHeader"] [data-slot="subheader"][data-variant="body2"],
+  .mui-skin .rs-card-header [data-slot="subheader"][data-variant="body2"],
+  .mui-skin .mui-card-header [data-slot="subheader"][data-variant="body2"] {
+    /* MUI Typography body2 variant with textSecondary color */
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.43; /* MUI body2 lineHeight */
+    letter-spacing: 0.01071em; /* MUI body2 letterSpacing (0.15/14) */
+    color: rgba(0, 0, 0, 0.6); /* palette.text.secondary */
+  }
+  
+  /* MUI CardHeader Action */
+  .mui-skin [data-component="RsCardHeader"] [data-slot="action"],
+  .mui-skin .rs-card-header [data-slot="action"],
+  .mui-skin .mui-card-header [data-slot="action"],
+  .mui-skin [data-component="RsCardHeader"] .MuiCardHeader-action,
+  .mui-skin .rs-card-header .MuiCardHeader-action,
+  .mui-skin .mui-card-header .MuiCardHeader-action {
+    /* MUI CardHeaderAction styles */
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-top: -4px; /* MUI exact margin */
+    margin-right: -8px; /* MUI exact margin */
+    margin-bottom: -4px; /* MUI exact margin */
+  }
+  
+  /* Fallback for browsers that don't support :has() selector */
+  /* Title default (assume no avatar) */
+  .mui-skin [data-component="RsCardHeader"] [data-slot="title"]:not([data-variant]),
+  .mui-skin .rs-card-header [data-slot="title"]:not([data-variant]),
+  .mui-skin .mui-card-header [data-slot="title"]:not([data-variant]) {
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 1.5rem; /* h5 variant */
+    line-height: 1.334;
+    letter-spacing: 0em;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
+  /* Subheader default (assume no avatar) */
+  .mui-skin [data-component="RsCardHeader"] [data-slot="subheader"]:not([data-variant]),
+  .mui-skin .rs-card-header [data-slot="subheader"]:not([data-variant]),
+  .mui-skin .mui-card-header [data-slot="subheader"]:not([data-variant]) {
+    display: block;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 1rem; /* body1 variant */
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  /* =========================================================
+     CARD CONTENT (MUI CardContent - Exact Specifications)
+     ========================================================= */
+  
+  .mui-skin [data-component="RsCardContent"],
+  .mui-skin .rs-card-content,
+  .mui-skin .mui-card-content {
+    /* MUI CardContent root styles */
+    padding: 16px; /* MUI exact padding */
+  }
+  
+  /* MUI CardContent last-child padding */
+  .mui-skin [data-component="RsCardContent"]:last-child,
+  .mui-skin .rs-card-content:last-child,
+  .mui-skin .mui-card-content:last-child {
+    padding-bottom: 24px; /* MUI exact last-child padding */
+  }
+  
+  /* =========================================================
+     CARD ACTIONS (MUI CardActions - Exact Specifications)
+     ========================================================= */
+  
+  .mui-skin [data-component="RsCardActions"],
+  .mui-skin .rs-card-actions,
+  .mui-skin .mui-card-actions {
+    /* MUI CardActions root styles */
+    display: flex;
+    align-items: center;
+    padding: 8px; /* MUI exact padding */
+  }
+  
+  /* MUI CardActions spacing between children (when not disableSpacing) */
+  .mui-skin [data-component="RsCardActions"]:not([data-disable-spacing="true"]) > :not(style) ~ :not(style),
+  .mui-skin .rs-card-actions:not([data-disable-spacing="true"]) > :not(style) ~ :not(style),
+  .mui-skin .mui-card-actions:not([data-disable-spacing="true"]) > :not(style) ~ :not(style) {
+    margin-left: 8px; /* MUI exact spacing */
+  }
+  
+  /* Note: MUI CardActions with disableSpacing=true has no additional styles - 
+     spacing is controlled by the :not([data-disable-spacing="true"]) selector above */
+  
+  /* =========================================================
+     INPUT BASE STYLES (MUI TextField Outlined Variant)
+     ========================================================= */
+  
+  /* Target all text and number inputs - MUI exact specifications */
+  .mui-skin input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="date"]):not([type="time"]),
   .mui-skin [data-component="RsTextField"] input,
   .mui-skin [data-component="RsNumber"] input,
-  .mui-skin [data-component="RsDatePicker"] input,
-  .mui-skin [data-component="RsTextArea"] textarea,
-  .mui-skin [data-component="RsSelect"] select {
+  .mui-skin [data-component="RsNumberFormat"] input,
+  .mui-skin .rs-input,
+  .mui-skin .rs-input-number-input,
+  .mui-skin .rs-input-group input {
     width: 100%;
-    height: 44px;
+    /* MUI doesn't set min-height - height is determined naturally by padding + line-height + border */
   
-    border: var(--mui-border);
-    border-radius: var(--mui-radius);
+    border: 1px solid rgba(0, 0, 0, 0.23); /* MUI exact border color */
+    border-radius: 4px; /* MUI standard border radius */
   
     background-color: #ffffff;
-    padding: 10px 12px;
+    padding: 8.5px 14px; /* MUI exact padding: top/bottom 16.5px, left/right 14px */
   
-    font-size: 0.95rem;
-    line-height: 1.4;
-    color: var(--mui-text);
+    font-size: 1rem; /* MUI body1 typography: 16px */
+    line-height: 1.4375em; /* MUI exact: 23px for 16px font */
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400; /* MUI body1 font-weight */
+    letter-spacing: 0.00938em; /* MUI body1 letter-spacing */
+    color: rgba(0, 0, 0, 0.87); /* MUI text.primary color */
   
     outline: none;
     appearance: none;
+    box-sizing: border-box;
+    margin: 0; /* Reset for Safari */
+    display: block;
+    min-width: 0; /* Make flex item shrink with Firefox */
+    -webkit-tap-highlight-color: transparent; /* MUI InputBase */
   
     transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      background-color 0.15s ease;
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; /* MUI transition for border width change */
+  }
+  
+  /* Reset Firefox invalid required input style (MUI InputBase) */
+  .mui-skin input:invalid,
+  .mui-skin textarea:invalid {
+    box-shadow: none;
+  }
+  
+  /* Hide number input spinners (MUI doesn't show them) */
+  .mui-skin input[type="number"]::-webkit-inner-spin-button,
+  .mui-skin input[type="number"]::-webkit-outer-spin-button,
+  .mui-skin .rs-input-number-btn,
+  .mui-skin .rs-input-number-touchspin-up,
+  .mui-skin .rs-input-number-touchspin-down {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+  
+  .mui-skin input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Standard */
   }
   
   /* =========================================================
-     TEXTAREA
+     FILE UPLOAD / CAMERA CAPTURE (MUI File Upload - Exact Specifications)
+     ========================================================= */
+  
+  /* MUI Visually Hidden File Input */
+  /* This is the standard MUI pattern for file uploads - hide the native input */
+  .mui-skin input[type="file"],
+  .mui-skin [data-component="RsUploader"] input[type="file"],
+  .mui-skin .rs-uploader input[type="file"],
+  .mui-skin .visually-hidden-input,
+  .mui-skin [data-visually-hidden="true"] input[type="file"] {
+    /* MUI VisuallyHiddenInput exact specifications */
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
+    /* Additional properties for complete hiding */
+    border: 0;
+    margin: -1px;
+    padding: 0;
+    opacity: 0;
+    z-index: -1;
+  }
+  
+  /* File Upload Button Container (Button as label wrapper) */
+  /* When button is used as label for file input */
+  .mui-skin button[component="label"],
+  .mui-skin label[role="button"],
+  .mui-skin [data-component="RsUploader"] button,
+  .mui-skin [data-component="RsUploader"] label,
+  .mui-skin .rs-uploader button,
+  .mui-skin .rs-uploader label {
+    /* Use MUI Button styles (already defined above) */
+    /* Additional styling for upload button */
+    cursor: pointer;
+    position: relative;
+  }
+  
+  /* File Upload Button with Icon */
+  /* Note: File input is visually hidden, button acts as the visible trigger */
+  /* Button styles are already applied in the BUTTONS section above */
+  
+  /* Camera Capture (accept="image/*;capture=camera") */
+  .mui-skin input[type="file"][accept*="capture=camera"],
+  .mui-skin input[type="file"][accept*="image/*;capture"],
+  .mui-skin [data-component="RsUploader"][data-capture="camera"] input,
+  .mui-skin .rs-uploader[data-capture="camera"] input {
+    /* Same visually hidden pattern for camera capture */
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
+    border: 0;
+    margin: -1px;
+    padding: 0;
+    opacity: 0;
+    z-index: -1;
+  }
+  
+  /* Upload Button with Camera Icon Variant */
+  /* Note: Uses MUI Button styles (already applied above) */
+  /* Camera capture uses same visually hidden input pattern */
+  
+  /* File Upload Area / Drop Zone */
+  .mui-skin [data-component="RsUploader"],
+  .mui-skin .rs-uploader,
+  .mui-skin .mui-file-upload {
+    /* Container for upload component */
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* File Upload List / Preview */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-item,
+  .mui-skin [data-component="RsUploader"] .file-item,
+  .mui-skin .rs-uploader .rs-uploader-file-item,
+  .mui-skin .rs-uploader .file-item {
+    /* File list item styling */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background-color: transparent;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-item:hover,
+  .mui-skin [data-component="RsUploader"] .file-item:hover,
+  .mui-skin .rs-uploader .rs-uploader-file-item:hover,
+  .mui-skin .rs-uploader .file-item:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* action.hover */
+  }
+  
+  /* File Name in Upload List */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-name,
+  .mui-skin [data-component="RsUploader"] .file-name,
+  .mui-skin .rs-uploader .rs-uploader-file-name,
+  .mui-skin .rs-uploader .file-name {
+    /* MUI Typography body1 */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 1rem; /* 16px */
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87); /* text.primary */
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* File Size in Upload List */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-size,
+  .mui-skin [data-component="RsUploader"] .file-size,
+  .mui-skin .rs-uploader .rs-uploader-file-size,
+  .mui-skin .rs-uploader .file-size {
+    /* MUI Typography body2 with textSecondary color */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    color: rgba(0, 0, 0, 0.6); /* text.secondary */
+  }
+  
+  /* Remove File Button in Upload List */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-remove,
+  .mui-skin [data-component="RsUploader"] .file-remove,
+  .mui-skin .rs-uploader .rs-uploader-file-remove,
+  .mui-skin .rs-uploader .file-remove {
+    /* MUI IconButton for remove action */
+    text-align: center;
+    flex: 0 0 auto;
+    font-size: 1.5rem; /* 24px */
+    padding: 8px;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.54); /* action.active */
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-remove:hover,
+  .mui-skin [data-component="RsUploader"] .file-remove:hover,
+  .mui-skin .rs-uploader .rs-uploader-file-remove:hover,
+  .mui-skin .rs-uploader .file-remove:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* action.hover */
+  }
+  
+  .mui-skin [data-component="RsUploader"] .rs-uploader-file-remove:active,
+  .mui-skin [data-component="RsUploader"] .file-remove:active,
+  .mui-skin .rs-uploader .rs-uploader-file-remove:active,
+  .mui-skin .rs-uploader .file-remove:active {
+    background-color: rgba(0, 0, 0, 0.08); /* action.selected */
+  }
+  
+  /* Upload Progress / Status */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-progress,
+  .mui-skin [data-component="RsUploader"] .upload-progress,
+  .mui-skin .rs-uploader .rs-uploader-progress,
+  .mui-skin .rs-uploader .upload-progress {
+    /* Progress indicator styling */
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  /* Drag and Drop Zone */
+  .mui-skin [data-component="RsUploader"][data-drag-drop="true"],
+  .mui-skin .rs-uploader[data-drag-drop="true"],
+  .mui-skin .mui-file-upload[data-drag-drop="true"] {
+    /* Drag and drop area */
+    border: 2px dashed rgba(0, 0, 0, 0.12); /* divider */
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    background-color: transparent;
+    transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  
+  .mui-skin [data-component="RsUploader"][data-drag-drop="true"]:hover,
+  .mui-skin .rs-uploader[data-drag-drop="true"]:hover,
+  .mui-skin .mui-file-upload[data-drag-drop="true"]:hover {
+    border-color: rgba(0, 0, 0, 0.23);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .mui-skin [data-component="RsUploader"][data-drag-drop="true"][data-drag-active="true"],
+  .mui-skin .rs-uploader[data-drag-drop="true"][data-drag-active="true"],
+  .mui-skin .mui-file-upload[data-drag-drop="true"][data-drag-active="true"] {
+    border-color: #1976d2; /* primary.main */
+    background-color: rgba(25, 118, 210, 0.04); /* primary with hoverOpacity */
+  }
+  
+  /* Upload Helper Text */
+  .mui-skin [data-component="RsUploader"] .rs-uploader-helper-text,
+  .mui-skin [data-component="RsUploader"] .helper-text,
+  .mui-skin .rs-uploader .rs-uploader-helper-text,
+  .mui-skin .rs-uploader .helper-text {
+    /* MUI Typography caption with textSecondary color */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.66;
+    letter-spacing: 0.03333em;
+    color: rgba(0, 0, 0, 0.6); /* text.secondary */
+    margin-top: 4px;
+    margin-bottom: 0;
+  }
+  
+  /* Upload Error State */
+  /* Note: Error styling is applied to helper text and drag-drop border below */
+  
+  .mui-skin [data-component="RsUploader"][data-error="true"] .rs-uploader-helper-text,
+  .mui-skin .rs-uploader[data-error="true"] .rs-uploader-helper-text,
+  .mui-skin [data-component="RsUploader"].error .rs-uploader-helper-text,
+  .mui-skin .rs-uploader.error .rs-uploader-helper-text {
+    color: #d32f2f; /* error.main */
+  }
+  
+  .mui-skin [data-component="RsUploader"][data-error="true"][data-drag-drop="true"],
+  .mui-skin .rs-uploader[data-error="true"][data-drag-drop="true"],
+  .mui-skin [data-component="RsUploader"].error[data-drag-drop="true"],
+  .mui-skin .rs-uploader.error[data-drag-drop="true"] {
+    border-color: #d32f2f; /* error.main */
+  }
+  
+  /* Upload Disabled State */
+  .mui-skin [data-component="RsUploader"][data-disabled="true"],
+  .mui-skin .rs-uploader[data-disabled="true"],
+  .mui-skin [data-component="RsUploader"].disabled,
+  .mui-skin .rs-uploader.disabled {
+    opacity: 0.38; /* action.disabledOpacity */
+    pointer-events: none;
+  }
+  
+  /* =========================================================
+     TEXTAREA (MUI TextField Multiline)
      ========================================================= */
   
   .mui-skin textarea,
-  .mui-skin [data-component="RsTextArea"] textarea {
-    min-height: 88px;
+  .mui-skin [data-component="RsTextArea"] textarea,
+  .mui-skin .rs-input-group textarea {
     height: auto;
+    padding: 16.5px 14px; /* MUI exact padding for multiline */
     resize: vertical;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    background-color: #ffffff;
+    outline: none;
+    appearance: none;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    min-width: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
   }
   
   /* =========================================================
-     SELECT
+     SELECT (MUI Select Outlined)
      ========================================================= */
   
-  .mui-skin select {
+  .mui-skin select,
+  .mui-skin [data-component="RsSelect"] select {
+    height: auto;
+    padding: 16.5px 14px;
     padding-right: 32px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    background-color: #ffffff;
     background-repeat: no-repeat;
-    background-position: right 10px center;
+    background-position: right 14px center;
+    background-size: 24px;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    outline: none;
+    appearance: none;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    min-width: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
   }
   
   /* =========================================================
-     PLACEHOLDER
+     PLACEHOLDER (MUI Placeholder)
      ========================================================= */
   
   .mui-skin input::placeholder,
   .mui-skin textarea::placeholder {
-    color: var(--mui-placeholder);
-    opacity: 1;
+    color: currentColor; /* MUI uses currentColor */
+    opacity: 0.42; /* MUI exact placeholder opacity in light mode */
+    font-size: 1rem;
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; /* MUI placeholder transition */
+  }
+  
+  /* MUI placeholder visibility logic - hidden when label is present and not focused */
+  .mui-skin input:not(:focus):not(:placeholder-shown)::placeholder,
+  .mui-skin textarea:not(:focus):not(:placeholder-shown)::placeholder {
+    opacity: 0;
+  }
+  
+  .mui-skin input:focus::placeholder,
+  .mui-skin textarea:focus::placeholder {
+    opacity: 0.42;
   }
   
   /* =========================================================
-     HOVER
+     HOVER (MUI Hover State)
      ========================================================= */
   
-  .mui-skin input:hover,
-  .mui-skin textarea:hover,
-  .mui-skin select:hover {
-    border-color: #b0bec5;
+  .mui-skin input:hover:not(:disabled):not([readonly]),
+  .mui-skin textarea:hover:not(:disabled):not([readonly]),
+  .mui-skin select:hover:not(:disabled) {
+    border-color: rgba(0, 0, 0, 0.87); /* MUI hover border */
   }
   
   /* =========================================================
-     FOCUS (Material Blue Ring)
+     FOCUS (MUI Focus State - Outlined Variant)
      ========================================================= */
   
-  .mui-skin input:focus,
-  .mui-skin textarea:focus,
-  .mui-skin select:focus {
-    border-color: var(--mui-primary);
-    box-shadow: 0 0 0 3px var(--mui-primary-focus);
+  .mui-skin input:focus:not(:disabled),
+  .mui-skin textarea:focus:not(:disabled),
+  .mui-skin select:focus:not(:disabled) {
+    border-color: #1976d2; /* MUI primary.main color */
+    border-width: 2px; /* MUI focus border width */
+    /* Adjust padding to maintain visual size when border increases from 1px to 2px */
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px); /* Compensate for 1px border increase */
+    box-shadow: none; /* MUI outlined variant doesn't use box-shadow on focus */
+    outline: 0; /* MUI InputBase focus style */
+  }
+  
+  /* Adjust padding for select on focus */
+  .mui-skin select:focus:not(:disabled) {
+    padding-right: calc(32px - 0.5px); /* Adjust for 2px border */
   }
   
   /* =========================================================
-     DISABLED / READONLY
+     DISABLED / READONLY (MUI Disabled State)
      ========================================================= */
   
   .mui-skin input:disabled,
   .mui-skin textarea:disabled,
-  .mui-skin select:disabled {
-    background-color: #f5f7fa;
-    color: #9e9e9e;
-    border-color: var(--mui-border-color);
-    cursor: not-allowed;
+  .mui-skin select:disabled,
+  .mui-skin .rs-input-disabled input,
+  .mui-skin .rs-input-group-disabled input,
+  .mui-skin .rs-input-group-disabled textarea {
+    background-color: transparent; /* MUI disabled doesn't change background */
+    color: rgba(0, 0, 0, 0.38); /* MUI text.disabled color */
+    border-color: rgba(0, 0, 0, 0.23); /* MUI action.disabled color */
+    cursor: default; /* MUI uses default, not not-allowed */
+    opacity: 1; /* Reset iOS opacity */
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.38); /* Fix opacity Safari bug */
   }
   
   .mui-skin input[readonly],
   .mui-skin textarea[readonly] {
-    background-color: #f9fafb;
+    background-color: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.87);
+    cursor: default;
   }
   
   /* =========================================================
-     ERROR / INVALID
+     ERROR / INVALID (MUI Error State)
      ========================================================= */
   
   .mui-skin input[aria-invalid="true"],
@@ -187,27 +947,370 @@
   .mui-skin .is-invalid input,
   .mui-skin .is-invalid textarea,
   .mui-skin .is-invalid select,
-  .mui-skin input:invalid,
-  .mui-skin textarea:invalid,
-  .mui-skin select:invalid {
-    border-color: var(--mui-danger);
-    box-shadow: 0 0 0 3px var(--mui-danger-focus);
+  .mui-skin input:invalid:not(:focus):not(:placeholder-shown),
+  .mui-skin textarea:invalid:not(:focus):not(:placeholder-shown),
+  .mui-skin select:invalid:not(:focus),
+  .mui-skin .rs-form-control-wrapper-error input,
+  .mui-skin .rs-form-control-wrapper-error textarea,
+  .mui-skin .rs-form-control-wrapper-error select {
+    border-color: #d32f2f; /* MUI error.main color */
+    border-width: 1px;
+    padding: 16.5px 14px; /* Normal padding for error state */
+  }
+  
+  .mui-skin input[aria-invalid="true"]:focus,
+  .mui-skin textarea[aria-invalid="true"]:focus,
+  .mui-skin select[aria-invalid="true"]:focus,
+  .mui-skin .is-invalid input:focus,
+  .mui-skin .is-invalid textarea:focus,
+  .mui-skin .is-invalid select:focus {
+    border-color: #d32f2f; /* MUI error.main color */
+    border-width: 2px;
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px); /* Adjust for 2px border */
+    box-shadow: none;
+  }
+  
+  .mui-skin select[aria-invalid="true"]:focus,
+  .mui-skin .is-invalid select:focus {
+    padding-right: calc(32px - 0.5px); /* Adjust for 2px border */
   }
   
   /* =========================================================
-     AUTOFILL (WEBKIT FIX)
+     AUTOFILL (MUI Webkit Autofill Fix)
      ========================================================= */
   
   .mui-skin input:-webkit-autofill,
   .mui-skin textarea:-webkit-autofill,
   .mui-skin select:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-    -webkit-text-fill-color: var(--mui-text) !important;
-    transition: background-color 9999s ease-out;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+    border-color: rgba(0, 0, 0, 0.23) !important;
+    border-radius: 4px !important;
+    transition: background-color 5000s ease-out 0s, border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+    animation-duration: 5000s !important;
+    animation-name: mui-auto-fill !important;
+  }
+  
+  .mui-skin input:-webkit-autofill:focus,
+  .mui-skin textarea:-webkit-autofill:focus,
+  .mui-skin select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+    border-color: #1976d2 !important;
+    border-width: 2px !important;
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px) !important;
+  }
+  
+  /* MUI autofill animation keyframes */
+  @keyframes mui-auto-fill {
+    from {
+      display: block;
+    }
+  }
+  
+  @keyframes mui-auto-fill-cancel {
+    from {
+      display: block;
+    }
   }
   
   /* =========================================================
-     COMPACT INPUTS (TABLES / GRIDS)
+     RSUITE INPUT GROUP WRAPPERS
+     ========================================================= */
+  
+  .mui-skin .rs-input-group,
+  .mui-skin .rs-input-group:not(.rs-input-group-disabled):not(.rs-input-group-readonly) {
+    border: none;
+    background: transparent;
+  }
+  
+  .mui-skin .rs-input-group:not(.rs-input-group-disabled):not(.rs-input-group-readonly):hover {
+    border: none;
+  }
+  
+  .mui-skin .rs-input-group:not(.rs-input-group-disabled):not(.rs-input-group-readonly).rs-input-group-focus {
+    border: none;
+    box-shadow: none;
+  }
+  
+  /* Remove RSuite default borders from input groups - we style the input directly */
+  .mui-skin .rs-input-group:not(.rs-input-group-inside) {
+    border: none;
+    background: transparent;
+  }
+  
+  /* =========================================================
+     DATE PICKER INPUT (MUI DatePicker)
+     ========================================================= */
+  
+  .mui-skin [data-component="RsDatePicker"] input,
+  .mui-skin .rs-picker-toggle {
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    background-color: #ffffff;
+    padding: 16.5px 14px;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    outline: none;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    min-width: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  }
+  
+  .mui-skin [data-component="RsDatePicker"] input:hover:not(:disabled),
+  .mui-skin .rs-picker-toggle:hover:not(.rs-picker-toggle-disabled) {
+    border-color: rgba(0, 0, 0, 0.87);
+  }
+  
+  .mui-skin [data-component="RsDatePicker"] input:focus,
+  .mui-skin .rs-picker-toggle.rs-picker-toggle-active {
+    border-color: #1976d2;
+    border-width: 2px;
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px);
+    box-shadow: none;
+    outline: 0;
+  }
+  
+  /* =========================================================
+     TIME PICKER INPUT (MUI TimePicker - Exact Specifications)
+     ========================================================= */
+  
+  /* MUI TimePicker uses same input styling as DatePicker (OutlinedInput pattern) */
+  .mui-skin [data-component="RsTimePicker"] input,
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle,
+  .mui-skin .rs-time-picker input,
+  .mui-skin .rs-time-picker .rs-picker-toggle {
+    /* MUI OutlinedInput exact specifications */
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.23); /* MUI exact border color */
+    border-radius: 4px; /* MUI standard border radius */
+    background-color: #ffffff;
+    padding: 16.5px 14px; /* MUI exact padding for OutlinedInput */
+    font-size: 1rem; /* MUI body1 typography: 16px */
+    line-height: 1.4375em; /* MUI exact: 23px for 16px font */
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400; /* MUI body1 font-weight */
+    letter-spacing: 0.00938em; /* MUI body1 letter-spacing */
+    color: rgba(0, 0, 0, 0.87); /* MUI text.primary color */
+    outline: none;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    min-width: 0;
+    -webkit-tap-highlight-color: transparent; /* MUI InputBase */
+    transition:
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; /* MUI transition for border width change */
+  }
+  
+  /* Native HTML5 Time Input */
+  .mui-skin input[type="time"] {
+    /* MUI OutlinedInput exact specifications for native time input */
+    width: 100%;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.23); /* MUI exact border color */
+    border-radius: 4px; /* MUI standard border radius */
+    background-color: #ffffff;
+    padding: 16.5px 14px; /* MUI exact padding */
+    font-size: 1rem; /* MUI body1 typography: 16px */
+    line-height: 1.4375em; /* MUI exact: 23px for 16px font */
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-weight: 400; /* MUI body1 font-weight */
+    letter-spacing: 0.00938em; /* MUI body1 letter-spacing */
+    color: rgba(0, 0, 0, 0.87); /* MUI text.primary color */
+    outline: none;
+    appearance: none;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    min-width: 0;
+    -webkit-tap-highlight-color: transparent; /* MUI InputBase */
+    transition:
+      border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,
+      border-width 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; /* MUI transition for border width change */
+  }
+  
+  /* Hide native time input controls/spinners if needed */
+  .mui-skin input[type="time"]::-webkit-calendar-picker-indicator {
+    /* Native time picker icon - can be styled or hidden */
+    cursor: pointer;
+    opacity: 0.54; /* MUI action.active opacity */
+  }
+  
+  .mui-skin input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.87; /* MUI hover opacity */
+  }
+  
+  /* TimePicker Hover State */
+  .mui-skin [data-component="RsTimePicker"] input:hover:not(:disabled),
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle:hover:not(.rs-picker-toggle-disabled),
+  .mui-skin .rs-time-picker input:hover:not(:disabled),
+  .mui-skin .rs-time-picker .rs-picker-toggle:hover:not(.rs-picker-toggle-disabled),
+  .mui-skin input[type="time"]:hover:not(:disabled) {
+    border-color: rgba(0, 0, 0, 0.87); /* MUI hover border */
+  }
+  
+  /* TimePicker Focus State */
+  .mui-skin [data-component="RsTimePicker"] input:focus:not(:disabled),
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle.rs-picker-toggle-active,
+  .mui-skin .rs-time-picker input:focus:not(:disabled),
+  .mui-skin .rs-time-picker .rs-picker-toggle.rs-picker-toggle-active,
+  .mui-skin input[type="time"]:focus:not(:disabled) {
+    border-color: #1976d2; /* MUI primary.main color */
+    border-width: 2px; /* MUI focus border width */
+    /* Adjust padding to maintain visual size when border increases from 1px to 2px */
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px); /* Compensate for 1px border increase */
+    box-shadow: none; /* MUI outlined variant doesn't use box-shadow on focus */
+    outline: 0; /* MUI InputBase focus style */
+  }
+  
+  /* TimePicker Disabled State */
+  .mui-skin [data-component="RsTimePicker"] input:disabled,
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle.rs-picker-toggle-disabled,
+  .mui-skin .rs-time-picker input:disabled,
+  .mui-skin .rs-time-picker .rs-picker-toggle.rs-picker-toggle-disabled,
+  .mui-skin input[type="time"]:disabled {
+    background-color: transparent; /* MUI disabled doesn't change background */
+    color: rgba(0, 0, 0, 0.38); /* MUI text.disabled color */
+    border-color: rgba(0, 0, 0, 0.23); /* MUI action.disabled color */
+    cursor: default; /* MUI uses default, not not-allowed */
+    opacity: 1; /* Reset iOS opacity */
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.38); /* Fix opacity Safari bug */
+  }
+  
+  /* TimePicker Error State */
+  .mui-skin [data-component="RsTimePicker"][aria-invalid="true"] input,
+  .mui-skin [data-component="RsTimePicker"].is-invalid input,
+  .mui-skin [data-component="RsTimePicker"] .rs-form-control-wrapper-error input,
+  .mui-skin .rs-time-picker[aria-invalid="true"] input,
+  .mui-skin .rs-time-picker.is-invalid input,
+  .mui-skin .rs-time-picker .rs-form-control-wrapper-error input,
+  .mui-skin input[type="time"][aria-invalid="true"],
+  .mui-skin input[type="time"]:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: #d32f2f; /* MUI error.main color */
+    border-width: 1px;
+    padding: 16.5px 14px; /* Normal padding for error state */
+  }
+  
+  .mui-skin [data-component="RsTimePicker"][aria-invalid="true"] input:focus,
+  .mui-skin [data-component="RsTimePicker"].is-invalid input:focus,
+  .mui-skin .rs-time-picker[aria-invalid="true"] input:focus,
+  .mui-skin .rs-time-picker.is-invalid input:focus,
+  .mui-skin input[type="time"][aria-invalid="true"]:focus,
+  .mui-skin input[type="time"]:invalid:focus {
+    border-color: #d32f2f; /* MUI error.main color */
+    border-width: 2px;
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px); /* Adjust for 2px border */
+    box-shadow: none;
+  }
+  
+  /* TimePicker Placeholder */
+  .mui-skin [data-component="RsTimePicker"] input::placeholder,
+  .mui-skin .rs-time-picker input::placeholder,
+  .mui-skin input[type="time"]::placeholder {
+    color: currentColor; /* MUI uses currentColor */
+    opacity: 0.42; /* MUI exact placeholder opacity in light mode */
+    font-size: 1rem;
+    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; /* MUI placeholder transition */
+  }
+  
+  .mui-skin [data-component="RsTimePicker"] input:not(:focus):not(:placeholder-shown)::placeholder,
+  .mui-skin .rs-time-picker input:not(:focus):not(:placeholder-shown)::placeholder,
+  .mui-skin input[type="time"]:not(:focus):not(:placeholder-shown)::placeholder {
+    opacity: 0; /* MUI placeholder visibility logic */
+  }
+  
+  .mui-skin [data-component="RsTimePicker"] input:focus::placeholder,
+  .mui-skin .rs-time-picker input:focus::placeholder,
+  .mui-skin input[type="time"]:focus::placeholder {
+    opacity: 0.42;
+  }
+  
+  /* TimePicker Autofill */
+  .mui-skin [data-component="RsTimePicker"] input:-webkit-autofill,
+  .mui-skin .rs-time-picker input:-webkit-autofill,
+  .mui-skin input[type="time"]:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+    border-color: rgba(0, 0, 0, 0.23) !important;
+    border-radius: 4px !important;
+    transition: background-color 5000s ease-out 0s, border-color 250ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+  }
+  
+  .mui-skin [data-component="RsTimePicker"] input:-webkit-autofill:focus,
+  .mui-skin .rs-time-picker input:-webkit-autofill:focus,
+  .mui-skin input[type="time"]:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+    border-color: #1976d2 !important;
+    border-width: 2px !important;
+    padding: calc(16.5px - 0.5px) calc(14px - 0.5px) !important;
+  }
+  
+  /* TimePicker Small/Dense Variant (in tables/grids) */
+  .mui-skin table [data-component="RsTimePicker"] input,
+  .mui-skin table .rs-time-picker input,
+  .mui-skin table .rs-time-picker .rs-picker-toggle,
+  .mui-skin table input[type="time"],
+  .mui-skin .fe-grid [data-component="RsTimePicker"] input,
+  .mui-skin .fe-grid .rs-time-picker input,
+  .mui-skin .fe-grid input[type="time"] {
+    height: auto; /* MUI small/dense variant - height determined naturally */
+    padding: 8.5px 14px; /* MUI exact small padding */
+    font-size: 0.875rem; /* MUI small font size: 14px */
+    line-height: 1.43; /* MUI small line height */
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+  }
+  
+  .mui-skin table [data-component="RsTimePicker"] input:focus,
+  .mui-skin table .rs-time-picker input:focus,
+  .mui-skin table .rs-time-picker .rs-picker-toggle.rs-picker-toggle-active,
+  .mui-skin table input[type="time"]:focus,
+  .mui-skin .fe-grid [data-component="RsTimePicker"] input:focus,
+  .mui-skin .fe-grid .rs-time-picker input:focus,
+  .mui-skin .fe-grid input[type="time"]:focus {
+    border-width: 2px;
+    padding: calc(8.5px - 0.5px) calc(14px - 0.5px); /* Adjust for 2px border */
+  }
+  
+  /* TimePicker Icon/Button (clock icon) */
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle-btn,
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle-icon,
+  .mui-skin .rs-time-picker .rs-picker-toggle-btn,
+  .mui-skin .rs-time-picker .rs-picker-toggle-icon {
+    /* Icon button styling - uses MUI IconButton pattern */
+    color: rgba(0, 0, 0, 0.54); /* MUI action.active */
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  
+  .mui-skin [data-component="RsTimePicker"]:hover .rs-picker-toggle-btn,
+  .mui-skin [data-component="RsTimePicker"]:hover .rs-picker-toggle-icon,
+  .mui-skin .rs-time-picker:hover .rs-picker-toggle-btn,
+  .mui-skin .rs-time-picker:hover .rs-picker-toggle-icon {
+    color: rgba(0, 0, 0, 0.87); /* MUI hover color */
+  }
+  
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle-btn:disabled,
+  .mui-skin [data-component="RsTimePicker"] .rs-picker-toggle-icon:disabled,
+  .mui-skin .rs-time-picker .rs-picker-toggle-btn:disabled,
+  .mui-skin .rs-time-picker .rs-picker-toggle-icon:disabled {
+    color: rgba(0, 0, 0, 0.26); /* MUI action.disabled */
+  }
+  
+  /* =========================================================
+     COMPACT INPUTS (TABLES / GRIDS - MUI Dense Variant)
      ========================================================= */
   
   .mui-skin .fe-grid input,
@@ -215,39 +1318,732 @@
   .mui-skin .fe-grid textarea,
   .mui-skin table input,
   .mui-skin table select,
-  .mui-skin table textarea {
-    height: 40px;
-    border-radius: 8px;
+  .mui-skin table textarea,
+  .mui-skin table .rs-input,
+  .mui-skin table .rs-input-number-input,
+  .mui-skin table .rs-picker-toggle {
+    height: auto; /* MUI small/dense variant - height determined naturally */
+    padding: 8.5px 14px; /* MUI exact small padding */
+    font-size: 0.875rem; /* MUI small font size: 14px */
+    line-height: 1.43; /* MUI small line height */
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+  }
+  
+  .mui-skin table input:focus,
+  .mui-skin table select:focus,
+  .mui-skin table textarea:focus,
+  .mui-skin table .rs-picker-toggle.rs-picker-toggle-active {
+    border-width: 2px;
+    padding: calc(8.5px - 0.5px) calc(14px - 0.5px); /* Adjust for 2px border */
+  }
+  
+  .mui-skin table select:focus {
+    padding-right: calc(32px - 0.5px); /* Adjust for 2px border */
   }
   
   /* =========================================================
-     LABELS & HEADERS
+     LABELS (MUI FormLabel - Exact Specifications)
      ========================================================= */
   
+  /* MUI FormLabel Base Styles */
   .mui-skin label,
   .mui-skin .rs-label,
   .mui-skin [data-component="RsLabel"] {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  
-    margin-bottom: 6px;
-  
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--mui-label);
+    /* MUI FormLabel root styles */
+    color: rgba(0, 0, 0, 0.6); /* palette.text.secondary */
+    
+    /* MUI typography.body1 */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1rem; /* 16px */
+    line-height: 1.4375em; /* MUI FormLabel overrides body1 lineHeight */
+    letter-spacing: 0.00938em; /* 0.15/16 */
+    
+    /* MUI FormLabel specific */
+    padding: 0;
+    position: relative;
+    
+    /* Display - default is inline for label element */
+    display: inline-block;
   }
   
+  /* MUI FormLabel Focused State */
+  .mui-skin label:focus,
+  .mui-skin .rs-label:focus,
+  .mui-skin [data-component="RsLabel"]:focus,
+  .mui-skin label[data-focused="true"],
+  .mui-skin .rs-label[data-focused="true"],
+  .mui-skin [data-component="RsLabel"][data-focused="true"] {
+    color: #1976d2; /* primary.main - when focused */
+  }
+  
+  /* MUI FormLabel Disabled State */
+  .mui-skin label:disabled,
+  .mui-skin .rs-label:disabled,
+  .mui-skin [data-component="RsLabel"]:disabled,
+  .mui-skin label[data-disabled="true"],
+  .mui-skin .rs-label[data-disabled="true"],
+  .mui-skin [data-component="RsLabel"][data-disabled="true"],
+  .mui-skin label[aria-disabled="true"],
+  .mui-skin .rs-label[aria-disabled="true"],
+  .mui-skin [data-component="RsLabel"][aria-disabled="true"] {
+    color: rgba(0, 0, 0, 0.38); /* palette.text.disabled */
+  }
+  
+  /* MUI FormLabel Error State */
+  .mui-skin label[data-error="true"],
+  .mui-skin .rs-label[data-error="true"],
+  .mui-skin [data-component="RsLabel"][data-error="true"],
+  .mui-skin label.error,
+  .mui-skin .rs-label.error,
+  .mui-skin [data-component="RsLabel"].error,
+  .mui-skin .is-invalid label,
+  .mui-skin .rs-form-control-wrapper-error label {
+    color: #d32f2f; /* palette.error.main */
+  }
+  
+  /* MUI FormLabel Required Asterisk */
+  .mui-skin label[data-required="true"]::after,
+  .mui-skin .rs-label[data-required="true"]::after,
+  .mui-skin [data-component="RsLabel"][data-required="true"]::after,
+  .mui-skin label.required::after,
+  .mui-skin .rs-label.required::after,
+  .mui-skin [data-component="RsLabel"].required::after,
+  .mui-skin label[aria-required="true"]::after,
+  .mui-skin .rs-label[aria-required="true"]::after,
+  .mui-skin [data-component="RsLabel"][aria-required="true"]::after {
+    content: '\2009*'; /* &thinsp; + asterisk - MUI exact */
+    margin-left: 0;
+  }
+  
+  /* MUI FormLabel Required Asterisk Error State */
+  .mui-skin label[data-error="true"]::after,
+  .mui-skin .rs-label[data-error="true"]::after,
+  .mui-skin [data-component="RsLabel"][data-error="true"]::after,
+  .mui-skin label.error::after,
+  .mui-skin .rs-label.error::after,
+  .mui-skin [data-component="RsLabel"].error::after {
+    color: #d32f2f; /* palette.error.main */
+  }
+  
+  /* MUI FormLabel Color Variants */
+  /* Note: primary color is applied when focused (see focused state above) */
+  
+  .mui-skin label[data-color="secondary"],
+  .mui-skin .rs-label[data-color="secondary"],
+  .mui-skin [data-component="RsLabel"][data-color="secondary"] {
+    color: rgba(0, 0, 0, 0.6); /* text.secondary - same as default */
+  }
+  
+  .mui-skin label[data-color="error"],
+  .mui-skin .rs-label[data-color="error"],
+  .mui-skin [data-component="RsLabel"][data-color="error"] {
+    color: #d32f2f; /* error.main */
+  }
+  
+  /* MUI InputLabel Styles (for labels inside input fields) */
+  /* InputLabel extends FormLabel with additional positioning */
+  .mui-skin [data-component="RsInputLabel"],
+  .mui-skin .rs-input-label,
+  .mui-skin .mui-input-label {
+    /* MUI InputLabel base styles */
+    display: block;
+    transform-origin: top left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    
+    /* Inherit FormLabel styles */
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    letter-spacing: 0.00938em;
+    padding: 0;
+    position: relative;
+  }
+  
+  /* MUI InputLabel Standard Variant (default) */
+  .mui-skin [data-component="RsInputLabel"][data-variant="standard"],
+  .mui-skin .rs-input-label[data-variant="standard"],
+  .mui-skin .mui-input-label[data-variant="standard"],
+  .mui-skin [data-component="RsInputLabel"]:not([data-variant]),
+  .mui-skin .rs-input-label:not([data-variant]),
+  .mui-skin .mui-input-label:not([data-variant]) {
+    /* Standard variant - positioned absolutely when formControl */
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(0, 20px) scale(1);
+  }
+  
+  /* MUI InputLabel Standard Variant Shrunk */
+  .mui-skin [data-component="RsInputLabel"][data-variant="standard"][data-shrink="true"],
+  .mui-skin .rs-input-label[data-variant="standard"][data-shrink="true"],
+  .mui-skin .mui-input-label[data-variant="standard"][data-shrink="true"],
+  .mui-skin [data-component="RsInputLabel"]:not([data-variant])[data-shrink="true"],
+  .mui-skin .rs-input-label:not([data-variant])[data-shrink="true"],
+  .mui-skin .mui-input-label:not([data-variant])[data-shrink="true"] {
+    transform: translate(0, -1.5px) scale(0.75);
+    transform-origin: top left;
+    max-width: 133%;
+  }
+  
+  /* MUI InputLabel Standard Variant Small Size */
+  .mui-skin [data-component="RsInputLabel"][data-variant="standard"][data-size="small"],
+  .mui-skin .rs-input-label[data-variant="standard"][data-size="small"],
+  .mui-skin .mui-input-label[data-variant="standard"][data-size="small"],
+  .mui-skin [data-component="RsInputLabel"]:not([data-variant])[data-size="small"],
+  .mui-skin .rs-input-label:not([data-variant])[data-size="small"],
+  .mui-skin .mui-input-label:not([data-variant])[data-size="small"] {
+    transform: translate(0, 17px) scale(1);
+  }
+  
+  /* MUI InputLabel Standard Variant Small Size Shrunk */
+  .mui-skin [data-component="RsInputLabel"][data-variant="standard"][data-size="small"][data-shrink="true"],
+  .mui-skin .rs-input-label[data-variant="standard"][data-size="small"][data-shrink="true"],
+  .mui-skin .mui-input-label[data-variant="standard"][data-size="small"][data-shrink="true"],
+  .mui-skin [data-component="RsInputLabel"]:not([data-variant])[data-size="small"][data-shrink="true"],
+  .mui-skin .rs-input-label:not([data-variant])[data-size="small"][data-shrink="true"],
+  .mui-skin .mui-input-label:not([data-variant])[data-size="small"][data-shrink="true"] {
+    transform: translate(0, -1.5px) scale(0.75);
+    max-width: 133%;
+  }
+  
+  /* MUI InputLabel Outlined Variant */
+  .mui-skin [data-component="RsInputLabel"][data-variant="outlined"],
+  .mui-skin .rs-input-label[data-variant="outlined"],
+  .mui-skin .mui-input-label[data-variant="outlined"] {
+    z-index: 1;
+    pointer-events: none;
+    transform: translate(14px, 16px) scale(1);
+    max-width: calc(100% - 24px);
+  }
+  
+  /* MUI InputLabel Outlined Variant Shrunk */
+  .mui-skin [data-component="RsInputLabel"][data-variant="outlined"][data-shrink="true"],
+  .mui-skin .rs-input-label[data-variant="outlined"][data-shrink="true"],
+  .mui-skin .mui-input-label[data-variant="outlined"][data-shrink="true"] {
+    user-select: none;
+    pointer-events: auto;
+    max-width: calc(133% - 32px);
+    transform: translate(14px, -9px) scale(0.75);
+  }
+  
+  /* MUI InputLabel Outlined Variant Small Size */
+  .mui-skin [data-component="RsInputLabel"][data-variant="outlined"][data-size="small"],
+  .mui-skin .rs-input-label[data-variant="outlined"][data-size="small"],
+  .mui-skin .mui-input-label[data-variant="outlined"][data-size="small"] {
+    transform: translate(14px, 9px) scale(1);
+  }
+  
+  /* MUI InputLabel Filled Variant */
+  .mui-skin [data-component="RsInputLabel"][data-variant="filled"],
+  .mui-skin .rs-input-label[data-variant="filled"],
+  .mui-skin .mui-input-label[data-variant="filled"] {
+    z-index: 1;
+    pointer-events: none;
+    transform: translate(12px, 16px) scale(1);
+    max-width: calc(100% - 24px);
+  }
+  
+  /* MUI InputLabel Filled Variant Shrunk */
+  .mui-skin [data-component="RsInputLabel"][data-variant="filled"][data-shrink="true"],
+  .mui-skin .rs-input-label[data-variant="filled"][data-shrink="true"],
+  .mui-skin .mui-input-label[data-variant="filled"][data-shrink="true"] {
+    user-select: none;
+    pointer-events: auto;
+    transform: translate(12px, 7px) scale(0.75);
+    max-width: calc(133% - 24px);
+  }
+  
+  /* MUI InputLabel Filled Variant Small Size */
+  .mui-skin [data-component="RsInputLabel"][data-variant="filled"][data-size="small"],
+  .mui-skin .rs-input-label[data-variant="filled"][data-size="small"],
+  .mui-skin .mui-input-label[data-variant="filled"][data-size="small"] {
+    transform: translate(12px, 13px) scale(1);
+  }
+  
+  /* MUI InputLabel Filled Variant Small Size Shrunk */
+  .mui-skin [data-component="RsInputLabel"][data-variant="filled"][data-size="small"][data-shrink="true"],
+  .mui-skin .rs-input-label[data-variant="filled"][data-size="small"][data-shrink="true"],
+  .mui-skin .mui-input-label[data-variant="filled"][data-size="small"][data-shrink="true"] {
+    transform: translate(12px, 4px) scale(0.75);
+  }
+  
+  /* MUI InputLabel Animation (when not disabled) */
+  .mui-skin [data-component="RsInputLabel"]:not([data-disable-animation="true"]),
+  .mui-skin .rs-input-label:not([data-disable-animation="true"]),
+  .mui-skin .mui-input-label:not([data-disable-animation="true"]) {
+    transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                max-width 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; /* theme.transitions.create(['color', 'transform', 'max-width']) */
+  }
+  
+  /* MUI InputLabel Focused State */
+  .mui-skin [data-component="RsInputLabel"][data-focused="true"],
+  .mui-skin .rs-input-label[data-focused="true"],
+  .mui-skin .mui-input-label[data-focused="true"] {
+    color: #1976d2; /* primary.main */
+  }
+  
+  /* MUI InputLabel Error State */
+  .mui-skin [data-component="RsInputLabel"][data-error="true"],
+  .mui-skin .rs-input-label[data-error="true"],
+  .mui-skin .mui-input-label[data-error="true"] {
+    color: #d32f2f; /* error.main */
+  }
+  
+  /* MUI InputLabel Disabled State */
+  .mui-skin [data-component="RsInputLabel"][data-disabled="true"],
+  .mui-skin .rs-input-label[data-disabled="true"],
+  .mui-skin .mui-input-label[data-disabled="true"] {
+    color: rgba(0, 0, 0, 0.38); /* text.disabled */
+  }
+  
+  /* =========================================================
+     PAGE HEADERS (MUI Typography Variants - Exact Specifications)
+     ========================================================= */
+  
+  /* MUI Typography h1 Variant */
   .mui-skin h1,
-  .mui-skin h2,
-  .mui-skin h3,
-  .mui-skin h4,
-  .mui-skin h5,
-  .mui-skin h6,
-  .mui-skin .rs-header,
-  .mui-skin [data-component="RsHeader"] {
+  .mui-skin .rs-header[data-variant="h1"],
+  .mui-skin [data-component="RsHeader"][data-variant="h1"] {
+    /* MUI Typography h1 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 300; /* fontWeightLight */
+    font-size: 6rem; /* 96px */
+    line-height: 1.167; /* MUI h1 lineHeight */
+    letter-spacing: -0.01562em; /* MUI h1 letterSpacing (-1.5/96) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
     margin: 0;
-    font-weight: 600;
+  }
+  
+  /* MUI Typography h2 Variant */
+  .mui-skin h2,
+  .mui-skin .rs-header[data-variant="h2"],
+  .mui-skin [data-component="RsHeader"][data-variant="h2"] {
+    /* MUI Typography h2 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 300; /* fontWeightLight */
+    font-size: 3.75rem; /* 60px */
+    line-height: 1.2; /* MUI h2 lineHeight */
+    letter-spacing: -0.00833em; /* MUI h2 letterSpacing (-0.5/60) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography h3 Variant */
+  .mui-skin h3,
+  .mui-skin .rs-header[data-variant="h3"],
+  .mui-skin [data-component="RsHeader"][data-variant="h3"] {
+    /* MUI Typography h3 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 3rem; /* 48px */
+    line-height: 1.167; /* MUI h3 lineHeight */
+    letter-spacing: 0em; /* MUI h3 letterSpacing (0/48) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography h4 Variant */
+  .mui-skin h4,
+  .mui-skin .rs-header[data-variant="h4"],
+  .mui-skin [data-component="RsHeader"][data-variant="h4"] {
+    /* MUI Typography h4 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 2.125rem; /* 34px */
+    line-height: 1.235; /* MUI h4 lineHeight */
+    letter-spacing: 0.00735em; /* MUI h4 letterSpacing (0.25/34) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography h5 Variant */
+  .mui-skin h5,
+  .mui-skin .rs-header[data-variant="h5"],
+  .mui-skin [data-component="RsHeader"][data-variant="h5"] {
+    /* MUI Typography h5 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.334; /* MUI h5 lineHeight */
+    letter-spacing: 0em; /* MUI h5 letterSpacing (0/24) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography h6 Variant */
+  .mui-skin h6,
+  .mui-skin .rs-header[data-variant="h6"],
+  .mui-skin [data-component="RsHeader"][data-variant="h6"] {
+    /* MUI Typography h6 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500; /* fontWeightMedium */
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.6; /* MUI h6 lineHeight */
+    letter-spacing: 0.0075em; /* MUI h6 letterSpacing (0.15/20) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* Default header styling when no variant is specified */
+  /* Default to h4 for generic .rs-header and [data-component="RsHeader"] */
+  .mui-skin .rs-header:not([data-variant]),
+  .mui-skin [data-component="RsHeader"]:not([data-variant]) {
+    /* MUI Typography h4 (commonly used for page headers) */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 2.125rem; /* 34px */
+    line-height: 1.235; /* MUI h4 lineHeight */
+    letter-spacing: 0.00735em; /* MUI h4 letterSpacing (0.25/34) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography gutterBottom support for headers */
+  .mui-skin h1[data-gutter-bottom="true"],
+  .mui-skin h2[data-gutter-bottom="true"],
+  .mui-skin h3[data-gutter-bottom="true"],
+  .mui-skin h4[data-gutter-bottom="true"],
+  .mui-skin h5[data-gutter-bottom="true"],
+  .mui-skin h6[data-gutter-bottom="true"],
+  .mui-skin .rs-header[data-gutter-bottom="true"],
+  .mui-skin [data-component="RsHeader"][data-gutter-bottom="true"],
+  .mui-skin h1.gutter-bottom,
+  .mui-skin h2.gutter-bottom,
+  .mui-skin h3.gutter-bottom,
+  .mui-skin h4.gutter-bottom,
+  .mui-skin h5.gutter-bottom,
+  .mui-skin h6.gutter-bottom,
+  .mui-skin .rs-header.gutter-bottom,
+  .mui-skin [data-component="RsHeader"].gutter-bottom {
+    margin-bottom: 0.35em; /* MUI Typography gutterBottom */
+  }
+  
+  /* MUI Typography noWrap support for headers */
+  .mui-skin h1[data-no-wrap="true"],
+  .mui-skin h2[data-no-wrap="true"],
+  .mui-skin h3[data-no-wrap="true"],
+  .mui-skin h4[data-no-wrap="true"],
+  .mui-skin h5[data-no-wrap="true"],
+  .mui-skin h6[data-no-wrap="true"],
+  .mui-skin .rs-header[data-no-wrap="true"],
+  .mui-skin [data-component="RsHeader"][data-no-wrap="true"],
+  .mui-skin h1.no-wrap,
+  .mui-skin h2.no-wrap,
+  .mui-skin h3.no-wrap,
+  .mui-skin h4.no-wrap,
+  .mui-skin h5.no-wrap,
+  .mui-skin h6.no-wrap,
+  .mui-skin .rs-header.no-wrap,
+  .mui-skin [data-component="RsHeader"].no-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* MUI Typography color variants for headers */
+  .mui-skin h1[data-color="textSecondary"],
+  .mui-skin h2[data-color="textSecondary"],
+  .mui-skin h3[data-color="textSecondary"],
+  .mui-skin h4[data-color="textSecondary"],
+  .mui-skin h5[data-color="textSecondary"],
+  .mui-skin h6[data-color="textSecondary"],
+  .mui-skin .rs-header[data-color="textSecondary"],
+  .mui-skin [data-component="RsHeader"][data-color="textSecondary"] {
+    color: rgba(0, 0, 0, 0.6); /* palette.text.secondary */
+  }
+  
+  .mui-skin h1[data-color="textDisabled"],
+  .mui-skin h2[data-color="textDisabled"],
+  .mui-skin h3[data-color="textDisabled"],
+  .mui-skin h4[data-color="textDisabled"],
+  .mui-skin h5[data-color="textDisabled"],
+  .mui-skin h6[data-color="textDisabled"],
+  .mui-skin .rs-header[data-color="textDisabled"],
+  .mui-skin [data-component="RsHeader"][data-color="textDisabled"] {
+    color: rgba(0, 0, 0, 0.38); /* palette.text.disabled */
+  }
+  
+  .mui-skin h1[data-color="primary"],
+  .mui-skin h2[data-color="primary"],
+  .mui-skin h3[data-color="primary"],
+  .mui-skin h4[data-color="primary"],
+  .mui-skin h5[data-color="primary"],
+  .mui-skin h6[data-color="primary"],
+  .mui-skin .rs-header[data-color="primary"],
+  .mui-skin [data-component="RsHeader"][data-color="primary"] {
+    color: #1976d2; /* palette.primary.main */
+  }
+  
+  .mui-skin h1[data-color="secondary"],
+  .mui-skin h2[data-color="secondary"],
+  .mui-skin h3[data-color="secondary"],
+  .mui-skin h4[data-color="secondary"],
+  .mui-skin h5[data-color="secondary"],
+  .mui-skin h6[data-color="secondary"],
+  .mui-skin .rs-header[data-color="secondary"],
+  .mui-skin [data-component="RsHeader"][data-color="secondary"] {
+    color: #9c27b0; /* palette.secondary.main */
+  }
+  
+  .mui-skin h1[data-color="error"],
+  .mui-skin h2[data-color="error"],
+  .mui-skin h3[data-color="error"],
+  .mui-skin h4[data-color="error"],
+  .mui-skin h5[data-color="error"],
+  .mui-skin h6[data-color="error"],
+  .mui-skin .rs-header[data-color="error"],
+  .mui-skin [data-component="RsHeader"][data-color="error"] {
+    color: #d32f2f; /* palette.error.main */
+  }
+  
+  /* =========================================================
+     TEXT / TYPOGRAPHY (MUI Typography Variants - Exact Specifications)
+     ========================================================= */
+  
+  /* MUI Typography body1 Variant (Default) */
+  .mui-skin p,
+  .mui-skin [data-component="RsTypography"][data-variant="body1"],
+  .mui-skin [data-component="RsTypography"]:not([data-variant]),
+  .mui-skin [data-variant="body1"],
+  .mui-skin .MuiTypography-body1 {
+    /* MUI Typography body1 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1rem; /* 16px */
+    line-height: 1.5; /* MUI body1 lineHeight */
+    letter-spacing: 0.00938em; /* MUI body1 letterSpacing (0.15/16) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography body2 Variant */
+  .mui-skin [data-component="RsTypography"][data-variant="body2"],
+  .mui-skin [data-variant="body2"],
+  .mui-skin .MuiTypography-body2,
+  .mui-skin small {
+    /* MUI Typography body2 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.43; /* MUI body2 lineHeight */
+    letter-spacing: 0.01071em; /* MUI body2 letterSpacing (0.15/14) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography subtitle1 Variant */
+  .mui-skin [data-component="RsTypography"][data-variant="subtitle1"],
+  .mui-skin [data-variant="subtitle1"],
+  .mui-skin .MuiTypography-subtitle1 {
+    /* MUI Typography subtitle1 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 1rem; /* 16px */
+    line-height: 1.75; /* MUI subtitle1 lineHeight */
+    letter-spacing: 0.00938em; /* MUI subtitle1 letterSpacing (0.15/16) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography subtitle2 Variant */
+  .mui-skin [data-component="RsTypography"][data-variant="subtitle2"],
+  .mui-skin [data-variant="subtitle2"],
+  .mui-skin .MuiTypography-subtitle2 {
+    /* MUI Typography subtitle2 exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500; /* fontWeightMedium */
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.57; /* MUI subtitle2 lineHeight */
+    letter-spacing: 0.00714em; /* MUI subtitle2 letterSpacing (0.1/14) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography caption Variant */
+  .mui-skin [data-component="RsTypography"][data-variant="caption"],
+  .mui-skin [data-variant="caption"],
+  .mui-skin .MuiTypography-caption,
+  .mui-skin .caption {
+    /* MUI Typography caption exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.66; /* MUI caption lineHeight */
+    letter-spacing: 0.03333em; /* MUI caption letterSpacing (0.4/12) */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography overline Variant */
+  .mui-skin [data-component="RsTypography"][data-variant="overline"],
+  .mui-skin [data-variant="overline"],
+  .mui-skin .MuiTypography-overline,
+  .mui-skin .overline {
+    /* MUI Typography overline exact specifications */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400; /* fontWeightRegular */
+    font-size: 0.75rem; /* 12px */
+    line-height: 2.66; /* MUI overline lineHeight */
+    letter-spacing: 0.08333em; /* MUI overline letterSpacing (1/12) */
+    text-transform: uppercase; /* MUI overline casing */
+    color: rgba(0, 0, 0, 0.87); /* palette.text.primary */
+    margin: 0;
+  }
+  
+  /* MUI Typography gutterBottom support for text */
+  .mui-skin p[data-gutter-bottom="true"],
+  .mui-skin [data-component="RsTypography"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="body1"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="body2"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="subtitle1"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="subtitle2"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="caption"][data-gutter-bottom="true"],
+  .mui-skin [data-variant="overline"][data-gutter-bottom="true"],
+  .mui-skin p.gutter-bottom,
+  .mui-skin [data-component="RsTypography"].gutter-bottom {
+    margin-bottom: 0.35em; /* MUI Typography gutterBottom */
+  }
+  
+  /* MUI Typography paragraph support (deprecated but still supported) */
+  .mui-skin p[data-paragraph="true"],
+  .mui-skin [data-component="RsTypography"][data-paragraph="true"],
+  .mui-skin p.paragraph,
+  .mui-skin [data-component="RsTypography"].paragraph {
+    margin-bottom: 16px; /* MUI Typography paragraph */
+  }
+  
+  /* MUI Typography noWrap support for text */
+  .mui-skin p[data-no-wrap="true"],
+  .mui-skin [data-component="RsTypography"][data-no-wrap="true"],
+  .mui-skin [data-variant="body1"][data-no-wrap="true"],
+  .mui-skin [data-variant="body2"][data-no-wrap="true"],
+  .mui-skin [data-variant="subtitle1"][data-no-wrap="true"],
+  .mui-skin [data-variant="subtitle2"][data-no-wrap="true"],
+  .mui-skin [data-variant="caption"][data-no-wrap="true"],
+  .mui-skin [data-variant="overline"][data-no-wrap="true"],
+  .mui-skin p.no-wrap,
+  .mui-skin [data-component="RsTypography"].no-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* MUI Typography color variants for text */
+  .mui-skin p[data-color="textSecondary"],
+  .mui-skin [data-component="RsTypography"][data-color="textSecondary"],
+  .mui-skin [data-variant="body1"][data-color="textSecondary"],
+  .mui-skin [data-variant="body2"][data-color="textSecondary"],
+  .mui-skin [data-variant="subtitle1"][data-color="textSecondary"],
+  .mui-skin [data-variant="subtitle2"][data-color="textSecondary"],
+  .mui-skin [data-variant="caption"][data-color="textSecondary"],
+  .mui-skin [data-variant="overline"][data-color="textSecondary"] {
+    color: rgba(0, 0, 0, 0.6); /* palette.text.secondary */
+  }
+  
+  .mui-skin p[data-color="textDisabled"],
+  .mui-skin [data-component="RsTypography"][data-color="textDisabled"],
+  .mui-skin [data-variant="body1"][data-color="textDisabled"],
+  .mui-skin [data-variant="body2"][data-color="textDisabled"],
+  .mui-skin [data-variant="subtitle1"][data-color="textDisabled"],
+  .mui-skin [data-variant="subtitle2"][data-color="textDisabled"],
+  .mui-skin [data-variant="caption"][data-color="textDisabled"],
+  .mui-skin [data-variant="overline"][data-color="textDisabled"] {
+    color: rgba(0, 0, 0, 0.38); /* palette.text.disabled */
+  }
+  
+  .mui-skin p[data-color="primary"],
+  .mui-skin [data-component="RsTypography"][data-color="primary"],
+  .mui-skin [data-variant="body1"][data-color="primary"],
+  .mui-skin [data-variant="body2"][data-color="primary"],
+  .mui-skin [data-variant="subtitle1"][data-color="primary"],
+  .mui-skin [data-variant="subtitle2"][data-color="primary"],
+  .mui-skin [data-variant="caption"][data-color="primary"],
+  .mui-skin [data-variant="overline"][data-color="primary"] {
+    color: #1976d2; /* palette.primary.main */
+  }
+  
+  .mui-skin p[data-color="secondary"],
+  .mui-skin [data-component="RsTypography"][data-color="secondary"],
+  .mui-skin [data-variant="body1"][data-color="secondary"],
+  .mui-skin [data-variant="body2"][data-color="secondary"],
+  .mui-skin [data-variant="subtitle1"][data-color="secondary"],
+  .mui-skin [data-variant="subtitle2"][data-color="secondary"],
+  .mui-skin [data-variant="caption"][data-color="secondary"],
+  .mui-skin [data-variant="overline"][data-color="secondary"] {
+    color: #9c27b0; /* palette.secondary.main */
+  }
+  
+  .mui-skin p[data-color="error"],
+  .mui-skin [data-component="RsTypography"][data-color="error"],
+  .mui-skin [data-variant="body1"][data-color="error"],
+  .mui-skin [data-variant="body2"][data-color="error"],
+  .mui-skin [data-variant="subtitle1"][data-color="error"],
+  .mui-skin [data-variant="subtitle2"][data-color="error"],
+  .mui-skin [data-variant="caption"][data-color="error"],
+  .mui-skin [data-variant="overline"][data-color="error"] {
+    color: #d32f2f; /* palette.error.main */
+  }
+  
+  .mui-skin p[data-color="warning"],
+  .mui-skin [data-component="RsTypography"][data-color="warning"],
+  .mui-skin [data-variant="body1"][data-color="warning"],
+  .mui-skin [data-variant="body2"][data-color="warning"],
+  .mui-skin [data-variant="subtitle1"][data-color="warning"],
+  .mui-skin [data-variant="subtitle2"][data-color="warning"],
+  .mui-skin [data-variant="caption"][data-color="warning"],
+  .mui-skin [data-variant="overline"][data-color="warning"] {
+    color: #ed6c02; /* palette.warning.main */
+  }
+  
+  .mui-skin p[data-color="info"],
+  .mui-skin [data-component="RsTypography"][data-color="info"],
+  .mui-skin [data-variant="body1"][data-color="info"],
+  .mui-skin [data-variant="body2"][data-color="info"],
+  .mui-skin [data-variant="subtitle1"][data-color="info"],
+  .mui-skin [data-variant="subtitle2"][data-color="info"],
+  .mui-skin [data-variant="caption"][data-color="info"],
+  .mui-skin [data-variant="overline"][data-color="info"] {
+    color: #0288d1; /* palette.info.main */
+  }
+  
+  .mui-skin p[data-color="success"],
+  .mui-skin [data-component="RsTypography"][data-color="success"],
+  .mui-skin [data-variant="body1"][data-color="success"],
+  .mui-skin [data-variant="body2"][data-color="success"],
+  .mui-skin [data-variant="subtitle1"][data-color="success"],
+  .mui-skin [data-variant="subtitle2"][data-color="success"],
+  .mui-skin [data-variant="caption"][data-color="success"],
+  .mui-skin [data-variant="overline"][data-color="success"] {
+    color: #2e7d32; /* palette.success.main */
+  }
+  
+  /* MUI Typography align support for text */
+  .mui-skin p[data-align="left"],
+  .mui-skin [data-component="RsTypography"][data-align="left"],
+  .mui-skin p[data-align="center"],
+  .mui-skin [data-component="RsTypography"][data-align="center"],
+  .mui-skin p[data-align="right"],
+  .mui-skin [data-component="RsTypography"][data-align="right"],
+  .mui-skin p[data-align="justify"],
+  .mui-skin [data-component="RsTypography"][data-align="justify"] {
+    text-align: var(--Typography-textAlign);
+  }
+  
+  /* MUI Typography span/inline elements */
+  .mui-skin span,
+  .mui-skin [data-component="RsTypography"][data-component="span"],
+  .mui-skin [data-component="RsTypography"] span {
+    /* Inherit from parent or use body1 as default */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    color: rgba(0, 0, 0, 0.87);
   }
   
   /* =========================================================
@@ -263,32 +2059,183 @@
   }
   
   /* =========================================================
-     BUTTONS (Material Filled Style)
+     BUTTONS (MUI Button - Exact Specifications)
      ========================================================= */
   
+  /* MUI Button Base Styles */
   .mui-skin button {
-    border: none;
-    border-radius: 8px;
-  
-    padding: 10px 16px;
-  
-    background-color: var(--mui-primary);
-    color: #ffffff;
-  
-    font-weight: 500;
+    /* MUI typography.button */
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500; /* fontWeightMedium */
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.75;
+    letter-spacing: 0.02857em; /* 0.4/14 */
+    text-transform: uppercase;
+    
+    /* MUI ButtonBase */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0;
+    border: 0;
+    margin: 0;
+    border-radius: 4px; /* theme.shape.borderRadius */
+    padding: 0;
     cursor: pointer;
-  
-    transition:
-      background-color 0.15s ease,
-      box-shadow 0.15s ease;
+    user-select: none;
+    vertical-align: middle;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    text-decoration: none;
+    color: inherit;
+    
+    /* MUI Button default (text variant) */
+    min-width: 64px;
+    padding: 6px 8px;
+    background-color: transparent;
+    color: #1976d2; /* primary.main */
+    
+    /* MUI transition */
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
   
-  .mui-skin button:hover {
-    background-color: #1565c0;
+  /* MUI Button Text Variant Hover */
+  .mui-skin button:hover:not(:disabled) {
+    text-decoration: none;
+    background-color: rgba(25, 118, 210, 0.04); /* primary.main with hoverOpacity 0.04 */
   }
   
-  .mui-skin button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  /* MUI Button Contained Variant */
+  .mui-skin button[class*="contained"],
+  .mui-skin button[data-variant="contained"],
+  .mui-skin .rs-btn-primary,
+  .mui-skin .rs-btn-ghost:not(.rs-btn-ghost):not([class*="outlined"]):not([class*="text"]) {
+    padding: 6px 16px;
+    color: #ffffff; /* primary.contrastText */
+    background-color: #1976d2; /* primary.main */
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+                0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 5px 0px rgba(0, 0, 0, 0.12); /* shadows[2] */
+  }
+  
+  .mui-skin button[class*="contained"]:hover:not(:disabled),
+  .mui-skin button[data-variant="contained"]:hover:not(:disabled),
+  .mui-skin .rs-btn-primary:hover:not(:disabled) {
+    background-color: #1565c0; /* primary.dark */
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+                0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 10px 0px rgba(0, 0, 0, 0.12); /* shadows[4] */
+  }
+  
+  .mui-skin button[class*="contained"]:active:not(:disabled),
+  .mui-skin button[data-variant="contained"]:active:not(:disabled),
+  .mui-skin .rs-btn-primary:active:not(:disabled) {
+    box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0px 3px 14px 2px rgba(0, 0, 0, 0.12); /* shadows[8] */
+  }
+  
+  /* MUI Button Outlined Variant */
+  .mui-skin button[class*="outlined"],
+  .mui-skin button[data-variant="outlined"] {
+    padding: 5px 15px;
+    border: 1px solid currentColor;
+    border-color: rgba(25, 118, 210, 0.5); /* primary.main with 0.5 alpha */
+    background-color: transparent;
+    color: #1976d2; /* primary.main */
+  }
+  
+  .mui-skin button[class*="outlined"]:hover:not(:disabled),
+  .mui-skin button[data-variant="outlined"]:hover:not(:disabled) {
+    border-color: #1976d2; /* primary.main */
+    background-color: rgba(25, 118, 210, 0.04); /* primary.main with hoverOpacity */
+  }
+  
+  /* MUI Button Sizes - Small */
+  .mui-skin button[class*="small"],
+  .mui-skin button[data-size="small"] {
+    font-size: 0.8125rem; /* 13px */
+  }
+  
+  .mui-skin button[class*="small"][class*="contained"],
+  .mui-skin button[data-size="small"][data-variant="contained"] {
+    padding: 4px 10px;
+  }
+  
+  .mui-skin button[class*="small"][class*="outlined"],
+  .mui-skin button[data-size="small"][data-variant="outlined"] {
+    padding: 3px 9px;
+  }
+  
+  .mui-skin button[class*="small"]:not([class*="contained"]):not([class*="outlined"]),
+  .mui-skin button[data-size="small"]:not([data-variant="contained"]):not([data-variant="outlined"]) {
+    padding: 4px 5px;
+  }
+  
+  /* MUI Button Sizes - Large */
+  .mui-skin button[class*="large"],
+  .mui-skin button[data-size="large"] {
+    font-size: 0.9375rem; /* 15px */
+  }
+  
+  .mui-skin button[class*="large"][class*="contained"],
+  .mui-skin button[data-size="large"][data-variant="contained"] {
+    padding: 8px 22px;
+  }
+  
+  .mui-skin button[class*="large"][class*="outlined"],
+  .mui-skin button[data-size="large"][data-variant="outlined"] {
+    padding: 7px 21px;
+  }
+  
+  .mui-skin button[class*="large"]:not([class*="contained"]):not([class*="outlined"]),
+  .mui-skin button[data-size="large"]:not([data-variant="contained"]):not([data-variant="outlined"]) {
+    padding: 8px 11px;
+  }
+  
+  /* MUI Button Disabled State */
+  .mui-skin button:disabled,
+  .mui-skin button[disabled],
+  .mui-skin .rs-btn-disabled {
+    color: rgba(0, 0, 0, 0.26); /* action.disabled */
+    cursor: default;
+    pointer-events: none;
+  }
+  
+  .mui-skin button[class*="contained"]:disabled,
+  .mui-skin button[data-variant="contained"]:disabled,
+  .mui-skin .rs-btn-primary:disabled {
+    color: rgba(0, 0, 0, 0.26);
+    background-color: rgba(0, 0, 0, 0.12); /* action.disabledBackground */
+    box-shadow: none; /* shadows[0] */
+  }
+  
+  .mui-skin button[class*="outlined"]:disabled,
+  .mui-skin button[data-variant="outlined"]:disabled {
+    border: 1px solid rgba(0, 0, 0, 0.12); /* action.disabledBackground */
+  }
+  
+  /* MUI Button Focus Visible (keyboard focus) */
+  .mui-skin button:focus-visible {
+    outline: 0;
+  }
+  
+  .mui-skin button[class*="contained"]:focus-visible:not(:disabled),
+  .mui-skin button[data-variant="contained"]:focus-visible:not(:disabled) {
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+                0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 18px 0px rgba(0, 0, 0, 0.12); /* shadows[6] */
+  }
+  
+  /* Reset Firefox dotted outline */
+  .mui-skin button::-moz-focus-inner {
+    border-style: none;
   }
   
