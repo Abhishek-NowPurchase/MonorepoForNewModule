@@ -60,9 +60,11 @@ export const apiFetch = async (
     method?: string;
     body?: any;
     headers?: Record<string, string>;
-  } = {}
+  } = {},
+  customBaseUrl?: string // Optional custom base URL override
 ) => {
-  const url = `${BASE_URL}${endpoint}`;
+  const baseUrl = customBaseUrl || BASE_URL;
+  const url = `${baseUrl}${endpoint}`;
   
   const headers = {
     ...DEFAULT_HEADERS,
@@ -71,7 +73,9 @@ export const apiFetch = async (
 
   const fetchOptions: RequestInit = {
     method: options.method || 'GET',
-    headers
+    headers,
+    mode: 'cors', // Explicitly set CORS mode
+    credentials: 'omit' // Don't send cookies for cross-origin requests
   };
 
   // Add body for POST/PUT/PATCH requests
@@ -79,13 +83,39 @@ export const apiFetch = async (
     fetchOptions.body = JSON.stringify(options.body);
   }
 
-  const response = await fetch(url, fetchOptions);
+  try {
+    const response = await fetch(url, fetchOptions);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    // Check if response is ok
+    if (!response.ok) {
+      // Try to get error message from response
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.detail || errorMessage;
+      } catch {
+        // If response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
+
+    // Check if response has content
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      // If not JSON, return text
+      return response.text();
+    }
+  } catch (error: any) {
+    // Handle network errors and CORS errors
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error(`Network error: Unable to connect to ${baseUrl}. This could be a CORS issue or the server is down.`);
+    }
+    // Re-throw other errors
+    throw error;
   }
-
-  return response.json();
 };
 
 // Authenticated API call wrapper with automatic token handling
@@ -95,8 +125,17 @@ export const authenticatedApiCall = async (
     method?: string;
     body?: any;
     headers?: Record<string, string>;
+    baseUrl?: string; // Optional custom base URL
   } = {}
 ) => {
+  // If custom authorization header is provided, use it directly without adding default token
+  if (options.headers?.authorization) {
+    return apiFetch(endpoint, '', {
+      ...options,
+      headers: options.headers
+    }, options.baseUrl);
+  }
+  
   const token = getToken();
   
   if (!token) {
@@ -110,7 +149,7 @@ export const authenticatedApiCall = async (
           ...options.headers,
           'authorization': `Token ${tokenV2}`
         }
-      });
+      }, options.baseUrl);
     }
     
     throw new Error('No authentication token found. Please login first.');
@@ -122,5 +161,5 @@ export const authenticatedApiCall = async (
       ...options.headers,
       'authorization': `Token ${token}`
     }
-  });
+  }, options.baseUrl);
 };

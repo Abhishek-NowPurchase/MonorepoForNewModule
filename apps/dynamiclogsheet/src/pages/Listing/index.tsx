@@ -6,32 +6,34 @@ const Listing: React.FC = () => {
   const {
     templates,
     selectedTemplate,
-    logSheets,
-    fieldConfigs,
+    logsheets,
     isLoading,
-    page,
-    pageSize,
-    totalCount,
     handleTemplateChange,
+    // Pagination
+    pageNo,
+    pageSize,
+    total,
     handlePageChange,
     handlePageSizeChange,
-    handleRowClick
+    // Filters
+    status,
+    handleStatusChange,
   } = useListing();
 
   return (
     <ListingComponent
       templates={templates}
       selectedTemplate={selectedTemplate}
-      logSheets={logSheets}
-      fieldConfigs={fieldConfigs}
+      logsheets={logsheets}
       isLoading={isLoading}
-      page={page}
-      pageSize={pageSize}
-      totalCount={totalCount}
       onTemplateChange={handleTemplateChange}
+      pageNo={pageNo}
+      pageSize={pageSize}
+      total={total}
       onPageChange={handlePageChange}
       onPageSizeChange={handlePageSizeChange}
-      onRowClick={handleRowClick}
+      status={status}
+      onStatusChange={handleStatusChange}
     />
   );
 };

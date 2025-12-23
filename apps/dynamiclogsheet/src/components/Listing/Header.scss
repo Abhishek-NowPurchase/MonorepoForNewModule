@@ -65,6 +65,7 @@
   position: relative;
   min-width: 160px;
   height: 40px;
+  box-sizing: border-box;
 
   &:focus {
     outline: 2px dashed #1890ff;

@@ -5,7 +5,6 @@ import './Detail.scss';
 
 const Detail: React.FC = () => {
   const {
-    logSheet,
     htmlContent,
     isLoading,
     error,

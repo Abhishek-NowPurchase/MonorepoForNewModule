@@ -1,6 +1,11 @@
 import { authenticatedApiCall } from "../apiUtils";
 
-const ENDPOINT = "/api/admin/dynamic_logsheet/";
+// Use v1 API endpoint for log sheets (matching the pattern of templates API)
+const ENDPOINT = "/api/v1/logsheets";
+// Base URL for all dynamiclogsheet APIs
+const DLMS_BASE_URL = 'https://dlms-api.iotnp.com';
+// Hardcoded JWT token for all DLMS API endpoints (temporary)
+const DLMS_JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMTU4LCJuYW1lIjoiTWFuaGFyIEJoYXJkd2FqIiwibW9iaWxlIjoiKzkxNzk3OTc1NzkwNSIsImN1c3RvbWVyX2lkIjo0NDEsImN1c3RvbWVyX25hbWUiOiJUSVRBR0FSSCBSQUlMIFNZU1RFTVMgTElNSVRFRCIsImV4cCI6MTc2NjU1OTEyNn0.LdBoVA5vu6_IQBHWgNSE7Q5J4I6BKL10ri6Rb0luc8g';
 
 export interface FormDataSection {
   data: Record<string, string | number | boolean | null>;
@@ -70,6 +75,10 @@ export async function fetchLogSheetDetail(
 ): Promise<LogSheet> {
   const response = await authenticatedApiCall(`${ENDPOINT}${id}/`, {
     method: "GET",
+    headers: {
+      'authorization': `Bearer ${DLMS_JWT_TOKEN}`
+    },
+    baseUrl: DLMS_BASE_URL
   });
 
   return response;
@@ -91,6 +100,10 @@ export async function createLogSheet(
   const response = await authenticatedApiCall(ENDPOINT, {
     method: "POST",
     body: data,
+    headers: {
+      'authorization': `Bearer ${DLMS_JWT_TOKEN}`
+    },
+    baseUrl: DLMS_BASE_URL
   });
 
   return response;
@@ -110,6 +123,10 @@ export async function updateLogSheet(
   const response = await authenticatedApiCall(`${ENDPOINT}${id}/`, {
     method: "PATCH",
     body: data,
+    headers: {
+      'authorization': `Bearer ${DLMS_JWT_TOKEN}`
+    },
+    baseUrl: DLMS_BASE_URL
   });
 
   return response;

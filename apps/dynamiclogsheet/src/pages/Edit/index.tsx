@@ -1,12 +1,11 @@
 import React, { useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import type { IFormViewer } from '@react-form-builder/core';
 import { FormRenderer, Loader, ErrorDisplay, EmptyState } from '../../../../shared/component';
 import { useFormBuilderConfig } from '../../../../shared/hooks';
 import { NewPageFooter } from '../../components/NewPage/NewPageFooter';
 import { getCategoryFromPath } from '../../utils/routeUtils';
 import {
-  useLogSheetId,
   useDataChangeNotifier,
   useLogSheetLoader,
   useFormJsonProcessor,
@@ -18,20 +17,24 @@ import {
 const Edit: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams<{ template_id?: string; logsheet_id?: string }>();
+  const [searchParams] = useSearchParams();
   const category = getCategoryFromPath(location.pathname);
   const viewerRef = useRef<IFormViewer | null>(null);
 
   // Initialize form builder configuration
   const { viewWithCss } = useFormBuilderConfig();
 
-  // Extract log sheet ID from URL
-  const logSheetId = useLogSheetId();
+  // Extract template_id, logsheet_id, and version from URL
+  const templateId = params?.template_id || null;
+  const logsheetId = params?.logsheet_id || null;
+  const version = searchParams.get('version') || undefined;
 
-  // Load log sheet data
-  const { logSheet, isLoading, error } = useLogSheetLoader(logSheetId);
+  // Load log sheet data and template data (in parallel)
+  const { logSheet, isLoading, error } = useLogSheetLoader(templateId, logsheetId, version);
 
   // Notify Agnipariksha about data changes
-  useDataChangeNotifier(logSheetId, logSheet);
+  useDataChangeNotifier(logsheetId, logSheet);
 
   // Process form JSON
   const { formJsonString, getForm, dateFieldKeys, fileUploadFieldKeys } = useFormJsonProcessor(logSheet);
@@ -53,7 +56,7 @@ const Edit: React.FC = () => {
     formValues,
     logSheet,
     dateFieldKeys,
-    logSheetId,
+    logsheetId,
     category
   );
 

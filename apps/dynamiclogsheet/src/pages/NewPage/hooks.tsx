@@ -2,12 +2,11 @@ import { useEffect, useState, useMemo, useRef, useContext, useCallback } from 'r
 import { useParams, useNavigate } from 'react-router-dom';
 import type { IFormViewer } from '@react-form-builder/core';
 import { DataChangeContext } from '../../contexts/DataChangeContext';
-import { fetchDynamicForm } from '../Listing/api';
-import { createLogSheet } from '../../../../shared/Api/dynamicLogSheet';
+import { fetchDynamicForm, createLogsheetSubmit } from '../Listing/api';
 import { extractDateFieldKeys, processFormJson, structureFormDataForAPI } from './utils';
 
 /**
- * Extract and parse template ID from URL params
+ * Extract template ID from URL params (can be string or number)
  */
 export const useTemplateId = () => {
   const params = useParams<{ template_id: string }>();
@@ -15,8 +14,8 @@ export const useTemplateId = () => {
   return useMemo(() => {
     const templateParam = params?.template_id;
     if (templateParam) {
-      const parsed = parseInt(templateParam, 10);
-      return isNaN(parsed) ? null : parsed;
+      // Return as string to support both string IDs (from API) and numeric IDs
+      return templateParam;
     }
     return null;
   }, [params?.template_id]);
@@ -25,7 +24,7 @@ export const useTemplateId = () => {
 /**
  * Hook to notify Agnipariksha about data changes
  */
-export const useDataChangeNotifier = (templateId: number | null, formData: any) => {
+export const useDataChangeNotifier = (templateId: string | number | null, formData: any) => {
   const onDataChange = useContext(DataChangeContext);
   const hasSentDataRef = useRef<string | null>(null);
 
@@ -49,8 +48,9 @@ export const useDataChangeNotifier = (templateId: number | null, formData: any) 
 
 /**
  * Hook to load form data from API
+ * Fetches template detail directly (API returns active version by default if version not provided)
  */
-export const useFormDataLoader = (templateId: number | null) => {
+export const useFormDataLoader = (templateId: string | number | null) => {
   const [formData, setFormData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +68,8 @@ export const useFormDataLoader = (templateId: number | null) => {
       setError(null);
 
       try {
+        // Fetch template detail directly without version parameter
+        // API will return the active version by default
         const response = await fetchDynamicForm(templateId);
         setFormData(response);
       } catch (err) {
@@ -159,7 +161,7 @@ export const useFormSubmission = (
   formValues: Record<string, any>,
   formData: any,
   dateFieldKeys: Set<string>,
-  templateId: number | null,
+  templateId: string | number | null,
   category: string
 ) => {
   const navigate = useNavigate();
@@ -194,22 +196,37 @@ export const useFormSubmission = (
         dateFieldKeys
       );
 
-      // Create the log sheet
-      // Use template ID from URL query parameter (already validated in useEffect)
+      // Create the log sheet using new submit API
+      // Use template ID from URL params (already validated in useEffect)
       if (!templateId) {
         setError('Template ID is missing. Please go back and select a template.');
         setIsSubmitting(false);
         return;
       }
 
-      await createLogSheet({
-        template: templateId,
-        form_data: structuredData,
-        status: 'COMPLETED',
-      });
+      // Prepare submit request
+      // structuredData returns: { main: { section_name, order, data: {...} } }
+      // API expects: { status: string, data: { main: {...} } }
+      const submitRequest = {
+        status: 'completed', // Default status for new logsheets
+        data: structuredData, // Contains { main: { section_name, order, data: {...} } }
+      };
 
-      // Navigate back to listing on success
-      navigate(`/dynamic-log-sheet/${category}`);
+      // Call the new submit API
+      const submitResponse = await createLogsheetSubmit(
+        templateId,
+        submitRequest
+      );
+
+      // Navigate to detail page on success using template_id and logsheet_id from response
+      const logsheetId = submitResponse.logsheet_id;
+      if (logsheetId) {
+        navigate(`/dynamic-log-sheet/${category}`);
+        // navigate(`/dynamic-log-sheet/${category}/${templateId}/${logsheetId}`);
+      } else {
+        // Fallback to listing if logsheet_id not in response
+        navigate(`/dynamic-log-sheet/${category}`);
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to create log sheet');
       setIsSubmitting(false);

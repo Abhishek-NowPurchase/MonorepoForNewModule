@@ -1,19 +1,23 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { fetchLogSheetList, fetchTemplateList, fetchFieldConfigs } from "./api";
-import { Template, LogSheet, FieldConfig } from "./types";
+import { fetchTemplateList, fetchTemplateLogSheets } from "./api";
+import { Template, TemplateLogSheetsResponse } from "./types";
 import { useCategoryFromRoute } from "../../utils/routeUtils";
 
 const STORAGE_KEY = "dynamicLogSheet_selectedTemplateId";
 
 // Helper functions for localStorage operations
-const getSavedTemplateId = (): number | null => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? Number(saved) : null;
+const getSavedTemplateId = (): string | null => {
+  return localStorage.getItem(STORAGE_KEY);
 };
 
-const saveTemplateId = (templateId: number): void => {
-  localStorage.setItem(STORAGE_KEY, templateId.toString());
+const saveTemplateId = (templateId: string | number): void => {
+  localStorage.setItem(STORAGE_KEY, String(templateId));
+};
+
+// Helper to get template identifier for matching (prefer template_id, fallback to id)
+const getTemplateIdentifier = (template: Template): string => {
+  return template.template_id || String(template.id);
 };
 
 // Helper to find and select the appropriate template
@@ -21,9 +25,13 @@ const getTemplateToSelect = (templates: Template[]): Template | null => {
   if (templates.length === 0) return null;
 
   const savedId = getSavedTemplateId();
-  return savedId
-    ? templates.find((t) => t.id === savedId) || templates[0]
-    : templates[0];
+  if (savedId) {
+    // Try to match by template_id first, then by id
+    return templates.find(
+      (t) => t.template_id === savedId || String(t.id) === savedId
+    ) || templates[0];
+  }
+  return templates[0];
 };
 
 export const useListing = () => {
@@ -33,12 +41,17 @@ export const useListing = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null
   );
-  const [logSheets, setLogSheets] = useState<LogSheet[]>([]);
-  const [fieldConfigs, setFieldConfigs] = useState<FieldConfig[]>([]);
+  const [logsheets, setLogsheets] = useState<TemplateLogSheetsResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [totalCount, setTotalCount] = useState<number>(0);
+  
+  // Pagination state
+  const [pageNo, setPageNo] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
+  const [total, setTotal] = useState<number>(0);
+  
+  // Filter state
+  const [status, setStatus] = useState<"pending" | "completed">("completed");
+  const [platform, setPlatform] = useState<"web" | "kiosk">("web");
 
   // Determine category from route
   const categoryRoute = useCategoryFromRoute();
@@ -48,11 +61,15 @@ export const useListing = () => {
   }, [categoryRoute]);
 
   // Filter templates by category number
-  // Only show templates that have the matching category number
-  // Exclude templates with category: null
+  // Show templates that match the category, or templates without category (null)
+  // This handles cases where the new API doesn't provide category information
   const filteredTemplates = useMemo(() => {
     return templates.filter(template => {
-      // Only include templates that have a category and it matches the current route
+      // If template has no category, show it (allows backward compatibility)
+      if (template.category === null || template.category === undefined) {
+        return true;
+      }
+      // Otherwise, only show templates that match the current route category
       return template.category === categoryNumber;
     });
   }, [templates, categoryNumber]);
@@ -61,8 +78,44 @@ export const useListing = () => {
   useEffect(() => {
     const loadTemplates = async () => {
       try {
-        const templateList = await fetchTemplateList();
-        setTemplates(templateList);
+        const templateList = await fetchTemplateList({
+          is_active: true, // Only get latest versions by default
+        });
+        
+        // Map new API response to existing Template interface
+        const mappedTemplates: Template[] = templateList.map((item) => {
+          // Map category from API response ("master" or "operational") to category number
+          // category: "master" -> 1, "operational" -> 2
+          let category: number | null = null;
+          let category_name: string | undefined = undefined;
+          
+          if (item.category) {
+            const categoryLower = item.category.toLowerCase();
+            if (categoryLower === 'master') {
+              category = 1;
+              category_name = 'Master';
+            } else if (categoryLower === 'operational') {
+              category = 2;
+              category_name = 'Operational';
+            }
+          }
+          
+          // Store the template_id for API calls (this is what should be used for detail API)
+          // Use template_id from API response (e.g., "f8904514-9d49-4c34-b939-7024ca467e9d")
+          return {
+            id: item.id, // Keep id for display/selection purposes
+            template_id: item.template_id, // Store template_id for detail API calls
+            name: item.template_name || '',
+            version: item.version || '',
+            template_name: item.template_name,
+            description: item.description,
+            platforms: item.platforms || [],
+            category,
+            category_name,
+          };
+        });
+        
+        setTemplates(mappedTemplates);
       } catch (error) {
         console.error("Error fetching templates:", error);
       }
@@ -75,12 +128,20 @@ export const useListing = () => {
   useEffect(() => {
     if (filteredTemplates.length > 0) {
       const savedId = getSavedTemplateId();
-      const templateToSelect = savedId
-        ? filteredTemplates.find((t) => t.id === savedId) || filteredTemplates[0]
-        : filteredTemplates[0];
+      let templateToSelect: Template | null = null;
+      
+      if (savedId) {
+        // Try to match by template_id first, then by id
+        templateToSelect = filteredTemplates.find(
+          (t) => t.template_id === savedId || String(t.id) === savedId
+        ) || filteredTemplates[0];
+      } else {
+        templateToSelect = filteredTemplates[0];
+      }
       
       // Only update if the template is different or if no template is selected
-      if (templateToSelect && (!selectedTemplate || templateToSelect.id !== selectedTemplate.id)) {
+      // Compare using template_id if available, otherwise use id
+      if (templateToSelect && (!selectedTemplate || getTemplateIdentifier(templateToSelect) !== getTemplateIdentifier(selectedTemplate))) {
         setSelectedTemplate(templateToSelect);
       }
     } else {
@@ -92,88 +153,87 @@ export const useListing = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredTemplates, categoryRoute]);
 
-  // Fetch field configs when selected template changes
-  useEffect(() => {
-    const loadFieldConfigs = async () => {
-      if (!selectedTemplate) {
-        setFieldConfigs([]);
-        return;
-      }
-
-      try {
-        const configs = await fetchFieldConfigs(selectedTemplate.id);
-        setFieldConfigs(configs);
-      } catch (error) {
-        console.error("Error fetching field configs:", error);
-        setFieldConfigs([]);
-      }
-    };
-
-    loadFieldConfigs();
-  }, [selectedTemplate]);
-
-  // Fetch log sheets when selected template changes
+  // Fetch logsheets when selected template, pagination, or filters change
   useEffect(() => {
     const loadLogSheets = async () => {
       if (!selectedTemplate) {
+        setLogsheets(null);
         setIsLoading(false);
         return;
       }
 
       setIsLoading(true);
       try {
-        const response = await fetchLogSheetList({
-          template: selectedTemplate.id,
-          page: page,
+        // Use template_id for the logsheets API call (this is the correct field to use)
+        // template_id is like "f8904514-9d49-4c34-b939-7024ca467e9d"
+        // If template_id is not available, fall back to id
+        const templateIdForApi = selectedTemplate.template_id || String(selectedTemplate.id);
+        
+        // Fetch logsheets using template_id with pagination and filters
+        const response = await fetchTemplateLogSheets(templateIdForApi, {
+          status,
+          platform,
+          page_no: pageNo,
           page_size: pageSize,
-          category: categoryNumber,
         });
-
-        setLogSheets(response.results || []);
-        setTotalCount(response.count || 0);
+        
+        setLogsheets(response);
+        setTotal(response.total);
       } catch (error) {
-        console.error("Error fetching log sheets:", error);
-        setLogSheets([]);
-        setTotalCount(0);
+        console.error("Error fetching logsheets:", error);
+        setLogsheets(null);
+        setTotal(0);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadLogSheets();
-  }, [selectedTemplate, page, pageSize, categoryNumber]);
+  }, [selectedTemplate, pageNo, pageSize, status, platform]);
 
   const handleTemplateChange = (template: Template) => {
     setSelectedTemplate(template);
-    saveTemplateId(template.id);
-    setPage(1); // Reset to first page when template changes
+    // Save the template_id if available, otherwise save the id
+    saveTemplateId(template.template_id || String(template.id));
+    // Reset pagination when template changes
+    setPageNo(1);
   };
 
   const handlePageChange = (newPage: number) => {
-    setPage(newPage);
+    setPageNo(newPage);
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
-    setPage(1); // Reset to first page when page size changes
+    setPageNo(1); // Reset to first page when page size changes
   };
 
-  const handleRowClick = (logSheet: LogSheet) => {
-    navigate(`/dynamic-log-sheet/${categoryRoute}/${logSheet.id}`);
+  const handleStatusChange = (newStatus: "pending" | "completed") => {
+    setStatus(newStatus);
+    setPageNo(1); // Reset to first page when status changes
+  };
+
+  const handlePlatformChange = (newPlatform: "web" | "kiosk") => {
+    setPlatform(newPlatform);
+    setPageNo(1); // Reset to first page when platform changes
   };
 
   return {
     templates: filteredTemplates,
     selectedTemplate,
-    logSheets,
-    fieldConfigs,
+    logsheets,
     isLoading,
-    page,
-    pageSize,
-    totalCount,
     handleTemplateChange,
+    // Pagination
+    pageNo,
+    pageSize,
+    total,
     handlePageChange,
     handlePageSizeChange,
-    handleRowClick,
+    // Filters
+    status,
+    platform,
+    handleStatusChange,
+    handlePlatformChange,
   };
 };

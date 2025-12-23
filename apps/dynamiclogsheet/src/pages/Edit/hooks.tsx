@@ -1,8 +1,10 @@
 import { useEffect, useState, useMemo, useRef, useContext, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import type { IFormViewer } from '@react-form-builder/core';
 import { DataChangeContext } from '../../contexts/DataChangeContext';
-import { fetchLogSheetDetail, updateLogSheet, LogSheet } from '../../../../shared/Api/dynamicLogSheet';
+import { LogSheet } from '../../../../shared/Api/dynamicLogSheet';
+import { fetchLogsheetDetail, fetchDynamicForm, updateLogsheetSubmit } from '../Listing/api';
+import { LogsheetDetailResponse, TemplateDetailResponse } from '../Listing/types';
 import {
   extractFileUploadFieldKeys,
   extractDateFieldKeys,
@@ -13,24 +15,34 @@ import {
 
 /**
  * Extract and parse log sheet ID from URL params
+ * New route structure: /{category}/{template_id}/{logsheet_id}/edit
  */
 export const useLogSheetId = () => {
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ template_id?: string; logsheet_id?: string; id?: string }>();
   
   return useMemo(() => {
-    const idParam = params?.id;
-    if (idParam) {
-      const parsed = parseInt(idParam, 10);
+    // Try new route structure first (logsheet_id)
+    if (params?.logsheet_id) {
+      // logsheet_id is a MongoDB ObjectId (string), but API might expect number
+      // Try parsing as number first, fallback to string
+      const parsed = parseInt(params.logsheet_id, 10);
+      return isNaN(parsed) ? params.logsheet_id : parsed;
+    }
+    
+    // Fallback to old route structure (id) for backward compatibility
+    if (params?.id) {
+      const parsed = parseInt(params.id, 10);
       return isNaN(parsed) ? null : parsed;
     }
+    
     return null;
-  }, [params?.id]);
+  }, [params?.logsheet_id, params?.id]);
 };
 
 /**
  * Hook to notify Agnipariksha about data changes
  */
-export const useDataChangeNotifier = (logSheetId: number | null, logSheet: LogSheet | null) => {
+export const useDataChangeNotifier = (logSheetId: number | string | null, logSheet: LogSheet | null) => {
   const onDataChange = useContext(DataChangeContext);
   const hasSentDataRef = useRef<string | null>(null);
 
@@ -51,18 +63,24 @@ export const useDataChangeNotifier = (logSheetId: number | null, logSheet: LogSh
 };
 
 /**
- * Hook to load log sheet data from API
+ * Hook to load log sheet data and template data from API (in parallel)
+ * New implementation: Fetches logsheet detail and template detail simultaneously
  */
-export const useLogSheetLoader = (logSheetId: number | null) => {
+export const useLogSheetLoader = (
+  templateId: string | null,
+  logSheetId: string | null,
+  version?: string
+) => {
   const [logSheet, setLogSheet] = useState<LogSheet | null>(null);
+  const [templateDetail, setTemplateDetail] = useState<TemplateDetailResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadLogSheetData = async () => {
-      // If no log sheet ID in URL, show error
-      if (!logSheetId) {
-        setError('Log sheet ID is required. Please select a log sheet from the listing page.');
+      // If no template_id or logsheet_id in URL, show error
+      if (!templateId || !logSheetId) {
+        setError('Template ID and Log sheet ID are required. Please select a log sheet from the listing page.');
         setIsLoading(false);
         return;
       }
@@ -71,10 +89,45 @@ export const useLogSheetLoader = (logSheetId: number | null) => {
       setError(null);
 
       try {
-        const data = await fetchLogSheetDetail(logSheetId);
-        setLogSheet(data);
-      } catch (err) {
-        setError(`Failed to load log sheet data for ID ${logSheetId}`);
+        // First fetch logsheet detail to get template_version
+        const logsheetData = await fetchLogsheetDetail(templateId, logSheetId);
+        
+        // Use template_version from logsheet response, or fallback to version from URL query params
+        const templateVersion = logsheetData.template_version || version;
+        
+        // Then fetch template detail using the template_version
+        const templateData = await fetchDynamicForm(
+          templateId, 
+          templateVersion ? { version: templateVersion } : undefined
+        );
+
+        // Combine the responses into a LogSheet-like structure
+        // Map LogsheetDetailResponse to LogSheet format for compatibility
+        const combinedLogSheet: LogSheet = {
+          id: logsheetData.id as any, // Keep as string or number based on API
+          name: templateData.template_name || '',
+          template: templateId as any, // Store template_id
+          template_name: templateData.template_name,
+          created_at: logsheetData.created_at,
+          updated_at: logsheetData.updated_at,
+          modified_at: logsheetData.updated_at,
+          status: logsheetData.status,
+          // Store the new structure in form_data for processing
+          form_data: {
+            data: logsheetData.data,
+            parent_data: logsheetData.parent_data,
+            previous_step: logsheetData.previous_step,
+          } as any,
+          // Store form_json from template detail
+          form_json: templateData.form_json,
+          // Store template version
+          template_version: logsheetData.template_version,
+        } as LogSheet;
+
+        setLogSheet(combinedLogSheet);
+        setTemplateDetail(templateData);
+      } catch (err: any) {
+        setError(err.message || `Failed to load log sheet data for ID ${logSheetId}`);
         console.error('Error fetching log sheet detail:', err);
       } finally {
         setIsLoading(false);
@@ -82,9 +135,9 @@ export const useLogSheetLoader = (logSheetId: number | null) => {
     };
 
     loadLogSheetData();
-  }, [logSheetId]);
+  }, [templateId, logSheetId, version]);
 
-  return { logSheet, isLoading, error, setError };
+  return { logSheet, templateDetail, isLoading, error, setError };
 };
 
 /**
@@ -194,10 +247,11 @@ export const useFormSubmission = (
   formValues: Record<string, any>,
   logSheet: LogSheet | null,
   dateFieldKeys: Set<string>,
-  logSheetId: number | null,
+  logSheetId: number | string | null,
   category: string
 ) => {
   const navigate = useNavigate();
+  const params = useParams<{ template_id?: string; logsheet_id?: string }>();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -234,23 +288,34 @@ export const useFormSubmission = (
         dateFieldKeys
       );
 
-      // Update the log sheet
-      // Create the full payload using the GET response as base
-      // Only update the form_data field, keep everything else unchanged
-      const updateData: any = {
-        ...logSheet, // Start with full GET response
-        form_data: structuredData, // Update only form_data
+      // Extract template_id and logsheet_id from route params
+      const templateId = params?.template_id;
+      if (!templateId) {
+        setError('Template ID is required for submission.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Prepare submit request
+      // The structuredData from structureFormDataForAPI returns: { data: { main: {...} }, parent_data: {...}, previous_step: {...} }
+      // But the API expects: { status: string, data: { main: {...} } }
+      // Extract just the data part (which contains main structure)
+      const submitRequest = {
+        status: logSheet.status || 'completed', // Use current status or default to completed
+        data: structuredData.data || structuredData, // Extract data field which contains { main: { section_name, order, data: {...} } }
       };
 
-      // Ensure we don't send read-only or computed fields that shouldn't be updated
-      delete updateData.id; // ID shouldn't be in PATCH
-      delete updateData.created_at; // Created timestamp shouldn't change
-      delete updateData.created_by; // Created by shouldn't change
-
-      await updateLogSheet(logSheetId, updateData);
+      // Call the new submit API
+      const submitResponse = await updateLogsheetSubmit(
+        templateId,
+        logSheetId,
+        submitRequest
+      );
 
       // Navigate back to detail page on success
-      navigate(`/dynamic-log-sheet/${category}/${logSheetId}`);
+      // Use logsheet_id from response if available, otherwise use the current one
+      const finalLogsheetId = submitResponse.logsheet_id || logSheetId;
+      navigate(`/dynamic-log-sheet/${category}/${templateId}/${finalLogsheetId}`);
     } catch (err: any) {
       setError(err.message || 'Failed to update log sheet');
       setIsSubmitting(false);
@@ -259,11 +324,19 @@ export const useFormSubmission = (
 
   const handleCancel = useCallback(() => {
     if (logSheetId) {
-      navigate(`/dynamic-log-sheet/${category}/${logSheetId}`);
+      // Extract template_id from current route if available
+      const currentTemplateId = params?.template_id;
+      if (currentTemplateId) {
+        // Use new route structure
+        navigate(`/dynamic-log-sheet/${category}/${currentTemplateId}/${logSheetId}`);
+      } else {
+        // Fallback to old route structure
+        navigate(`/dynamic-log-sheet/${category}/${logSheetId}`);
+      }
     } else {
       navigate(`/dynamic-log-sheet/${category}`);
     }
-  }, [navigate, category, logSheetId]);
+  }, [navigate, category, logSheetId, params?.template_id]);
 
   return { isSubmitting, error, setError, handleSubmit, handleCancel };
 };

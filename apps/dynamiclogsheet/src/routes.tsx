@@ -10,14 +10,14 @@ import NewPage from './pages/NewPage';
 export const routes: Array<{ path: string; component: React.ComponentType }> = [
   // Master Data routes
   { path: '/dynamic-log-sheet/master/new/:template_id', component: NewPage },
-  { path: '/dynamic-log-sheet/master/:id/edit', component: Edit },
-  { path: '/dynamic-log-sheet/master/:id', component: Detail },
+  { path: '/dynamic-log-sheet/master/:template_id/:logsheet_id/edit', component: Edit },
+  { path: '/dynamic-log-sheet/master/:template_id/:logsheet_id', component: Detail },
   { path: '/dynamic-log-sheet/master', component: Listing },
   
   // Operational Data routes
   { path: '/dynamic-log-sheet/operational/new/:template_id', component: NewPage },
-  { path: '/dynamic-log-sheet/operational/:id/edit', component: Edit },
-  { path: '/dynamic-log-sheet/operational/:id', component: Detail },
+  { path: '/dynamic-log-sheet/operational/:template_id/:logsheet_id/edit', component: Edit },
+  { path: '/dynamic-log-sheet/operational/:template_id/:logsheet_id', component: Detail },
   { path: '/dynamic-log-sheet/operational', component: Listing },
   
   // Backward compatibility - redirect to master

@@ -117,6 +117,8 @@ export const processFormJson = (formJson: any): string => {
 
 /**
  * Flatten form_data from log sheet and filter out file upload fields
+ * Handles both old structure (sectioned) and new structure (data, parent_data, previous_step)
+ * New structure: data.main.data contains the actual field values
  * @param logSheet - The log sheet data
  * @param fileUploadKeys - Set of file upload field keys to filter out
  * @returns Flattened form data without file upload fields
@@ -131,12 +133,39 @@ export const flattenFormData = (
 
   const flattened: Record<string, any> = {};
 
-  // Flatten all form_data from all sections
-  Object.values(logSheet.form_data).forEach((section: any) => {
-    if (section?.data && typeof section.data === "object") {
-      Object.assign(flattened, section.data);
+  // Check if it's the new structure (has top-level 'data' property)
+  if (logSheet.form_data.data && typeof logSheet.form_data.data === "object") {
+    // New structure: { data: { main: { section_name, order, data: {...} } }, parent_data: {...}, previous_step: {...} }
+    // Extract values from data.main.data (or iterate through all sections in data)
+    const dataObj = logSheet.form_data.data as any;
+    
+    // Check if data has nested structure like { main: { data: {...} } }
+    if (dataObj.main && dataObj.main.data) {
+      // Structure: data.main.data contains the actual field values
+      Object.assign(flattened, dataObj.main.data);
+    } else {
+      // If data is directly the field values (flat structure)
+      // Or iterate through all sections if multiple sections exist
+      Object.keys(dataObj).forEach((sectionKey) => {
+        const section = dataObj[sectionKey];
+        if (section?.data && typeof section.data === "object") {
+          // Extract field values from section.data
+          Object.assign(flattened, section.data);
+        } else if (typeof section === "object" && !section.section_name && !section.order) {
+          // If section itself is the data object (no nested structure)
+          Object.assign(flattened, section);
+        }
+      });
     }
-  });
+  } else {
+    // Old structure: sectioned form_data
+    // Flatten all form_data from all sections
+    Object.values(logSheet.form_data).forEach((section: any) => {
+      if (section?.data && typeof section.data === "object") {
+        Object.assign(flattened, section.data);
+      }
+    });
+  }
 
   // Filter out file upload fields - they cannot have values set programmatically
   const filtered: Record<string, any> = {};
@@ -175,8 +204,41 @@ export const structureFormDataForAPI = (
     dateFieldKeys
   );
 
-  // Preserve existing section structure if available
-  if (logSheet?.form_data && Object.keys(logSheet.form_data).length > 0) {
+  // Check if it's the new structure (has top-level 'data' property)
+  if (logSheet?.form_data?.data !== undefined) {
+    // New structure: { data: { main: { section_name, order, data: {...} } }, parent_data: {...}, previous_step: {...} }
+    // Preserve the nested structure: data.main.data contains the field values
+    const existingData = logSheet.form_data.data as any;
+    
+    // Preserve parent_data and previous_step
+    if ((logSheet.form_data as any).parent_data) {
+      structured.parent_data = (logSheet.form_data as any).parent_data;
+    }
+    if ((logSheet.form_data as any).previous_step) {
+      structured.previous_step = (logSheet.form_data as any).previous_step;
+    }
+    
+    // Update data structure - preserve section structure
+    if (existingData.main) {
+      // Structure: data.main.data
+      structured.data = {
+        main: {
+          ...existingData.main,
+          data: convertedFormData
+        }
+      };
+    } else {
+      // If no main section, create it or preserve existing structure
+      structured.data = {
+        main: {
+          section_name: logSheet?.template_name || "Form",
+          order: 1,
+          data: convertedFormData
+        }
+      };
+    }
+  } else if (logSheet?.form_data && Object.keys(logSheet.form_data).length > 0) {
+    // Old structure: sectioned form_data
     // Use the first section_id from existing form_data
     const firstSectionId = Object.keys(logSheet.form_data)[0];
     const existingSection = logSheet.form_data[firstSectionId];
